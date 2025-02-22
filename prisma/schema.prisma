@@ -33,6 +33,8 @@ model Report {
   date        DateTime         @db.Date
   time        DateTime         @db.Time
   status      ReportStatus     @default(pending)
+  createdAt   DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  deletedAt   DateTime?        @db.Timestamp() @map("deleted_at")
 
   userEmail   String           @db.VarChar(320) @map("user_email")
   user        User             @relation(fields: [userEmail], references: [email])
@@ -49,6 +51,8 @@ model Incident {
   id         String           @id @default(uuid())
   riskLevel  RiskLevel        @map("risk_level")
   status     IncidentStatus
+  createdAt  DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt  DateTime         @db.Timestamp() @default(now()) @map("updated_at")
   
   dateStart  DateTime         @db.Date @map("date_start")
   dateEnd    DateTime         @db.Date @map("date_end")
@@ -79,6 +83,8 @@ model Attachment {
 model Comment {
   id        Int    @id @default(autoincrement())
   comment   String @db.Text
+  createdAt  DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt  DateTime         @db.Timestamp() @default(now()) @map("updated_at")
   
   userEmail String @map("user_email")
   user      User   @relation(fields: [userEmail], references: [email])
@@ -88,7 +94,7 @@ model Comment {
 }
 
 model Vote {
-  type      VoteType
+  type      VoteType?
 
   userEmail String @map("user_email")
   user      User   @relation(fields: [userEmail], references: [email])
