@@ -18,9 +18,10 @@ model User {
   name         String    @db.VarChar(100)
   password     String    @db.VarChar(255)
   phone        String    @db.VarChar(15)
-  profilePhoto String?   @db.VarChar(2083)  @map("profile_photo")
+  profilePhoto String?   @db.VarChar(2083) @map("profile_photo")
   reputation   Int       @default(0)
 
+  reports      Report[]
   comments     Comment[]
   votes        Vote[]
 }
@@ -32,6 +33,9 @@ model Report {
   date        DateTime         @db.Date
   time        DateTime         @db.Time
   status      ReportStatus     @default(pending)
+
+  userEmail   String           @db.VarChar(320) @map("user_email")
+  user        User             @relation(fields: [userEmail], references: [email])
 
   categoryId  Int              @map("category_id")
   category    IncidentCategory @relation(fields: [categoryId], references: [id])
