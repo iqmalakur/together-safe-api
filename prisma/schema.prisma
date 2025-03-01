@@ -29,7 +29,8 @@ model User {
 model Report {
   id          String           @id @default(uuid())
   description String           @db.Text
-  location    String           @db.VarChar(50)
+  latitude    Float
+  longitude   Float
   date        DateTime         @db.Date
   time        DateTime         @db.Time
   status      ReportStatus     @default(pending)
@@ -48,20 +49,28 @@ model Report {
 }
 
 model Incident {
-  id         String           @id @default(uuid())
-  riskLevel  RiskLevel        @map("risk_level")
-  status     IncidentStatus
-  createdAt  DateTime         @db.Timestamp() @default(now()) @map("created_at")
-  updatedAt  DateTime         @db.Timestamp() @default(now()) @map("updated_at")
+  id                 String           @id @default(uuid())
+  riskLevel          RiskLevel        @map("risk_level")
+  status             IncidentStatus
+  createdAt          DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt          DateTime         @db.Timestamp() @default(now()) @map("updated_at")
+
+  latitude_max       Float
+  latitude_min       Float
+  latitude_centroid  Float
   
-  dateStart  DateTime         @db.Date @map("date_start")
-  dateEnd    DateTime         @db.Date @map("date_end")
+  longitude_max      Float
+  longitude_min      Float
+  longitude_centroid Float
+  
+  dateStart          DateTime         @db.Date @map("date_start")
+  dateEnd            DateTime         @db.Date @map("date_end")
 
-  timeStart  DateTime         @db.Time @map("time_start")
-  timeEnd    DateTime         @db.Time @map("time_end")
+  timeStart          DateTime         @db.Time @map("time_start")
+  timeEnd            DateTime         @db.Time @map("time_end")
 
-  categoryId Int              @map("category_id")
-  category   IncidentCategory @relation(fields: [categoryId], references: [id])
+  categoryId         Int              @map("category_id")
+  category           IncidentCategory @relation(fields: [categoryId], references: [id])
 }
 
 model IncidentCategory {
