@@ -25,7 +25,7 @@ async function bootstrap() {
       'jwt',
     )
     .addTag('Auth')
-    .addTag('Report')
+    .addTag('Incident')
     .build();
 
   const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(

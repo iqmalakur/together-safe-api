@@ -10,6 +10,29 @@ export const getDateString = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
+const months = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+];
+
+export const getFormattedDate = (date: Date) => {
+  const year = zeroPadding(date.getFullYear(), 4);
+  const day = zeroPadding(date.getDate(), 2);
+  const month = months[date.getMonth()];
+
+  return `${day} ${month} ${year}`;
+};
+
 export const getTimeString = (date: Date, timeFix: boolean = false) => {
   if (timeFix) {
     date.setHours(date.getHours() - 7);
