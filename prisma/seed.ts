@@ -43,45 +43,8 @@ async function main() {
     },
   });
 
-  // Seed Reports
-  const report1 = await prisma.report.create({
-    data: {
-      userEmail: ucup.email,
-      description: 'Pembegalan motor di jalan ibu ganirah cimahi',
-      latitude: -6.884275453943853,
-      longitude: 107.52424339838008,
-      date: getDate('2025-02-19'),
-      time: getDate('19:30'),
-      categoryId: categoryPembegalan.id,
-    },
-  });
-
-  const report2 = await prisma.report.create({
-    data: {
-      userEmail: budi.email,
-      description: 'Aksi pembegalan motor terhadap mahasiswa',
-      latitude: -6.884397052259107,
-      longitude: 107.52415722077858,
-      date: getDate('2025-02-19'),
-      time: getDate('19:00'),
-      categoryId: categoryPembegalan.id,
-    },
-  });
-
-  const report3 = await prisma.report.create({
-    data: {
-      userEmail: wati.email,
-      description: 'Pelaku begal merampas tas pengendara di jalan ibu ganirah',
-      latitude: -6.884422385888235,
-      longitude: 107.5241731692771,
-      date: getDate('2025-02-19'),
-      time: getDate('20:00'),
-      categoryId: categoryPembegalan.id,
-    },
-  });
-
   // Seed Incidents
-  await prisma.incident.create({
+  const incident = await prisma.incident.create({
     data: {
       categoryId: categoryPembegalan.id,
       status: 'active',
@@ -96,6 +59,43 @@ async function main() {
       longitude_min: 107.52415722077858,
       longitude_max: 107.52424339838008,
       longitude_centroid: 107.52420030957933,
+    },
+  });
+
+  // Seed Reports
+  const report1 = await prisma.report.create({
+    data: {
+      userEmail: ucup.email,
+      description: 'Pembegalan motor di jalan ibu ganirah cimahi',
+      latitude: -6.884275453943853,
+      longitude: 107.52424339838008,
+      date: getDate('2025-02-19'),
+      time: getDate('19:30'),
+      incidentId: incident.id,
+    },
+  });
+
+  const report2 = await prisma.report.create({
+    data: {
+      userEmail: budi.email,
+      description: 'Aksi pembegalan motor terhadap mahasiswa',
+      latitude: -6.884397052259107,
+      longitude: 107.52415722077858,
+      date: getDate('2025-02-19'),
+      time: getDate('19:00'),
+      incidentId: incident.id,
+    },
+  });
+
+  const report3 = await prisma.report.create({
+    data: {
+      userEmail: wati.email,
+      description: 'Pelaku begal merampas tas pengendara di jalan ibu ganirah',
+      latitude: -6.884422385888235,
+      longitude: 107.5241731692771,
+      date: getDate('2025-02-19'),
+      time: getDate('20:00'),
+      incidentId: incident.id,
     },
   });
 

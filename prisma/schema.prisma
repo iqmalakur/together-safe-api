@@ -40,8 +40,8 @@ model Report {
   userEmail   String           @db.VarChar(320) @map("user_email")
   user        User             @relation(fields: [userEmail], references: [email])
 
-  categoryId  Int              @map("category_id")
-  category    IncidentCategory @relation(fields: [categoryId], references: [id])
+  incidentId  String           @map("incident_id")
+  incident    Incident         @relation(fields: [incidentId], references: [id])
 
   attachments Attachment[]
   comments    Comment[]
@@ -71,13 +71,14 @@ model Incident {
 
   categoryId         Int              @map("category_id")
   category           IncidentCategory @relation(fields: [categoryId], references: [id])
+
+  reports            Report[]
 }
 
 model IncidentCategory {
   id        Int        @id @default(autoincrement())
   name      String     @db.VarChar(100)
 
-  reports   Report[]
   incidents Incident[]
 }
 

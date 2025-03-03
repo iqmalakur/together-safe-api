@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class IncidentReport {
+  @ApiProperty({ example: 'abcdefghijklmn' })
+  public id: string;
+
+  @ApiProperty({ example: 'Terjadi pembegalan di cimahi' })
+  public description: string;
+}
+
 export class IncidentResBody {
   @ApiProperty({ example: 'Pembegalan' })
   public category: string;
@@ -27,4 +35,14 @@ export class IncidentResBody {
 
   @ApiProperty({ example: 'active' })
   public status: string;
+
+  @ApiProperty({
+    example: ['https://example.com/image.jpg', 'https://example.com/video.mp4'],
+  })
+  public mediaUrls: string[];
+
+  @ApiProperty({
+    description: 'Incident report',
+  })
+  public reports: IncidentReport[];
 }

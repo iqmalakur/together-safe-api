@@ -2,12 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { BaseService } from './base.service';
 import { getFormattedDate, getTimeString } from 'src/utils/date.util';
 import { getLocationName } from 'src/utils/api.util';
-import { IncidentResBody } from 'src/dto/incident.dto';
+import { IncidentReport, IncidentResBody } from 'src/dto/incident.dto';
 
 @Injectable()
 export class IncidentService extends BaseService {
   public async handleGetIncident(): Promise<IncidentResBody[]> {
-    const incidents = await this.prisma.incident.findMany();
+    const incidents = await this.prisma.incident.findMany({
+      include: {
+        category: {
+          select: { name: true },
+        },
+        reports: {
+          select: {
+            id: true,
+            description: true,
+            attachments: {
+              select: { uri: true },
+            },
+          },
+        },
+      },
+    });
     const response: IncidentResBody[] = [];
 
     for (const incident of incidents) {
@@ -16,8 +31,22 @@ export class IncidentService extends BaseService {
         incident.longitude_centroid,
       );
 
+      const reports: IncidentReport[] = [];
+      const mediaUrls: string[] = [];
+
+      incident.reports.forEach((report) => {
+        reports.push({
+          id: report.id,
+          description: report.description,
+        });
+
+        mediaUrls.push(
+          ...report.attachments.map((attachment) => attachment.uri),
+        );
+      });
+
       response.push({
-        category: 'pembegalan',
+        category: incident.category.name,
         date: this.getDateRange(incident.dateStart, incident.dateEnd),
         time: this.getTimeRange(incident.timeStart, incident.timeEnd),
         riskLevel: incident.riskLevel as string,
@@ -25,6 +54,8 @@ export class IncidentService extends BaseService {
         latitude: incident.latitude_centroid,
         longitude: incident.longitude_centroid,
         status: incident.status as string,
+        reports,
+        mediaUrls,
       });
     }
 
