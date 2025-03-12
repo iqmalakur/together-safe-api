@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  email        String    @id @db.VarChar(320)
+  name         String    @db.VarChar(100)
+  password     String    @db.VarChar(255)
+  phone        String    @db.VarChar(15)
+  profilePhoto String?   @db.VarChar(2083) @map("profile_photo")
+  reputation   Int       @default(0)
+
+  reports      Report[]
+  comments     Comment[]
+  votes        Vote[]
+}
+
+model Report {
+  id          String           @id @default(uuid())
+  description String           @db.Text
+  latitude    Float
+  longitude   Float
+  date        DateTime         @db.Date
+  time        DateTime         @db.Time
+  status      ReportStatus     @default(pending)
+  createdAt   DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  deletedAt   DateTime?        @db.Timestamp() @map("deleted_at")
+
+  userEmail   String           @db.VarChar(320) @map("user_email")
+  user        User             @relation(fields: [userEmail], references: [email])
+
+  incidentId  String           @map("incident_id")
+  incident    Incident         @relation(fields: [incidentId], references: [id])
+
+  attachments Attachment[]
+  comments    Comment[]
+  votes       Vote[]
+}
+
+model Incident {
+  id                 String           @id @default(uuid())
+  riskLevel          RiskLevel        @map("risk_level")
+  status             IncidentStatus
+  createdAt          DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt          DateTime         @db.Timestamp() @default(now()) @map("updated_at")
+
+  latitude_max       Float
+  latitude_min       Float
+  latitude_centroid  Float
+  
+  longitude_max      Float
+  longitude_min      Float
+  longitude_centroid Float
+  
+  dateStart          DateTime         @db.Date @map("date_start")
+  dateEnd            DateTime         @db.Date @map("date_end")
+
+  timeStart          DateTime         @db.Time @map("time_start")
+  timeEnd            DateTime         @db.Time @map("time_end")
+
+  categoryId         Int              @map("category_id")
+  category           IncidentCategory @relation(fields: [categoryId], references: [id])
+
+  reports            Report[]
+}
+
+model IncidentCategory {
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(100)
+
+  incidents Incident[]
+}
+
+model Attachment {
+  id       Int    @id @default(autoincrement())
+  uri      String @db.VarChar(2083)
+
+  reportId String @map("report_id")
+  report   Report @relation(fields: [reportId], references: [id])
+}
+
+model Comment {
+  id        Int    @id @default(autoincrement())
+  comment   String @db.Text
+  createdAt  DateTime         @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt  DateTime         @db.Timestamp() @default(now()) @map("updated_at")
+  
+  userEmail String @map("user_email")
+  user      User   @relation(fields: [userEmail], references: [email])
+
+  reportId  String @map("report_id")
+  report    Report @relation(fields: [reportId], references: [id])
+}
+
+model Vote {
+  type      VoteType?
+
+  userEmail String @map("user_email")
+  user      User   @relation(fields: [userEmail], references: [email])
+
+  reportId  String @map("report_id")
+  report    Report @relation(fields: [reportId], references: [id])
+
+  @@id([userEmail, reportId])
+}
+
+enum VoteType {
+  upvote
+  downvote
+}
+
+enum RiskLevel {
+  high
+  medium
+  low
+}
+
+enum ReportStatus {
+  verified
+  pending
+  invalid
+}
+
+enum IncidentStatus {
+  active
+  non_active
+}

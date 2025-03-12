@@ -1,10 +1,16 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { PrismaService } from './services/prisma.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { IncidentController } from './controllers/incident.controller';
+import { IncidentService } from './services/incident.service';
+import { HttpMiddleware } from './middlewares/http.middleware';
 
 @Module({
   imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [IncidentController],
+  providers: [PrismaService, IncidentService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpMiddleware).forRoutes('*');
+  }
+}
