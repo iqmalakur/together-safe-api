@@ -43,6 +43,8 @@ export class IncidentResBody {
 
   @ApiProperty({
     description: 'Incident report',
+    type: IncidentReport,
+    isArray: true,
   })
   public reports: IncidentReport[];
 }
