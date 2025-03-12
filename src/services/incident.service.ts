@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from './base.service';
-import { getFormattedDate, getTimeString } from 'src/utils/date.util';
-import { getLocationName } from 'src/utils/api.util';
-import { IncidentReport, IncidentResBody } from 'src/dto/incident.dto';
+import { getFormattedDate, getTimeString } from '../utils/date.util';
+import { getLocationName } from '../utils/api.util';
+import { IncidentReport, IncidentResBody } from '../dto/incident.dto';
 
 @Injectable()
 export class IncidentService extends BaseService {
