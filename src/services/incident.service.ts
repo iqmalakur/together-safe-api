@@ -3,11 +3,12 @@ import { BaseService } from './base.service';
 import { getFormattedDate, getTimeString } from '../utils/date.util';
 import { getLocationName } from '../utils/api.util';
 import { IncidentReport, IncidentResBody } from '../dto/incident.dto';
+import { IncidentSelection } from 'src/types/incident.type';
 
 @Injectable()
 export class IncidentService extends BaseService {
   public async handleGetIncident(): Promise<IncidentResBody[]> {
-    const incidents = await this.prisma.incident.findMany({
+    const incidents: IncidentSelection[] = await this.prisma.incident.findMany({
       include: {
         category: {
           select: { name: true },
