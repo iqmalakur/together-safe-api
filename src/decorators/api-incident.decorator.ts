@@ -1,8 +1,8 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiToken } from './api-token.decorator';
-import { IncidentResBody } from '../modules/incident/incident.dto';
-import { ServerErrorResBody } from '../modules/shared/api-error.dto';
+import { IncidentResDto } from '../modules/incident/incident.dto';
+import { ServerErrorDto } from '../modules/shared/api-error.dto';
 
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(
@@ -14,12 +14,12 @@ export const ApiIncident = (): MethodDecorator => {
     ApiResponse({
       status: 200,
       description: 'success get incident data',
-      type: IncidentResBody,
+      type: IncidentResDto,
     }),
     ApiResponse({
       status: 500,
       description: 'an unexpected error occurred',
-      type: ServerErrorResBody,
+      type: ServerErrorDto,
     }),
   );
 };

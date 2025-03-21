@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ServerErrorResBody } from '../modules/shared/api-error.dto';
+import { ServerErrorDto } from '../modules/shared/api-error.dto';
 import { ApiBadRequest, ApiUnauthorized } from './api-response.decorator';
 import { LoginResDto } from 'src/modules/auth/auth.dto';
 
@@ -20,7 +20,7 @@ export const ApiLogin = (): MethodDecorator => {
     ApiResponse({
       status: 500,
       description: 'an unexpected error occurred',
-      type: ServerErrorResBody,
+      type: ServerErrorDto,
     }),
   );
 };

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class IncidentReport {
+export class IncidentReportDto {
   @ApiProperty({ example: 'abcdefghijklmn' })
   public id: string;
 
@@ -8,7 +8,7 @@ export class IncidentReport {
   public description: string;
 }
 
-export class IncidentResBody {
+export class IncidentResDto {
   @ApiProperty({ example: 'Pembegalan' })
   public category: string;
 
@@ -43,8 +43,8 @@ export class IncidentResBody {
 
   @ApiProperty({
     description: 'Incident report',
-    type: IncidentReport,
+    type: IncidentReportDto,
     isArray: true,
   })
-  public reports: IncidentReport[];
+  public reports: IncidentReportDto[];
 }

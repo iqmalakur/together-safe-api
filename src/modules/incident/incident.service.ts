@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import { getLocationName } from '../../utils/api.util';
-import { IncidentReport, IncidentResBody } from './incident.dto';
+import { IncidentReportDto, IncidentResDto } from './incident.dto';
 import { IncidentSelection } from './incident.type';
 import { IIncidentRepository, IncidentRepository } from './incident.repository';
 import { BaseService } from '../shared/base.service';
@@ -12,9 +12,9 @@ export class IncidentService extends BaseService<IIncidentRepository> {
     super(repository);
   }
 
-  public async handleGetIncident(): Promise<IncidentResBody[]> {
+  public async handleGetIncident(): Promise<IncidentResDto[]> {
     const incidents: IncidentSelection[] = await this.repository.getIncidents();
-    const response: IncidentResBody[] = [];
+    const response: IncidentResDto[] = [];
 
     for (const incident of incidents) {
       const location = await getLocationName(
@@ -22,7 +22,7 @@ export class IncidentService extends BaseService<IIncidentRepository> {
         incident.longitude_centroid,
       );
 
-      const reports: IncidentReport[] = [];
+      const reports: IncidentReportDto[] = [];
       const mediaUrls: string[] = [];
 
       incident.reports.forEach((report) => {

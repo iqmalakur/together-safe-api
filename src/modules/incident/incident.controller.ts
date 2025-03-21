@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import { IncidentService } from './incident.service';
-import { IncidentResBody } from './incident.dto';
+import { IncidentResDto } from './incident.dto';
 import { ApiIncident } from '../../decorators/api-incident.decorator';
 
 @Controller('incident')
@@ -14,7 +14,7 @@ export class IncidentController extends BaseController {
 
   @Get()
   @ApiIncident()
-  public async getIncident(): Promise<IncidentResBody[]> {
+  public async getIncident(): Promise<IncidentResDto[]> {
     return await this.service.handleGetIncident();
   }
 }
