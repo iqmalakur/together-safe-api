@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { getPhotoUrl } from '../utils/common.util';
+import { getPhotoUrl } from '../../utils/common.util';
 import { sign } from 'jsonwebtoken';
-import { SECRET_KEY } from '../config/app.config';
-import { UserAuthSelection } from '../types/auth.type';
+import { SECRET_KEY } from '../../config/app.config';
+import { UserAuthSelection } from './auth.type';
 
 export class LoginReqDto {
   @ApiProperty({ example: 'john@example.com' })

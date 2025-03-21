@@ -1,5 +1,5 @@
 import { ApiSecurity } from '@nestjs/swagger';
-import { LoggerUtil } from '../utils/logger.util';
+import { LoggerUtil } from '../../utils/logger.util';
 
 @ApiSecurity('jwt')
 export abstract class BaseController {

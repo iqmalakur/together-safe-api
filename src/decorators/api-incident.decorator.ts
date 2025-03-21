@@ -1,8 +1,8 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiToken } from './api-token.decorator';
-import { IncidentResBody } from '../dto/incident.dto';
-import { ServerErrorResBody } from '../dto/api-error.dto';
+import { IncidentResBody } from '../modules/incident/incident.dto';
+import { ServerErrorResBody } from '../modules/shared/api-error.dto';
 
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(

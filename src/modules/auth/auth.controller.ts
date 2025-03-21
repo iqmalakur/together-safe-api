@@ -7,10 +7,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BaseController } from './base.controller';
-import { ApiIncident } from '../decorators/api-incident.decorator';
-import { LoginReqDto, LoginResDto } from 'src/dto/auth.dto';
-import { AuthService } from 'src/services/auth.service';
+import { BaseController } from '../shared/base.controller';
+import { ApiIncident } from '../../decorators/api-incident.decorator';
+import { LoginReqDto, LoginResDto } from './auth.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 @ApiTags('Auth')
