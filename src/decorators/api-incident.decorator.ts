@@ -2,7 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiToken } from './api-token.decorator';
 import { IncidentResDto } from '../modules/incident/incident.dto';
-import { ServerErrorDto } from '../modules/shared/api-error.dto';
+import { ServerErrorDto } from '../modules/shared/shared.dto';
 
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(

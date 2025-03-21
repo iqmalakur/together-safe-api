@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { ErrorDto } from '../modules/shared/api-error.dto';
+import { ErrorDto } from '../modules/shared/shared.dto';
 
 const createApiResponseDecorator = (
   status: number,

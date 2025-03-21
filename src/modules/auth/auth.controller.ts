@@ -8,9 +8,12 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
-import { LoginReqDto, LoginResDto } from './auth.dto';
+import { LoginReqDto, AuthResDto, ValidateTokenReqDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { ApiLogin } from 'src/decorators/api-auth.decorator';
+import {
+  ApiLogin,
+  ApiValidateToken,
+} from '../../decorators/api-auth.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -22,7 +25,7 @@ export class AuthController extends BaseController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiLogin()
-  public async login(@Body() reqBody: LoginReqDto): Promise<LoginResDto> {
+  public async login(@Body() reqBody: LoginReqDto): Promise<AuthResDto> {
     this.logger.debug(`request body: `, reqBody);
 
     const { email, password } = reqBody;
@@ -36,5 +39,22 @@ export class AuthController extends BaseController {
     }
 
     return await this.service.handleLogin(email, password);
+  }
+
+  @Post('validate_token')
+  @HttpCode(HttpStatus.OK)
+  @ApiValidateToken()
+  public async validateToken(
+    @Body() reqBody: ValidateTokenReqDto,
+  ): Promise<AuthResDto> {
+    this.logger.debug(`request body: `, reqBody);
+
+    const { token } = reqBody;
+
+    if (!token) {
+      throw new BadRequestException('token harus diisi!');
+    }
+
+    return await this.service.handleValidateToken(token);
   }
 }
