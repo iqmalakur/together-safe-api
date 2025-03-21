@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
-import { ApiIncident } from '../../decorators/api-incident.decorator';
 import { LoginReqDto, LoginResDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { ApiLogin } from 'src/decorators/api-auth.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -21,7 +21,7 @@ export class AuthController extends BaseController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiIncident()
+  @ApiLogin()
   public async login(@Body() reqBody: LoginReqDto): Promise<LoginResDto> {
     this.logger.debug(`request body: `, reqBody);
 
