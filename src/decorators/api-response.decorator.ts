@@ -1,12 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { ErrorResBody } from '../dto/api-error.dto';
-
-interface ApiError {
-  message: string;
-  error: string;
-  statusCode: number;
-}
+import { ErrorDto } from '../modules/shared/api-error.dto';
 
 const createApiResponseDecorator = (
   status: number,
@@ -14,7 +8,7 @@ const createApiResponseDecorator = (
   description: string,
   message: string,
 ): MethodDecorator => {
-  const example: ApiError = {
+  const example = {
     message,
     error,
     statusCode: status,
@@ -24,7 +18,7 @@ const createApiResponseDecorator = (
     ApiResponse({
       status,
       description,
-      type: ErrorResBody,
+      type: ErrorDto,
       example,
     }),
   );

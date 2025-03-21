@@ -1,29 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from './base.service';
-import { getFormattedDate, getTimeString } from '../utils/date.util';
-import { getLocationName } from '../utils/api.util';
-import { IncidentReport, IncidentResBody } from '../dto/incident.dto';
+import { getFormattedDate, getTimeString } from '../../utils/date.util';
+import { getLocationName } from '../../utils/api.util';
+import { IncidentReportDto, IncidentResDto } from './incident.dto';
+import { IncidentSelection } from './incident.type';
+import { IIncidentRepository, IncidentRepository } from './incident.repository';
+import { BaseService } from '../shared/base.service';
 
 @Injectable()
-export class IncidentService extends BaseService {
-  public async handleGetIncident(): Promise<IncidentResBody[]> {
-    const incidents = await this.prisma.incident.findMany({
-      include: {
-        category: {
-          select: { name: true },
-        },
-        reports: {
-          select: {
-            id: true,
-            description: true,
-            attachments: {
-              select: { uri: true },
-            },
-          },
-        },
-      },
-    });
-    const response: IncidentResBody[] = [];
+export class IncidentService extends BaseService<IIncidentRepository> {
+  public constructor(repository: IncidentRepository) {
+    super(repository);
+  }
+
+  public async handleGetIncident(): Promise<IncidentResDto[]> {
+    const incidents: IncidentSelection[] = await this.repository.getIncidents();
+    const response: IncidentResDto[] = [];
 
     for (const incident of incidents) {
       const location = await getLocationName(
@@ -31,7 +22,7 @@ export class IncidentService extends BaseService {
         incident.longitude_centroid,
       );
 
-      const reports: IncidentReport[] = [];
+      const reports: IncidentReportDto[] = [];
       const mediaUrls: string[] = [];
 
       incident.reports.forEach((report) => {
