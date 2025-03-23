@@ -26,6 +26,7 @@ async function bootstrap() {
     )
     .addTag('Auth')
     .addTag('Incident')
+    .addTag('Geolocation')
     .build();
 
   const swaggerDocument: OpenAPIObject = SwaggerModule.createDocument(

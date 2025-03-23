@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class GeolocationSearchQueryDto {
+  @ApiProperty({ example: 'cimahi', description: 'search query' })
+  public readonly q: string;
+}
+
 export class GeolocationResDto {
   @ApiProperty({ example: 'Cimahi' })
   public readonly name: string;
