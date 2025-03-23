@@ -20,6 +20,27 @@ export class LoginReqDto {
   public readonly password: string;
 }
 
+export class RegisterReqDto {
+  @ApiProperty({ example: 'john@example.com' })
+  public readonly email: string;
+
+  @ApiProperty({ example: 'rahasia' })
+  public readonly password: string;
+
+  @ApiProperty({ example: 'John Marston' })
+  public readonly name: string;
+
+  @ApiProperty({ example: '08123456789' })
+  public readonly phone: string;
+
+  @ApiProperty({
+    description: 'foto profil',
+    type: 'string',
+    format: 'buffer',
+  })
+  public readonly profilePhoto: Express.Multer.File;
+}
+
 export class AuthResDto {
   @ApiProperty({ example: 'john@example.com' })
   public readonly email: string;

@@ -5,15 +5,23 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
-import { LoginReqDto, AuthResDto, ValidateTokenReqDto } from './auth.dto';
+import {
+  LoginReqDto,
+  AuthResDto,
+  ValidateTokenReqDto,
+  RegisterReqDto,
+} from './auth.dto';
 import { AuthService } from './auth.service';
 import {
   ApiLogin,
   ApiValidateToken,
 } from '../../decorators/api-auth.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileParam } from 'src/decorators/file-param.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -39,6 +47,20 @@ export class AuthController extends BaseController {
     }
 
     return await this.service.handleLogin(email, password);
+  }
+
+  @Post('register')
+  @UseInterceptors(FileInterceptor('profilePhoto'))
+  @HttpCode(HttpStatus.CREATED)
+  public async register(
+    @FileParam() reqBody: RegisterReqDto,
+  ): Promise<AuthResDto> {
+    this.logger.debug(`request body: `, {
+      ...reqBody,
+      profilePhoto: reqBody.profilePhoto.originalname,
+    });
+
+    return {} as unknown as Promise<AuthResDto>;
   }
 
   @Post('validate_token')

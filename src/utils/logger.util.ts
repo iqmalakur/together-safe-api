@@ -85,19 +85,25 @@ export class LoggerUtil {
   }
 
   private logFormat(data: object | string): string {
+    let formattedData: Record<string, any> = {};
+
     try {
       if (typeof data === 'string') {
-        data = JSON.parse(data) as object;
+        formattedData = JSON.parse(data);
+      } else {
+        formattedData = { ...data };
       }
     } catch {
       return data as string;
     }
 
-    const formattedData = { ...data } as object;
-    formattedData['password'] = formattedData['password']
-      ? '**********'
-      : undefined;
-    formattedData['token'] = formattedData['token'] ? '**********' : undefined;
+    if ('password' in formattedData) {
+      formattedData['password'] = '[hidden]';
+    }
+
+    if ('token' in formattedData) {
+      formattedData['token'] = '[hidden]';
+    }
 
     return JSON.stringify(formattedData, null, 2);
   }
