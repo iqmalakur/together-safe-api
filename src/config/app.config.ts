@@ -9,6 +9,7 @@ const validDestination: string[] = ['local', 'cloud'];
 
 export const PORT = parseInt(process.env.PORT || '3000');
 export const SECRET_KEY = process.env.SECRET_KEY || 'rahasia';
+export const APP_URL: string = process.env.APP_URL || 'http://localhost:3000';
 export const UPLOAD_DESTINATION: string = validDestination.includes(destination)
   ? destination
   : 'local';
