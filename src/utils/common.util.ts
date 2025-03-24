@@ -7,7 +7,7 @@ import {
   TokenExpiredError,
   verify,
 } from 'jsonwebtoken';
-import { APP_URL, SECRET_KEY } from '../config/app.config';
+import { SECRET_KEY } from '../config/app.config';
 
 export const handleError = (error: Error, logger: LoggerUtil): Error => {
   if (error instanceof HttpException) {
@@ -37,17 +37,6 @@ export const validateToken = (token: string): JwtPayload | null => {
   }
 };
 
-const LOCAL_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.mp4', '.mkv', '.webp'];
-
-export const getFileUrl = (
-  filename: string,
-  type: 'profiles' | 'incidents',
-) => {
-  const isLocal = LOCAL_EXTENSIONS.some((ext) =>
-    filename.toLowerCase().endsWith(ext),
-  );
-
-  return isLocal
-    ? `${APP_URL}/upload/${type}/${filename}`
-    : `https://lh3.googleusercontent.com/d/${filename}=s220`;
+export const getFileUrl = (id: string) => {
+  return `https://drive.google.com/uc?export=view&id=${id}`;
 };

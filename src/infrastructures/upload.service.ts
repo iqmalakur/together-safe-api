@@ -1,9 +1,6 @@
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { extname } from 'path';
 import { drive_v3, google } from 'googleapis';
 import { Readable } from 'stream';
 import {
-  UPLOAD_DESTINATION,
   GOOGLE_API_KEY_FILE,
   GOOGLE_DRIVE_FOLDER_ID,
 } from '../config/app.config';
@@ -30,22 +27,9 @@ export class UploadService {
   }
 
   public async uploadFile(file: Express.Multer.File): Promise<string> {
-    const name = uuidv4();
-
-    if (UPLOAD_DESTINATION === 'cloud') {
-      return await this.uploadToDrive(file, name);
-    } else {
-      return this.uploadToLocal(file, name);
-    }
-  }
-
-  private async uploadToDrive(
-    file: Express.Multer.File,
-    name: string,
-  ): Promise<string> {
     try {
       const fileMetadata = {
-        name,
+        name: uuidv4(),
         parents: [GOOGLE_DRIVE_FOLDER_ID],
       };
 
@@ -68,23 +52,6 @@ export class UploadService {
       }
 
       return fileId;
-    } catch (error) {
-      throw handleError(error, this.logger);
-    }
-  }
-
-  private uploadToLocal(file: Express.Multer.File, name: string): string {
-    const folderName = `./public/upload/`;
-
-    if (!existsSync(folderName)) {
-      mkdirSync(folderName, { recursive: true });
-    }
-
-    const filename = `${name}${extname(file.originalname)}`;
-
-    try {
-      writeFileSync(folderName + filename, file.buffer);
-      return filename;
     } catch (error) {
       throw handleError(error, this.logger);
     }
