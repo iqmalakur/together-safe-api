@@ -32,10 +32,12 @@
     "axios": "^1.8.1",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
+    "googleapis": "^148.0.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "1.4.5-lts.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
