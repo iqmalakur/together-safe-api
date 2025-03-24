@@ -9,13 +9,13 @@ import {
 } from 'jsonwebtoken';
 import { SECRET_KEY } from '../config/app.config';
 
-export const handleError = (error: Error, logger: LoggerUtil) => {
+export const handleError = (error: Error, logger: LoggerUtil): Error => {
   if (error instanceof HttpException) {
-    throw error;
+    return error;
   }
 
   logger.error(error);
-  throw new InternalServerErrorException();
+  return new InternalServerErrorException();
 };
 
 const expectedErrors = new Set([
@@ -30,7 +30,7 @@ export const validateToken = (token: string): JwtPayload | null => {
     return verify(token, SECRET_KEY) as JwtPayload;
   } catch (err) {
     if (!expectedErrors.has(err.constructor)) {
-      handleError(err, LoggerUtil.getInstance('ValidateToken'));
+      throw handleError(err, LoggerUtil.getInstance('ValidateToken'));
     }
 
     return null;
