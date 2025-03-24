@@ -60,7 +60,23 @@ export class AuthController extends BaseController {
       profilePhoto: reqBody.profilePhoto.originalname,
     });
 
-    return {} as unknown as Promise<AuthResDto>;
+    if (!reqBody.email) {
+      throw new BadRequestException('email harus diisi!');
+    }
+
+    if (!reqBody.name) {
+      throw new BadRequestException('name harus diisi!');
+    }
+
+    if (!reqBody.password) {
+      throw new BadRequestException('password harus diisi!');
+    }
+
+    if (!reqBody.phone) {
+      throw new BadRequestException('phone harus diisi!');
+    }
+
+    return this.service.handleRegister(reqBody);
   }
 
   @Post('validate_token')

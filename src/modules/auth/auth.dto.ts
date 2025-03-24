@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { getPhotoUrl } from '../../utils/common.util';
+import { getFileUrl } from '../../utils/common.util';
 import { sign } from 'jsonwebtoken';
 import { SECRET_KEY } from '../../config/app.config';
 import { UserAuthSelection } from './auth.type';
@@ -65,7 +65,7 @@ export class AuthResDto {
     this.name = user.name;
     this.token = sign({ email: user.email }, SECRET_KEY, { expiresIn: '1w' });
 
-    if (user.profilePhoto) this.profilePhoto = getPhotoUrl(user.profilePhoto);
+    if (user.profilePhoto) this.profilePhoto = getFileUrl(user.profilePhoto);
     else this.profilePhoto = null;
   }
 }
