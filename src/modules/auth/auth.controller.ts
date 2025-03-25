@@ -1,19 +1,28 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
-import { LoginReqDto, AuthResDto, ValidateTokenReqDto } from './auth.dto';
+import {
+  LoginReqDto,
+  AuthResDto,
+  ValidateTokenReqDto,
+  RegisterReqDto,
+} from './auth.dto';
 import { AuthService } from './auth.service';
 import {
   ApiLogin,
+  ApiRegister,
   ApiValidateToken,
 } from '../../decorators/api-auth.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -29,16 +38,29 @@ export class AuthController extends BaseController {
     this.logger.debug(`request body: `, reqBody);
 
     const { email, password } = reqBody;
-
-    if (!email) {
-      throw new BadRequestException('email harus diisi!');
-    }
-
-    if (!password) {
-      throw new BadRequestException('password harus diisi!');
-    }
-
     return await this.service.handleLogin(email, password);
+  }
+
+  @Post('register')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('profilePhoto'))
+  @HttpCode(HttpStatus.CREATED)
+  @ApiRegister()
+  public async register(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: RegisterReqDto,
+  ): Promise<AuthResDto> {
+    const data = plainToInstance(RegisterReqDto, {
+      ...body,
+      profilePhoto: file,
+    });
+
+    this.logger.debug(`request body: `, {
+      ...data,
+      profilePhoto: data.profilePhoto.originalname,
+    });
+
+    return this.service.handleRegister(data);
   }
 
   @Post('validate_token')
@@ -48,13 +70,6 @@ export class AuthController extends BaseController {
     @Body() reqBody: ValidateTokenReqDto,
   ): Promise<AuthResDto> {
     this.logger.debug(`request body: `, reqBody);
-
-    const { token } = reqBody;
-
-    if (!token) {
-      throw new BadRequestException('token harus diisi!');
-    }
-
-    return await this.service.handleValidateToken(token);
+    return await this.service.handleValidateToken(reqBody.token);
   }
 }

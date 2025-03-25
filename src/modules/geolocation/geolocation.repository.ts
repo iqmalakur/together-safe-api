@@ -29,7 +29,7 @@ export class GeolocationRepository
         });
       });
     } catch (e) {
-      handleError(e, this.logger);
+      throw handleError(e, this.logger);
     }
 
     return result;
