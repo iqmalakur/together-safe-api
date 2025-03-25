@@ -32,12 +32,12 @@ export class LoginReqDto {
 }
 
 export class RegisterReqDto {
-  @ApiProperty({ example: 'john@example.com' })
+  @ApiProperty({ description: 'example: john@example.com' })
   @IsEmail({}, { message: 'email tidak valid' })
   @IsNotEmpty({ message: 'email harus diisi' })
   public readonly email: string;
 
-  @ApiProperty({ example: 'rahasia' })
+  @ApiProperty({ description: 'example: rahasia' })
   @IsNotEmpty({ message: 'password harus diisi' })
   @MinLength(8, { message: 'password minimal terdiri dari 8 karakter' })
   @Matches(/[A-Z]/, {
@@ -51,11 +51,11 @@ export class RegisterReqDto {
   })
   public readonly password: string;
 
-  @ApiProperty({ example: 'John Marston' })
+  @ApiProperty({ description: 'example: John Marston' })
   @IsNotEmpty({ message: 'nama harus diisi' })
   public readonly name: string;
 
-  @ApiProperty({ example: '08123456789' })
+  @ApiProperty({ description: 'example: 08123456789' })
   @IsNotEmpty({ message: 'nomor telepon harus diisi' })
   @Length(10, 13, {
     message: 'nomor telepon harus terdiri dari 10 hingga 13 digit',
@@ -66,7 +66,7 @@ export class RegisterReqDto {
   public readonly phone: string;
 
   @ApiProperty({
-    description: 'foto profil',
+    description: 'profile photo (file)',
     type: 'string',
     format: 'binary',
   })

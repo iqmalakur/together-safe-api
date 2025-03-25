@@ -7,7 +7,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import {
   LoginReqDto,
@@ -18,6 +18,7 @@ import {
 import { AuthService } from './auth.service';
 import {
   ApiLogin,
+  ApiRegister,
   ApiValidateToken,
 } from '../../decorators/api-auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -41,8 +42,10 @@ export class AuthController extends BaseController {
   }
 
   @Post('register')
+  @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('profilePhoto'))
   @HttpCode(HttpStatus.CREATED)
+  @ApiRegister()
   public async register(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: RegisterReqDto,

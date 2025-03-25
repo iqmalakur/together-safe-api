@@ -39,7 +39,7 @@ export class AuthService extends BaseService<IAuthRepository> {
 
   public async handleRegister(user: RegisterReqDto): Promise<AuthResDto> {
     if (await this.repository.isUserExist(user.email)) {
-      throw new ConflictException(['email telah digunakan!']);
+      throw new ConflictException(['email sudah terdaftar!']);
     }
 
     const password = bcrypt.hashSync(user.password, 10);
