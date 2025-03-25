@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import { GeolocationService } from './geolocation.service';
@@ -23,14 +16,6 @@ export class GeolocationController extends BaseController {
   @HttpCode(HttpStatus.OK)
   @ApiSearch()
   public async search(@Query() queryParam: GeolocationSearchQueryDto) {
-    const query = queryParam.q;
-
-    if (!query) {
-      throw new BadRequestException(
-        "query parameter 'q' wajib diisi sebagai query pencarian",
-      );
-    }
-
-    return this.service.handleSearchLocation(query);
+    return this.service.handleSearchLocation(queryParam.q);
   }
 }
