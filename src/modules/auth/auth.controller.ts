@@ -1,10 +1,10 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Post,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -21,7 +21,7 @@ import {
   ApiValidateToken,
 } from '../../decorators/api-auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileParam } from 'src/decorators/file-param.decorator';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -37,15 +37,6 @@ export class AuthController extends BaseController {
     this.logger.debug(`request body: `, reqBody);
 
     const { email, password } = reqBody;
-
-    if (!email) {
-      throw new BadRequestException('email harus diisi!');
-    }
-
-    if (!password) {
-      throw new BadRequestException('password harus diisi!');
-    }
-
     return await this.service.handleLogin(email, password);
   }
 
@@ -53,30 +44,20 @@ export class AuthController extends BaseController {
   @UseInterceptors(FileInterceptor('profilePhoto'))
   @HttpCode(HttpStatus.CREATED)
   public async register(
-    @FileParam() reqBody: RegisterReqDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: RegisterReqDto,
   ): Promise<AuthResDto> {
-    this.logger.debug(`request body: `, {
-      ...reqBody,
-      profilePhoto: reqBody.profilePhoto.originalname,
+    const data = plainToInstance(RegisterReqDto, {
+      ...body,
+      profilePhoto: file,
     });
 
-    if (!reqBody.email) {
-      throw new BadRequestException('email harus diisi!');
-    }
+    this.logger.debug(`request body: `, {
+      ...data,
+      profilePhoto: data.profilePhoto.originalname,
+    });
 
-    if (!reqBody.name) {
-      throw new BadRequestException('name harus diisi!');
-    }
-
-    if (!reqBody.password) {
-      throw new BadRequestException('password harus diisi!');
-    }
-
-    if (!reqBody.phone) {
-      throw new BadRequestException('phone harus diisi!');
-    }
-
-    return this.service.handleRegister(reqBody);
+    return this.service.handleRegister(data);
   }
 
   @Post('validate_token')
@@ -86,13 +67,6 @@ export class AuthController extends BaseController {
     @Body() reqBody: ValidateTokenReqDto,
   ): Promise<AuthResDto> {
     this.logger.debug(`request body: `, reqBody);
-
-    const { token } = reqBody;
-
-    if (!token) {
-      throw new BadRequestException('token harus diisi!');
-    }
-
-    return await this.service.handleValidateToken(token);
+    return await this.service.handleValidateToken(reqBody.token);
   }
 }

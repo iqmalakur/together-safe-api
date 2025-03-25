@@ -31,7 +31,7 @@ export class AuthService extends BaseService<IAuthRepository> {
       : false;
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('email atau password salah!');
+      throw new UnauthorizedException(['email atau password salah!']);
     }
 
     return new AuthResDto(user!);
@@ -39,7 +39,7 @@ export class AuthService extends BaseService<IAuthRepository> {
 
   public async handleRegister(user: RegisterReqDto): Promise<AuthResDto> {
     if (await this.repository.isUserExist(user.email)) {
-      throw new ConflictException('email telah digunakan!');
+      throw new ConflictException(['email telah digunakan!']);
     }
 
     const password = bcrypt.hashSync(user.password, 10);
@@ -64,13 +64,13 @@ export class AuthService extends BaseService<IAuthRepository> {
     const tokenData = validateToken(token);
 
     if (!tokenData) {
-      throw new UnauthorizedException('token tidak valid!');
+      throw new UnauthorizedException(['token tidak valid!']);
     }
 
     const user = await this.repository.findUserByEmail(tokenData.email);
 
     if (!user) {
-      throw new UnauthorizedException('token tidak valid!');
+      throw new UnauthorizedException(['token tidak valid!']);
     }
 
     return new AuthResDto(user);

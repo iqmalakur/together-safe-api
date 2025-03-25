@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { LoggerUtil } from './utils/logger.util';
 import { PORT } from './config/app.config';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const logger = new LoggerUtil('Main');
@@ -11,6 +11,8 @@ async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule);
   app.enableCors();
   logger.info('Loaded app modules');
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const swaggerConfig: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
     .setTitle('Together Safe API')
