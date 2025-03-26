@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorDto {
   @ApiProperty({ description: 'error message' })
-  message: string;
+  message: Array<string>;
 
   @ApiProperty({ description: 'error type' })
   error: string;
