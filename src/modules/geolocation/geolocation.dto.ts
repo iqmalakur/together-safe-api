@@ -1,7 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class GeolocationSearchQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
+  @IsNotEmpty({
+    message: "query parameter 'q' wajib diisi sebagai query pencarian",
+  })
   public readonly q: string;
 }
 
