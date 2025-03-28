@@ -57,7 +57,7 @@ export class AuthController extends BaseController {
 
     this.logger.debug(`request body: `, {
       ...data,
-      profilePhoto: data.profilePhoto.originalname,
+      profilePhoto: data.profilePhoto?.originalname,
     });
 
     return this.service.handleRegister(data);
