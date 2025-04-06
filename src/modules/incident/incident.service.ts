@@ -18,8 +18,8 @@ export class IncidentService extends BaseService<IIncidentRepository> {
 
     for (const incident of incidents) {
       const location = await getLocationName(
-        incident.latitude_centroid,
-        incident.longitude_centroid,
+        incident.latitude,
+        incident.longitude,
       );
 
       const reports: IncidentReportDto[] = [];
@@ -31,20 +31,18 @@ export class IncidentService extends BaseService<IIncidentRepository> {
           description: report.description,
         });
 
-        mediaUrls.push(
-          ...report.attachments.map((attachment) => attachment.uri),
-        );
+        mediaUrls.push(...report.attachments);
       });
 
       response.push({
-        category: incident.category.name,
-        date: this.getDateRange(incident.dateStart, incident.dateEnd),
-        time: this.getTimeRange(incident.timeStart, incident.timeEnd),
-        riskLevel: incident.riskLevel as string,
+        category: incident.category,
+        date: this.getDateRange(incident.date_start, incident.date_end),
+        time: this.getTimeRange(incident.time_start, incident.time_end),
+        riskLevel: incident.risk_level,
         location,
-        latitude: incident.latitude_centroid,
-        longitude: incident.longitude_centroid,
-        status: incident.status as string,
+        latitude: incident.latitude,
+        longitude: incident.longitude,
+        status: incident.status,
         reports,
         mediaUrls,
       });
