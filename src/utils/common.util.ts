@@ -1,6 +1,6 @@
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { LoggerUtil } from './logger.util';
-import { JwtPayload } from '../modules/auth/auth.type';
+import { JwtPayload } from '../modules/shared/shared.type';
 import {
   JsonWebTokenError,
   NotBeforeError,
