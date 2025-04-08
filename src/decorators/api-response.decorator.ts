@@ -6,7 +6,7 @@ const createApiResponseDecorator = (
   status: number,
   error: string,
   description: string,
-  message: Array<string>,
+  message: string | string[],
 ): MethodDecorator => {
   const example = {
     message,
@@ -43,21 +43,27 @@ export const ApiUnauthorized = (
     HttpStatus.UNAUTHORIZED,
     'Unauthorized',
     description,
-    [message],
+    message,
   );
 
 export const ApiNotFound = (
   message: string,
   description: string = 'not found',
 ): MethodDecorator =>
-  createApiResponseDecorator(HttpStatus.NOT_FOUND, 'Not Found', description, [
+  createApiResponseDecorator(
+    HttpStatus.NOT_FOUND,
+    'Not Found',
+    description,
     message,
-  ]);
+  );
 
 export const ApiConflict = (
   message: string,
   description: string = 'conflict',
 ): MethodDecorator =>
-  createApiResponseDecorator(HttpStatus.CONFLICT, 'Conflict', description, [
+  createApiResponseDecorator(
+    HttpStatus.CONFLICT,
+    'Conflict',
+    description,
     message,
-  ]);
+  );

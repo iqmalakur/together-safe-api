@@ -14,12 +14,12 @@ export class TokenMiddleware implements NestMiddleware {
     const authHeader = req.get('Authorization');
 
     if (!authHeader) {
-      throw new BadRequestException('token harus diisi');
+      throw new BadRequestException(['token harus diisi']);
     }
 
     const tokenFormat = /bearer .+/i;
     if (!tokenFormat.test(authHeader)) {
-      throw new BadRequestException('format token tidak valid');
+      throw new BadRequestException(['format token tidak valid']);
     }
 
     const token = authHeader.split(' ')[1];
