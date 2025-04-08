@@ -28,6 +28,7 @@ async function bootstrap() {
     )
     .addTag('Auth')
     .addTag('Incident')
+    .addTag('Report')
     .addTag('Geolocation')
     .build();
 

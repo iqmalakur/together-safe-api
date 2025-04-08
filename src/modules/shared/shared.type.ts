@@ -1,7 +1,11 @@
 import { Request } from 'express';
 
-export type JwtPayload = { email: string };
+export type UserJwtPayload = {
+  email: string;
+  name: string;
+  profilePhoto: string;
+};
 
 export interface AuthRequest extends Request {
-  user: JwtPayload;
+  user: UserJwtPayload;
 }
