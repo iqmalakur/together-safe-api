@@ -3,7 +3,10 @@ import { IncidentSelection, RawIncidentRow } from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
 
 export interface IIncidentRepository {
-  getIncidents(): Promise<IncidentSelection[]>;
+  getIncidents(
+    latitude: number,
+    longitude: number,
+  ): Promise<IncidentSelection[]>;
 }
 
 @Injectable()
@@ -11,7 +14,10 @@ export class IncidentRepository
   extends BaseRepository
   implements IIncidentRepository
 {
-  public async getIncidents(): Promise<IncidentSelection[]> {
+  public async getIncidents(
+    latitude: number,
+    longitude: number,
+  ): Promise<IncidentSelection[]> {
     const incidents = await this.prisma.$queryRaw<RawIncidentRow[]>`
       SELECT
         i."id"::text,
@@ -26,11 +32,11 @@ export class IncidentRepository
         ic."name" AS category
       FROM "Incident" i
       JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
-      -- WHERE ST_DWithin(
-      --   i.location_point::geography,
-      --   ST_SetSRID(ST_MakePoint(\${userLng}, \${userLat}), 4326)::geography,
-      --   \${radiusMeters}
-      -- )
+      WHERE ST_DWithin(
+        i.location_point::geography,
+        ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+        1000 -- TODO: set radius dynamically based on user zoom level
+      )
     `;
 
     const incidentIds = incidents.map((incident) => incident.id);
