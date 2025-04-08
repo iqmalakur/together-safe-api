@@ -58,12 +58,8 @@ export class UploadService {
   }
 
   public async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
-    const fileIds: string[] = [];
-
-    for (const file of files) {
-      fileIds.push(await this.uploadFile(file));
-    }
-
+    const uploadPromises = files.map((file) => this.uploadFile(file));
+    const fileIds = await Promise.all(uploadPromises);
     return fileIds;
   }
 }
