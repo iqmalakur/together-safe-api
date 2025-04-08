@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
 import { IReportRepository, ReportRepository } from './report.repository';
 import { ReportReqDto, ReportResDto } from './report.dto';
@@ -54,9 +54,7 @@ export class ReportService extends BaseService<IReportRepository> {
       );
 
       if (!isEligible) {
-        throw new BadRequestException([
-          'Laporan serupa telah kamu kirim hari ini',
-        ]);
+        throw new ConflictException('Laporan serupa telah kamu kirim hari ini');
       }
     }
 

@@ -16,7 +16,7 @@ export class ReportUserDto {
 }
 
 export class ReportReqDto {
-  @ApiProperty({ description: 'example: Pembegalan' })
+  @ApiProperty({ description: '`1`: Pembegalan, `2`: Kecelakaan' })
   @IsNotEmpty({ message: 'kategori id tidak boleh kosong' })
   public categoryId: number;
 
