@@ -35,33 +35,33 @@ export class ReportService extends BaseService<IReportRepository> {
       latitude,
       longitude,
       userEmail: user.email,
-      incidentId: '',
       mediaUrls: [],
     };
 
-    const relatedIncident =
+    let relatedIncident =
       await this.repository.findRelatedIncident(reportInput);
-    let incidentId = relatedIncident?.id;
 
-    if (!incidentId) {
-      incidentId = await this.repository.createIncident(reportInput);
-      this.logger.info(`New incident created with ID ${incidentId}`);
+    if (!relatedIncident) {
+      relatedIncident = await this.repository.createIncident(reportInput);
+      this.logger.info(`New incident created with ID ${relatedIncident.id}`);
     } else {
       const isEligible = await this.repository.checkReportEligibility(
         user.email,
-        incidentId,
+        relatedIncident.id,
         getDate(date),
       );
 
       if (!isEligible) {
-        throw new ConflictException('Laporan serupa telah kamu kirim hari ini');
+        throw new ConflictException('Laporan serupa telah anda kirim hari ini');
       }
     }
 
-    reportInput.incidentId = incidentId;
     reportInput.mediaUrls = await this.uploadService.uploadFiles(media);
 
-    const result = await this.repository.createReport(reportInput);
+    const result = await this.repository.createReport(
+      relatedIncident,
+      reportInput,
+    );
 
     return {
       id: result.id,

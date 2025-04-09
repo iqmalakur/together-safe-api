@@ -1,13 +1,17 @@
+import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import { RelatedIncident, ReportInput, ReportResult } from './report.type';
-import { getDate } from 'src/utils/date.util';
+import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
 export interface IReportRepository {
-  createReport(report: ReportInput): Promise<ReportResult>;
+  createReport(
+    incident: RelatedIncident,
+    report: ReportInput,
+  ): Promise<ReportResult>;
   findRelatedIncident(report: ReportInput): Promise<RelatedIncident | null>;
-  createIncident(report: ReportInput): Promise<string>;
+  createIncident(report: ReportInput): Promise<RelatedIncident>;
   checkReportEligibility(
     userEmail: string,
     incidentId: string,
@@ -26,11 +30,13 @@ export class ReportRepository
   private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
   private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
 
-  public async createReport(report: ReportInput): Promise<ReportResult> {
+  public async createReport(
+    incident: RelatedIncident,
+    report: ReportInput,
+  ): Promise<ReportResult> {
     try {
       const {
         userEmail,
-        incidentId,
         description,
         latitude,
         longitude,
@@ -39,31 +45,38 @@ export class ReportRepository
         mediaUrls,
       } = report;
 
-      return await this.prisma.$transaction(
-        async (prisma) =>
-          await prisma.report.create({
-            data: {
-              userEmail,
-              incidentId,
-              description,
-              latitude,
-              longitude,
-              date: getDate(date),
-              time: getDate(time),
-              attachments: {
-                create: [
-                  ...mediaUrls.map<{ uri: string }>((uri) => ({
-                    uri,
-                  })),
-                ],
-              },
+      return await this.prisma.$transaction(async (tx) => {
+        const report = await tx.report.create({
+          data: {
+            userEmail,
+            incidentId: incident.id,
+            description,
+            latitude,
+            longitude,
+            date: getDate(date),
+            time: getDate(time),
+            attachments: {
+              create: [
+                ...mediaUrls.map<{ uri: string }>((uri) => ({
+                  uri,
+                })),
+              ],
             },
-            select: {
-              id: true,
-              status: true,
-            },
-          }),
-      );
+          },
+          select: {
+            id: true,
+            status: true,
+            date: true,
+            time: true,
+            latitude: true,
+            longitude: true,
+          },
+        });
+
+        await this.updateIncident(tx, incident, report);
+
+        return report;
+      });
     } catch (e) {
       throw handleError(e, this.logger);
     }
@@ -99,8 +112,10 @@ export class ReportRepository
       const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
         SELECT
           i."id"::text,
-          i."status",
-          ic."name" AS category
+          i."date_start",
+          i."date_end",
+          i."time_start",
+          i."time_end"
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
         WHERE ic."id" = ${categoryId}
@@ -120,11 +135,11 @@ export class ReportRepository
     }
   }
 
-  public async createIncident(report: ReportInput): Promise<string> {
+  public async createIncident(report: ReportInput): Promise<RelatedIncident> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const insertResult = await this.prisma.$queryRawUnsafe<{ id: string }[]>(`
+      const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
         INSERT INTO "Incident" (
           category_id,
           risk_level,
@@ -158,17 +173,63 @@ export class ReportRepository
             ${this.SRID_WGS84}
           )
         )
-        RETURNING id;
+        RETURNING id, date_start, date_end, time_start, time_end;
       `);
 
-      const incidentId = insertResult[0]?.id;
-      if (!incidentId) {
+      const incident = result[0];
+      if (!incident) {
         throw new Error('Failed to create incident');
       }
 
-      return incidentId;
+      return incident;
     } catch (e) {
       throw handleError(e, this.logger);
     }
+  }
+
+  private async updateIncident(
+    tx: Prisma.TransactionClient,
+    incident: RelatedIncident,
+    report: ReportResult,
+  ) {
+    let data = '';
+
+    if (report.date < incident.date_start)
+      data += `date_start = '${getDateString(report.date)}', `;
+    else if (report.date > incident.date_end)
+      data += `date_end = '${getDateString(report.date)}', `;
+
+    if (report.time < incident.time_start)
+      data += `time_start = '${getTimeString(report.time, true)}', `;
+    else if (report.time > incident.time_end)
+      data += `time_end = '${getTimeString(report.time, true)}', `;
+
+    const lat = report.latitude;
+    const lon = report.longitude;
+
+    const [{ contained }] = await tx.$queryRawUnsafe<{ contained: boolean }[]>(`
+      SELECT ST_Contains(location_area, ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)) as contained
+        FROM "Incident"
+      WHERE id = '${incident.id}'
+    `);
+
+    if (!contained) {
+      const point = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)`;
+      const buffered = `ST_Buffer(${point}, 0.0001)`;
+      const newArea = `ST_Envelope(ST_Union(location_area, ${buffered}))`;
+
+      data += `location_area = ${newArea}, `;
+      data += `location_point = ST_Centroid(${newArea}), `;
+    }
+
+    if (data == '') return;
+    data = data.replace(/, $/, '');
+
+    await tx.$executeRawUnsafe(`
+      UPDATE "Incident" SET ${data}
+      WHERE id = '${incident.id}'
+    `);
+
+    this.logger.debug(`Incident with id ${incident.id} updated: ${data}`);
   }
 }

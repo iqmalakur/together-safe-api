@@ -2,7 +2,6 @@ import { Prisma } from '@prisma/client';
 
 export type ReportInput = {
   userEmail: string;
-  incidentId: string;
   description: string;
   latitude: number;
   longitude: number;
@@ -14,13 +13,19 @@ export type ReportInput = {
 
 export type RelatedIncident = {
   id: string;
-  status: string;
-  category: string;
+  date_start: Date;
+  date_end: Date;
+  time_start: Date;
+  time_end: Date;
 };
 
 export type ReportResult = Prisma.ReportGetPayload<{
   select: {
     id: true;
     status: true;
+    date: true;
+    time: true;
+    latitude: true;
+    longitude: true;
   };
 }>;
