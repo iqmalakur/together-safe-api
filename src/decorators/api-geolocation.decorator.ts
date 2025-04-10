@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ServerErrorDto } from '../modules/shared/shared.dto';
-import { ApiBadRequest } from './api-response.decorator';
+import { ApiBadRequest, ApiServerError } from './api-response.decorator';
 import { GeolocationResDto } from 'src/modules/geolocation/geolocation.dto';
 
 export const ApiSearch = (): MethodDecorator => {
@@ -20,10 +19,6 @@ export const ApiSearch = (): MethodDecorator => {
       "query parameter 'q' wajib diisi sebagai query pencarian",
       'missing or invalid search query',
     ),
-    ApiResponse({
-      status: 500,
-      description: 'an unexpected error occurred',
-      type: ServerErrorDto,
-    }),
+    ApiServerError(),
   );
 };

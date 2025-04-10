@@ -4,4 +4,6 @@ export type UserAuthSelection = Prisma.UserGetPayload<{
   select: { email: true; password: true; name: true; profilePhoto: true };
 }>;
 
-export type JwtPayload = { email: string };
+export type UserCreateSelection = Prisma.UserGetPayload<{
+  select: { email: true };
+}>;

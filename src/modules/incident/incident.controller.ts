@@ -1,8 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import { IncidentService } from './incident.service';
-import { IncidentResDto } from './incident.dto';
+import { IncidentQueryDto, IncidentResDto } from './incident.dto';
 import { ApiIncident } from '../../decorators/api-incident.decorator';
 
 @Controller('incident')
@@ -14,7 +14,12 @@ export class IncidentController extends BaseController {
 
   @Get()
   @ApiIncident()
-  public async getIncident(): Promise<IncidentResDto[]> {
-    return await this.service.handleGetIncident();
+  public async getIncident(
+    @Query() query: IncidentQueryDto,
+  ): Promise<IncidentResDto[]> {
+    const latitude = parseFloat(query.lat);
+    const longitude = parseFloat(query.lon);
+
+    return await this.service.handleGetIncident(latitude, longitude);
   }
 }

@@ -1,12 +1,13 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ServerErrorDto } from '../modules/shared/shared.dto';
 import {
   ApiBadRequest,
   ApiConflict,
+  ApiServerError,
   ApiUnauthorized,
 } from './api-response.decorator';
 import { AuthResDto } from '../modules/auth/auth.dto';
+import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
 
 export const ApiLogin = (): MethodDecorator => {
   return applyDecorators(
@@ -21,11 +22,7 @@ export const ApiLogin = (): MethodDecorator => {
     }),
     ApiBadRequest('email harus diisi!', 'unfilled email or password'),
     ApiUnauthorized('email atau password salah!', 'invalid email or password'),
-    ApiResponse({
-      status: 500,
-      description: 'an unexpected error occurred',
-      type: ServerErrorDto,
-    }),
+    ApiServerError(),
   );
 };
 
@@ -38,18 +35,18 @@ export const ApiRegister = (): MethodDecorator => {
     ApiResponse({
       status: 201,
       description: 'registration successful',
-      type: AuthResDto,
+      type: SuccessCreateDto,
+      example: {
+        id: 'ucup@gmail.com',
+        message: 'Pendaftaran pengguna berhasil',
+      },
     }),
     ApiBadRequest(
       'email harus diisi!',
       'unfilled email or password or other required fields',
     ),
     ApiConflict('email sudah terdaftar!', 'email already registered'),
-    ApiResponse({
-      status: 500,
-      description: 'an unexpected error occurred',
-      type: ServerErrorDto,
-    }),
+    ApiServerError(),
   );
 };
 
@@ -66,10 +63,6 @@ export const ApiValidateToken = (): MethodDecorator => {
     }),
     ApiBadRequest('token harus diisi!', 'unfilled token'),
     ApiUnauthorized('token tidak valid!', 'invalid token'),
-    ApiResponse({
-      status: 500,
-      description: 'an unexpected error occurred',
-      type: ServerErrorDto,
-    }),
+    ApiServerError(),
   );
 };

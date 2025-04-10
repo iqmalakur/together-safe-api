@@ -11,7 +11,6 @@ export class HttpMiddleware implements NestMiddleware {
     this.logger.http(`${req.method} ${req.originalUrl}`);
 
     const logResponse = (body: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       this.logger.debug(`response body: `, body);
     };
 
@@ -19,7 +18,6 @@ export class HttpMiddleware implements NestMiddleware {
     const send: Send = res.send;
     res.send = function (body: any) {
       if (body) logResponse(body);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return send.call(this, body);
     };
 

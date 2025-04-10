@@ -1,6 +1,6 @@
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import { LoggerUtil } from './logger.util';
-import { JwtPayload } from '../modules/auth/auth.type';
+import { UserJwtPayload } from '../modules/shared/shared.type';
 import {
   JsonWebTokenError,
   NotBeforeError,
@@ -25,9 +25,9 @@ const expectedErrors = new Set([
   SyntaxError,
 ]);
 
-export const validateToken = (token: string): JwtPayload | null => {
+export const validateToken = (token: string): UserJwtPayload | null => {
   try {
-    return verify(token, SECRET_KEY) as JwtPayload;
+    return verify(token, SECRET_KEY) as UserJwtPayload;
   } catch (err) {
     if (!expectedErrors.has(err.constructor)) {
       throw handleError(err, LoggerUtil.getInstance('ValidateToken'));

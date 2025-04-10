@@ -1,3 +1,6 @@
+-- Make sure PostGIS extension active
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('upvote', 'downvote');
 
@@ -24,22 +27,30 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Report" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "description" TEXT NOT NULL,
-    "location" VARCHAR(50) NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
     "date" DATE NOT NULL,
     "time" TIME NOT NULL,
     "status" "ReportStatus" NOT NULL DEFAULT 'pending',
-    "category_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "deleted_at" TIMESTAMP,
+    "user_email" VARCHAR(320) NOT NULL,
+    "incident_id" UUID NOT NULL,
 
     CONSTRAINT "Report_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Incident" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "risk_level" "RiskLevel" NOT NULL,
     "status" "IncidentStatus" NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "location_area" geometry(Polygon, 4326) NOT NULL,
+    "location_point" geometry(Point, 4326) NOT NULL,
     "date_start" DATE NOT NULL,
     "date_end" DATE NOT NULL,
     "time_start" TIME NOT NULL,
@@ -61,7 +72,7 @@ CREATE TABLE "IncidentCategory" (
 CREATE TABLE "Attachment" (
     "id" SERIAL NOT NULL,
     "uri" VARCHAR(2083) NOT NULL,
-    "report_id" TEXT NOT NULL,
+    "report_id" UUID NOT NULL,
 
     CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
 );
@@ -70,23 +81,28 @@ CREATE TABLE "Attachment" (
 CREATE TABLE "Comment" (
     "id" SERIAL NOT NULL,
     "comment" TEXT NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "user_email" TEXT NOT NULL,
-    "report_id" TEXT NOT NULL,
+    "report_id" UUID NOT NULL,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Vote" (
-    "type" "VoteType" NOT NULL,
+    "type" "VoteType",
     "user_email" TEXT NOT NULL,
-    "report_id" TEXT NOT NULL,
+    "report_id" UUID NOT NULL,
 
     CONSTRAINT "Vote_pkey" PRIMARY KEY ("user_email","report_id")
 );
 
 -- AddForeignKey
-ALTER TABLE "Report" ADD CONSTRAINT "Report_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "IncidentCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Report" ADD CONSTRAINT "Report_user_email_fkey" FOREIGN KEY ("user_email") REFERENCES "User"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Report" ADD CONSTRAINT "Report_incident_id_fkey" FOREIGN KEY ("incident_id") REFERENCES "Incident"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Incident" ADD CONSTRAINT "Incident_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "IncidentCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -105,3 +121,12 @@ ALTER TABLE "Vote" ADD CONSTRAINT "Vote_user_email_fkey" FOREIGN KEY ("user_emai
 
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_report_id_fkey" FOREIGN KEY ("report_id") REFERENCES "Report"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add index to spatial field
+CREATE INDEX incident_location_point_idx
+ON "Incident"
+USING GIST (location_point);
+
+CREATE INDEX incident_location_area_idx
+ON "Incident"
+USING GIST (location_area);

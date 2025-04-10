@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthRepository, IAuthRepository } from './auth.repository';
 import { validateToken } from '../../utils/common.util';
 import { UploadService } from 'src/infrastructures/upload.service';
+import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Injectable()
 export class AuthService extends BaseService<IAuthRepository> {
@@ -31,15 +32,15 @@ export class AuthService extends BaseService<IAuthRepository> {
       : false;
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException(['email atau password salah!']);
+      throw new UnauthorizedException('email atau password salah!');
     }
 
     return new AuthResDto(user!);
   }
 
-  public async handleRegister(user: RegisterReqDto): Promise<AuthResDto> {
+  public async handleRegister(user: RegisterReqDto): Promise<SuccessCreateDto> {
     if (await this.repository.isUserExist(user.email)) {
-      throw new ConflictException(['email sudah terdaftar!']);
+      throw new ConflictException('email sudah terdaftar!');
     }
 
     const password = bcrypt.hashSync(user.password, 10);
@@ -57,20 +58,23 @@ export class AuthService extends BaseService<IAuthRepository> {
       profilePhoto: filename,
     });
 
-    return new AuthResDto(result);
+    return {
+      id: result.email,
+      message: 'Pendaftaran pengguna berhasil',
+    };
   }
 
   public async handleValidateToken(token: string): Promise<AuthResDto> {
     const tokenData = validateToken(token);
 
     if (!tokenData) {
-      throw new UnauthorizedException(['token tidak valid!']);
+      throw new UnauthorizedException('token tidak valid!');
     }
 
     const user = await this.repository.findUserByEmail(tokenData.email);
 
     if (!user) {
-      throw new UnauthorizedException(['token tidak valid!']);
+      throw new UnauthorizedException('token tidak valid!');
     }
 
     return new AuthResDto(user);

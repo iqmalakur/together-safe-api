@@ -95,9 +95,18 @@ export class AuthResDto {
   public constructor(user: UserAuthSelection) {
     this.email = user.email;
     this.name = user.name;
-    this.token = sign({ email: user.email }, SECRET_KEY, { expiresIn: '1w' });
 
     if (user.profilePhoto) this.profilePhoto = getFileUrl(user.profilePhoto);
     else this.profilePhoto = null;
+
+    this.token = sign(
+      {
+        email: this.email,
+        name: this.name,
+        profilePhoto: this.profilePhoto,
+      },
+      SECRET_KEY,
+      { expiresIn: '1w' },
+    );
   }
 }

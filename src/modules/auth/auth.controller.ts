@@ -23,6 +23,7 @@ import {
 } from '../../decorators/api-auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { plainToInstance } from 'class-transformer';
+import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -49,7 +50,7 @@ export class AuthController extends BaseController {
   public async register(
     @UploadedFile() file: Express.Multer.File,
     @Body() body: RegisterReqDto,
-  ): Promise<AuthResDto> {
+  ): Promise<SuccessCreateDto> {
     const data = plainToInstance(RegisterReqDto, {
       ...body,
       profilePhoto: file,

@@ -56,4 +56,10 @@ export class UploadService {
       throw handleError(error, this.logger);
     }
   }
+
+  public async uploadFiles(files: Express.Multer.File[]): Promise<string[]> {
+    const uploadPromises = files.map((file) => this.uploadFile(file));
+    const fileIds = await Promise.all(uploadPromises);
+    return fileIds;
+  }
 }
