@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ErrorDto {
-  @ApiProperty({ description: 'error message' })
-  message: Array<string>;
-
+class BaseErrorDto {
   @ApiProperty({ description: 'error type' })
   error: string;
 
@@ -11,13 +8,28 @@ export class ErrorDto {
   statusCode: number;
 }
 
-export class ServerErrorDto {
+export class ErrorDto extends BaseErrorDto {
+  @ApiProperty({ description: 'error message' })
+  message: string;
+}
+
+export class ClientErrorDto extends BaseErrorDto {
+  @ApiProperty({ description: 'error messages' })
+  message: string[];
+}
+
+export class ServerErrorDto extends BaseErrorDto {
   @ApiProperty({
     description: 'error message',
     example: 'Internal Server Error',
   })
   message: string;
+}
 
-  @ApiProperty({ description: 'error status code', example: 500 })
-  statusCode: number;
+export class SuccessCreateDto {
+  @ApiProperty({ description: 'success message' })
+  message: string;
+
+  @ApiProperty({ description: 'resource id' })
+  id: string | number;
 }

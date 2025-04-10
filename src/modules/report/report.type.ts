@@ -22,7 +22,6 @@ export type RelatedIncident = {
 export type ReportResult = Prisma.ReportGetPayload<{
   select: {
     id: true;
-    status: true;
     date: true;
     time: true;
     latitude: true;

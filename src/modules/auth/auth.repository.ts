@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
-import { UserAuthSelection } from './auth.type';
+import { UserAuthSelection, UserCreateSelection } from './auth.type';
 import { Prisma } from '@prisma/client';
 import { handleError } from 'src/utils/common.util';
 
 export interface IAuthRepository {
   findUserByEmail(email: string): Promise<UserAuthSelection | null>;
   isUserExist(email: string): Promise<boolean>;
-  createUser(user: Prisma.UserCreateInput): Promise<UserAuthSelection>;
+  createUser(user: Prisma.UserCreateInput): Promise<UserCreateSelection>;
 }
 
 @Injectable()
@@ -30,11 +30,11 @@ export class AuthRepository extends BaseRepository implements IAuthRepository {
 
   public async createUser(
     user: Prisma.UserCreateInput,
-  ): Promise<UserAuthSelection> {
+  ): Promise<UserCreateSelection> {
     try {
       return await this.prisma.user.create({
         data: user,
-        select: { email: true, password: true, name: true, profilePhoto: true },
+        select: { email: true },
       });
     } catch (e) {
       throw handleError(e, this.logger);

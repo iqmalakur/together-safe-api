@@ -1,12 +1,17 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpStatus, Type } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { ErrorDto } from '../modules/shared/shared.dto';
+import {
+  ClientErrorDto,
+  ErrorDto,
+  ServerErrorDto,
+} from '../modules/shared/shared.dto';
 
 const createApiResponseDecorator = (
   status: number,
   error: string,
   description: string,
   message: string | string[],
+  errorDto: Type = ErrorDto,
 ): MethodDecorator => {
   const example = {
     message,
@@ -18,7 +23,7 @@ const createApiResponseDecorator = (
     ApiResponse({
       status,
       description,
-      type: ErrorDto,
+      type: errorDto,
       example,
     }),
   );
@@ -33,6 +38,7 @@ export const ApiBadRequest = (
     'Bad Request',
     description,
     [message],
+    ClientErrorDto,
   );
 
 export const ApiUnauthorized = (
@@ -67,3 +73,10 @@ export const ApiConflict = (
     description,
     message,
   );
+
+export const ApiServerError = (): MethodDecorator =>
+  ApiResponse({
+    status: 500,
+    description: 'an unexpected error occurred',
+    type: ServerErrorDto,
+  });

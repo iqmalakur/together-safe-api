@@ -11,11 +11,12 @@ import {
 import { BaseController } from '../shared/base.controller';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ReportReqDto, ReportResDto } from './report.dto';
+import { ReportReqDto } from './report.dto';
 import { plainToInstance } from 'class-transformer';
 import { ReportService } from './report.service';
 import { AuthRequest } from '../shared/shared.type';
 import { ApiPostReport } from 'src/decorators/api-report.decorator';
+import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Controller('report')
 @ApiTags('Report')
@@ -33,7 +34,7 @@ export class ReportController extends BaseController {
     @Request() req: AuthRequest,
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() body: ReportReqDto,
-  ): Promise<ReportResDto> {
+  ): Promise<SuccessCreateDto> {
     const data = plainToInstance(ReportReqDto, {
       ...body,
       categoryId: parseInt((body as any).categoryId),

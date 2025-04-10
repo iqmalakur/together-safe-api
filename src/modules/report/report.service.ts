@@ -1,12 +1,12 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
 import { IReportRepository, ReportRepository } from './report.repository';
-import { ReportReqDto, ReportResDto } from './report.dto';
+import { ReportReqDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
-import { getLocationName } from 'src/utils/api.util';
 import { getDate } from 'src/utils/date.util';
+import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Injectable()
 export class ReportService extends BaseService<IReportRepository> {
@@ -20,7 +20,7 @@ export class ReportService extends BaseService<IReportRepository> {
   public async handleCreateReport(
     user: UserJwtPayload,
     data: ReportReqDto,
-  ): Promise<ReportResDto> {
+  ): Promise<SuccessCreateDto> {
     const { categoryId, description, date, time, location, media } = data;
 
     const splittedLocation = location.split(',');
@@ -65,20 +65,7 @@ export class ReportService extends BaseService<IReportRepository> {
 
     return {
       id: result.id,
-      description: reportInput.description,
-      status: result.status,
-      date: reportInput.date,
-      time: reportInput.time,
-      location: await getLocationName(
-        reportInput.latitude,
-        reportInput.longitude,
-      ),
-      attachments: reportInput.mediaUrls,
-      user: {
-        email: user.email,
-        name: user.name,
-        profilePhoto: user.profilePhoto,
-      },
+      message: 'Berhasil membuat laporan insiden',
     };
   }
 }

@@ -65,7 +65,6 @@ export class ReportRepository
           },
           select: {
             id: true,
-            status: true,
             date: true,
             time: true,
             latitude: true,
