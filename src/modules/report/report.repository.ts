@@ -4,6 +4,7 @@ import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import {
   RelatedIncident,
+  ReportDetailResult,
   ReportInput,
   ReportPreviewResult,
   ReportResult,
@@ -11,7 +12,8 @@ import {
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
 export interface IReportRepository {
-  getUserReport(email: string): Promise<ReportPreviewResult[]>;
+  getReportByUserEmail(email: string): Promise<ReportPreviewResult[]>;
+  getReportById(id: string): Promise<ReportDetailResult | null>;
   createReport(
     incident: RelatedIncident,
     report: ReportInput,
@@ -36,10 +38,58 @@ export class ReportRepository
   private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
   private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
 
-  public async getUserReport(email: string): Promise<ReportPreviewResult[]> {
+  public async getReportByUserEmail(
+    email: string,
+  ): Promise<ReportPreviewResult[]> {
     return await this.prisma.report.findMany({
       where: { userEmail: email },
       select: { id: true, description: true },
+    });
+  }
+
+  public async getReportById(id: string): Promise<ReportDetailResult | null> {
+    this.logger.debug(`id: ${id}`);
+    return await this.prisma.report.findFirst({
+      where: { id },
+      select: {
+        id: true,
+        description: true,
+        date: true,
+        time: true,
+        status: true,
+        latitude: true,
+        longitude: true,
+        incident: {
+          select: {
+            id: true,
+            category: { select: { name: true } },
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            profilePhoto: true,
+            reputation: true,
+          },
+        },
+        attachments: { select: { uri: true } },
+        votes: { select: { type: true } },
+        comments: {
+          select: {
+            id: true,
+            comment: true,
+            createdAt: true,
+            updatedAt: true,
+            user: {
+              select: {
+                name: true,
+                profilePhoto: true,
+                reputation: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 

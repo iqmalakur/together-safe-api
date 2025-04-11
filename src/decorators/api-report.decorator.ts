@@ -7,7 +7,7 @@ import {
   ApiUnauthorized,
 } from './api-response.decorator';
 import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
-import { ReportPreviewDto } from 'src/modules/report/report.dto';
+import { ReportPreviewDto, ReportResDto } from 'src/modules/report/report.dto';
 
 export const ApiUserReport = (): MethodDecorator => {
   return applyDecorators(
@@ -26,6 +26,24 @@ export const ApiUserReport = (): MethodDecorator => {
       'token harus diisi',
       'token is not provided or not a valid format',
     ),
+    ApiServerError(),
+  );
+};
+
+export const ApiReport = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get a single report by ID',
+      description:
+        'retrieve a detailed report based on the provided report ID.',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'Report data successfully retrieved',
+      type: ReportResDto,
+    }),
+    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiBadRequest('id tidak valid', 'invalid report id format or bad token'),
     ApiServerError(),
   );
 };

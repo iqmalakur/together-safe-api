@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Request,
   UploadedFiles,
@@ -12,12 +13,18 @@ import {
 import { BaseController } from '../shared/base.controller';
 import { ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ReportPreviewDto, ReportReqDto } from './report.dto';
+import {
+  ReportParamDto,
+  ReportPreviewDto,
+  ReportReqDto,
+  ReportResDto,
+} from './report.dto';
 import { plainToInstance } from 'class-transformer';
 import { ReportService } from './report.service';
 import { AuthRequest } from '../shared/shared.type';
 import {
   ApiPostReport,
+  ApiReport,
   ApiUserReport,
 } from 'src/decorators/api-report.decorator';
 import { SuccessCreateDto } from '../shared/shared.dto';
@@ -37,6 +44,16 @@ export class ReportController extends BaseController {
     @Request() req: AuthRequest,
   ): Promise<ReportPreviewDto[]> {
     return await this.service.handleGetUserReport(req.user);
+  }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiReport()
+  public async getReport(
+    @Param() param: ReportParamDto,
+  ): Promise<ReportResDto> {
+    this.logger.debug('param: ', param);
+    return await this.service.handleGetReport(param.id);
   }
 
   @Post()
