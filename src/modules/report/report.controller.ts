@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { BaseController } from '../shared/base.controller';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ReportPreviewDto, ReportReqDto } from './report.dto';
 import { plainToInstance } from 'class-transformer';
@@ -23,6 +23,7 @@ import {
 import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Controller('report')
+@ApiSecurity('jwt')
 @ApiTags('Report')
 export class ReportController extends BaseController {
   public constructor(private readonly service: ReportService) {
