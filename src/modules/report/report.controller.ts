@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -11,7 +12,7 @@ import {
 import { BaseController } from '../shared/base.controller';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ReportReqDto } from './report.dto';
+import { ReportPreviewDto, ReportReqDto } from './report.dto';
 import { plainToInstance } from 'class-transformer';
 import { ReportService } from './report.service';
 import { AuthRequest } from '../shared/shared.type';
@@ -23,6 +24,15 @@ import { SuccessCreateDto } from '../shared/shared.dto';
 export class ReportController extends BaseController {
   public constructor(private readonly service: ReportService) {
     super();
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  // @ApiUserReport()
+  public async getUserReport(
+    @Request() req: AuthRequest,
+  ): Promise<ReportPreviewDto[]> {
+    return await this.service.handleGetUserReport(req.user);
   }
 
   @Post()

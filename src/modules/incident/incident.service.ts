@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import { getLocationName } from '../../utils/api.util';
-import { IncidentReportDto, IncidentResDto } from './incident.dto';
+import { IncidentResDto } from './incident.dto';
 import { IncidentSelection } from './incident.type';
 import { IIncidentRepository, IncidentRepository } from './incident.repository';
 import { BaseService } from '../shared/base.service';
+import { ReportPreviewDto } from '../report/report.dto';
 
 @Injectable()
 export class IncidentService extends BaseService<IIncidentRepository> {
@@ -28,7 +29,7 @@ export class IncidentService extends BaseService<IIncidentRepository> {
         incident.longitude,
       );
 
-      const reports: IncidentReportDto[] = [];
+      const reports: ReportPreviewDto[] = [];
       const mediaUrls: string[] = [];
 
       incident.reports.forEach((report) => {

@@ -2,10 +2,16 @@ import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { RelatedIncident, ReportInput, ReportResult } from './report.type';
+import {
+  RelatedIncident,
+  ReportInput,
+  ReportPreviewResult,
+  ReportResult,
+} from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
 export interface IReportRepository {
+  getUserReport(email: string): Promise<ReportPreviewResult[]>;
   createReport(
     incident: RelatedIncident,
     report: ReportInput,
@@ -29,6 +35,13 @@ export class ReportRepository
   private readonly RADIUS_METERS = 100; // Radius from centroid
   private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
   private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
+
+  public async getUserReport(email: string): Promise<ReportPreviewResult[]> {
+    return await this.prisma.report.findMany({
+      where: { userEmail: email },
+      select: { id: true, description: true },
+    });
+  }
 
   public async createReport(
     incident: RelatedIncident,
