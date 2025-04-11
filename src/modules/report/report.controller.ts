@@ -24,6 +24,7 @@ import { ReportService } from './report.service';
 import { AuthRequest } from '../shared/shared.type';
 import {
   ApiPostReport,
+  ApiReport,
   ApiUserReport,
 } from 'src/decorators/api-report.decorator';
 import { SuccessCreateDto } from '../shared/shared.dto';
@@ -47,6 +48,7 @@ export class ReportController extends BaseController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
+  @ApiReport()
   public async getReport(
     @Param() param: ReportParamDto,
   ): Promise<ReportResDto> {
