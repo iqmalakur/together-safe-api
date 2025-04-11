@@ -1,29 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-class BaseErrorDto {
+export class ErrorDto {
+  @ApiProperty({ description: 'error message' })
+  public readonly message: string;
+
   @ApiProperty({ description: 'error type' })
-  error: string;
+  public readonly error: string;
 
   @ApiProperty({ description: 'error status code' })
-  statusCode: number;
+  public readonly statusCode: number;
 }
 
-export class ErrorDto extends BaseErrorDto {
-  @ApiProperty({ description: 'error message' })
-  message: string;
+export class ClientErrorDto {
+  @ApiProperty({ description: 'error message', isArray: true })
+  public readonly message: string[];
+
+  @ApiProperty({ description: 'error type' })
+  public readonly error: string;
+
+  @ApiProperty({ description: 'error status code' })
+  public readonly statusCode: number;
 }
 
-export class ClientErrorDto extends BaseErrorDto {
-  @ApiProperty({ description: 'error messages' })
-  message: string[];
-}
-
-export class ServerErrorDto extends BaseErrorDto {
+export class ServerErrorDto {
   @ApiProperty({
     description: 'error message',
     example: 'Internal Server Error',
   })
   message: string;
+
+  @ApiProperty({ description: 'error status code', example: 500 })
+  statusCode: number;
 }
 
 export class SuccessCreateDto {

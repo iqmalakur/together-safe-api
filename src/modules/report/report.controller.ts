@@ -16,7 +16,10 @@ import { ReportPreviewDto, ReportReqDto } from './report.dto';
 import { plainToInstance } from 'class-transformer';
 import { ReportService } from './report.service';
 import { AuthRequest } from '../shared/shared.type';
-import { ApiPostReport } from 'src/decorators/api-report.decorator';
+import {
+  ApiPostReport,
+  ApiUserReport,
+} from 'src/decorators/api-report.decorator';
 import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Controller('report')
@@ -28,7 +31,7 @@ export class ReportController extends BaseController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  // @ApiUserReport()
+  @ApiUserReport()
   public async getUserReport(
     @Request() req: AuthRequest,
   ): Promise<ReportPreviewDto[]> {
