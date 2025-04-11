@@ -181,10 +181,9 @@ export class ReportRepository
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
         WHERE ic."id" = ${categoryId}
-          AND ST_DWithin(
-            i."location_point",
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geography,
-            ${this.RADIUS_METERS}
+          AND ST_Intersects(
+            ST_Expand(i."location_area", ${this.RADIUS_METERS}),
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geometry
           )
           AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '${this.DATE_TOLERANCE_DAYS} day') AND (i."date_end" + INTERVAL '${this.DATE_TOLERANCE_DAYS} day')
           AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '${this.TIME_TOLERANCE_HOURS} hour') AND (i."time_end" + INTERVAL '${this.TIME_TOLERANCE_HOURS} hour')
