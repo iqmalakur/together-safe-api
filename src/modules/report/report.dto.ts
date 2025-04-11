@@ -58,6 +58,14 @@ export class ReportReqDto {
   public media: Array<Express.Multer.File>;
 }
 
+export class ReportPreviewDto {
+  @ApiProperty({ example: 'abcdefghijklmn' })
+  public id: string;
+
+  @ApiProperty({ example: 'Terjadi pembegalan di cimahi' })
+  public description: string;
+}
+
 export class ReportResDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   public readonly id: string;

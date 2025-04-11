@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
 import { IReportRepository, ReportRepository } from './report.repository';
-import { ReportReqDto } from './report.dto';
+import { ReportPreviewDto, ReportReqDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
@@ -15,6 +15,13 @@ export class ReportService extends BaseService<IReportRepository> {
     repository: ReportRepository,
   ) {
     super(repository);
+  }
+
+  public async handleGetUserReport(
+    user: UserJwtPayload,
+  ): Promise<ReportPreviewDto[]> {
+    const result = await this.repository.getUserReport(user.email);
+    return result as ReportPreviewDto[];
   }
 
   public async handleCreateReport(

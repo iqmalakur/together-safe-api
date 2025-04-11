@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Matches } from 'class-validator';
+import { ReportPreviewDto } from '../report/report.dto';
 
 export class IncidentQueryDto {
   @ApiProperty({ example: '-6.9175' })
@@ -15,14 +16,6 @@ export class IncidentQueryDto {
     message: 'longitude tidak valid',
   })
   public lon: string;
-}
-
-export class IncidentReportDto {
-  @ApiProperty({ example: 'abcdefghijklmn' })
-  public id: string;
-
-  @ApiProperty({ example: 'Terjadi pembegalan di cimahi' })
-  public description: string;
 }
 
 export class IncidentResDto {
@@ -60,8 +53,8 @@ export class IncidentResDto {
 
   @ApiProperty({
     description: 'Incident report',
-    type: IncidentReportDto,
+    type: ReportPreviewDto,
     isArray: true,
   })
-  public reports: IncidentReportDto[];
+  public reports: ReportPreviewDto[];
 }

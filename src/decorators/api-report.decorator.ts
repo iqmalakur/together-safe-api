@@ -4,8 +4,31 @@ import {
   ApiBadRequest,
   ApiConflict,
   ApiServerError,
+  ApiUnauthorized,
 } from './api-response.decorator';
 import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
+import { ReportPreviewDto } from 'src/modules/report/report.dto';
+
+export const ApiUserReport = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get user reports',
+      description: 'get a list of reports submitted by the authenticated user.',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'List of user reports successfully retrieved',
+      type: ReportPreviewDto,
+      isArray: true,
+    }),
+    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiBadRequest(
+      'token harus diisi',
+      'token is not provided or not a valid format',
+    ),
+    ApiServerError(),
+  );
+};
 
 export const ApiPostReport = (): MethodDecorator => {
   return applyDecorators(
@@ -22,6 +45,7 @@ export const ApiPostReport = (): MethodDecorator => {
         message: 'Berhasil membuat laporan insiden',
       },
     }),
+    ApiUnauthorized('token tidak valid', 'token is not valid'),
     ApiBadRequest('deskripsi tidak boleh kosong', 'unfilled required fields'),
     ApiConflict('Laporan serupa telah kamu kirim hari ini', 'duplicate report'),
     ApiServerError(),

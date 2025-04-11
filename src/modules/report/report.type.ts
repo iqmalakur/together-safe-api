@@ -28,3 +28,10 @@ export type ReportResult = Prisma.ReportGetPayload<{
     longitude: true;
   };
 }>;
+
+export type ReportPreviewResult = Prisma.ReportGetPayload<{
+  select: {
+    id: true;
+    description: true;
+  };
+}>;
