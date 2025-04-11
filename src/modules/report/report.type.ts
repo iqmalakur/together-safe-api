@@ -35,3 +35,45 @@ export type ReportPreviewResult = Prisma.ReportGetPayload<{
     description: true;
   };
 }>;
+
+export type ReportDetailResult = Prisma.ReportGetPayload<{
+  select: {
+    id: true;
+    description: true;
+    date: true;
+    time: true;
+    status: true;
+    latitude: true;
+    longitude: true;
+    incident: {
+      select: {
+        id: true;
+        category: { select: { name: true } };
+      };
+    };
+    user: {
+      select: {
+        name: true;
+        profilePhoto: true;
+        reputation: true;
+      };
+    };
+    attachments: { select: { uri: true } };
+    votes: { select: { type: true } };
+    comments: {
+      select: {
+        id: true;
+        comment: true;
+        createdAt: true;
+        updatedAt: true;
+        user: {
+          select: {
+            name: true;
+            profilePhoto: true;
+            reputation: true;
+          };
+        };
+      };
+    };
+  };
+}>;
