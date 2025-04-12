@@ -7,7 +7,10 @@ import {
   IncidentQueryDto,
   IncidentResDto,
 } from './incident.dto';
-import { ApiIncident } from '../../decorators/api-incident.decorator';
+import {
+  ApiIncident,
+  ApiIncidentReport,
+} from '../../decorators/api-incident.decorator';
 import { ReportPreviewDto } from '../report/report.dto';
 
 @Controller('incident')
@@ -29,7 +32,7 @@ export class IncidentController extends BaseController {
   }
 
   @Get(':id/reports')
-  // @ApiIncidentReport()
+  @ApiIncidentReport()
   public async getIncidentReports(
     @Param() param: IncidentParamDto,
   ): Promise<ReportPreviewDto[]> {
