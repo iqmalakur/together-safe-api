@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   IncidentDetailResult,
   IncidentPreviewResult,
@@ -13,7 +13,7 @@ export interface IIncidentRepository {
     latitude: number,
     longitude: number,
   ): Promise<IncidentPreviewResult[]>;
-  findIncidentById(id: string): Promise<IncidentSelection>;
+  findIncidentById(id: string): Promise<IncidentSelection | null>;
   getReportsByIncidentId(incidentId: string): Promise<ReportPreviewResult[]>;
 }
 
@@ -45,7 +45,7 @@ export class IncidentRepository
     }
   }
 
-  public async findIncidentById(id: string): Promise<IncidentSelection> {
+  public async findIncidentById(id: string): Promise<IncidentSelection | null> {
     try {
       const result = await this.prisma.$queryRaw<IncidentDetailResult[]>`
       SELECT
@@ -66,7 +66,7 @@ export class IncidentRepository
 
       const incident = result[0];
       if (!incident) {
-        throw new NotFoundException('insiden tidak ditemukan');
+        return null;
       }
 
       const reports = await this.prisma.report.findMany({

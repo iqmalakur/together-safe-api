@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import { getLocationName } from '../../utils/api.util';
 import { IncidentDetailResDto, IncidentResDto } from './incident.dto';
@@ -32,6 +32,10 @@ export class IncidentService extends BaseService<IIncidentRepository> {
     id: string,
   ): Promise<IncidentDetailResDto> {
     const incident = await this.repository.findIncidentById(id);
+
+    if (!incident) {
+      throw new NotFoundException('insiden tidak ditemukan');
+    }
 
     const reports: ReportPreviewDto[] = [];
     const mediaUrls: string[] = [];
