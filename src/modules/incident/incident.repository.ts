@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { IncidentSelection, RawIncidentRow } from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
+import { handleError } from 'src/utils/common.util';
+import { ReportPreviewResult } from '../report/report.type';
 
 export interface IIncidentRepository {
   findNearbyIncidents(
     latitude: number,
     longitude: number,
   ): Promise<IncidentSelection[]>;
+  getReportsByIncidentId(incidentId: string): Promise<ReportPreviewResult[]>;
 }
 
 @Injectable()
@@ -68,5 +71,18 @@ export class IncidentRepository
       ...incident,
       reports: groupedReports[incident.id] ?? [],
     }));
+  }
+
+  public async getReportsByIncidentId(
+    incidentId: string,
+  ): Promise<ReportPreviewResult[]> {
+    try {
+      return await this.prisma.report.findMany({
+        where: { incidentId },
+        select: { id: true, description: true },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
   }
 }

@@ -52,7 +52,6 @@ export class ReportController extends BaseController {
   public async getReport(
     @Param() param: ReportParamDto,
   ): Promise<ReportResDto> {
-    this.logger.debug('param: ', param);
     return await this.service.handleGetReport(param.id);
   }
 

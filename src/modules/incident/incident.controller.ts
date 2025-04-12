@@ -1,9 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import { IncidentService } from './incident.service';
-import { IncidentQueryDto, IncidentResDto } from './incident.dto';
+import {
+  IncidentParamDto,
+  IncidentQueryDto,
+  IncidentResDto,
+} from './incident.dto';
 import { ApiIncident } from '../../decorators/api-incident.decorator';
+import { ReportPreviewDto } from '../report/report.dto';
 
 @Controller('incident')
 @ApiTags('Incident')
@@ -21,5 +26,13 @@ export class IncidentController extends BaseController {
     const longitude = parseFloat(query.lon);
 
     return await this.service.handleGetNearbyIncident(latitude, longitude);
+  }
+
+  @Get(':id/reports')
+  // @ApiIncidentReport()
+  public async getIncidentReports(
+    @Param() param: IncidentParamDto,
+  ): Promise<ReportPreviewDto[]> {
+    return await this.service.handleGetIncidentReports(param.id);
   }
 }

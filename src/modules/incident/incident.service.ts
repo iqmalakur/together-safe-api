@@ -56,6 +56,13 @@ export class IncidentService extends BaseService<IIncidentRepository> {
     return response;
   }
 
+  public async handleGetIncidentReports(
+    id: string,
+  ): Promise<ReportPreviewDto[]> {
+    const result = await this.repository.getReportsByIncidentId(id);
+    return result as ReportPreviewDto[];
+  }
+
   private getDateRange(dateStart: Date, dateEnd: Date) {
     const formattedDateStart = getFormattedDate(dateStart);
     const formattedDateEnd = getFormattedDate(dateEnd);
