@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import { getLocationName } from '../../utils/api.util';
-import { IncidentResDto } from './incident.dto';
-import { IncidentSelection } from './incident.type';
+import { IncidentDetailResDto, IncidentResDto } from './incident.dto';
 import { IIncidentRepository, IncidentRepository } from './incident.repository';
 import { BaseService } from '../shared/base.service';
 import { ReportPreviewDto } from '../report/report.dto';
+import { getFileUrl } from 'src/utils/common.util';
 
 @Injectable()
 export class IncidentService extends BaseService<IIncidentRepository> {
@@ -17,43 +17,46 @@ export class IncidentService extends BaseService<IIncidentRepository> {
     latitude: number,
     longitude: number,
   ): Promise<IncidentResDto[]> {
-    const incidents: IncidentSelection[] =
-      await this.repository.findNearbyIncidents(latitude, longitude);
-    const response: IncidentResDto[] = [];
+    const incidents = await this.repository.findNearbyIncidents(
+      latitude,
+      longitude,
+    );
 
-    for (const incident of incidents) {
-      const location = await getLocationName(
-        incident.latitude,
-        incident.longitude,
-      );
+    return incidents.map(({ risk_level, ...incident }) => ({
+      ...incident,
+      riskLevel: risk_level,
+    }));
+  }
 
-      const reports: ReportPreviewDto[] = [];
-      const mediaUrls: string[] = [];
+  public async handleGetIncidentDetail(
+    id: string,
+  ): Promise<IncidentDetailResDto> {
+    const incident = await this.repository.findIncidentById(id);
 
-      incident.reports.forEach((report) => {
-        reports.push({
-          id: report.id,
-          description: report.description,
-        });
+    const reports: ReportPreviewDto[] = [];
+    const mediaUrls: string[] = [];
 
-        mediaUrls.push(...report.attachments);
+    incident.reports.forEach((report) => {
+      reports.push({
+        id: report.id,
+        description: report.description,
       });
 
-      response.push({
-        category: incident.category,
-        date: this.getDateRange(incident.date_start, incident.date_end),
-        time: this.getTimeRange(incident.time_start, incident.time_end),
-        riskLevel: incident.risk_level,
-        location,
-        latitude: incident.latitude,
-        longitude: incident.longitude,
-        status: incident.status,
-        reports,
-        mediaUrls,
-      });
-    }
+      const urls = report.attachments.map(({ uri }) => getFileUrl(uri));
+      mediaUrls.push(...urls);
+    });
 
-    return response;
+    return {
+      id: incident.id,
+      category: incident.category,
+      status: incident.status,
+      riskLevel: incident.risk_level,
+      location: await getLocationName(incident.latitude, incident.longitude),
+      date: this.getDateRange(incident.date_start, incident.date_end),
+      time: this.getTimeRange(incident.time_start, incident.time_end),
+      reports,
+      mediaUrls,
+    };
   }
 
   public async handleGetIncidentReports(

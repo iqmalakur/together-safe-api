@@ -19,14 +19,8 @@ export class IncidentQueryDto {
 }
 
 export class IncidentResDto {
-  @ApiProperty({ example: 'Pembegalan' })
-  public category: string;
-
-  @ApiProperty({
-    example:
-      'Jalan Warung Contong, Setiamanah, Cimahi, Jawa Barat, Jawa, 40524, Indonesia',
-  })
-  public location: string;
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  public id: string;
 
   @ApiProperty({ example: -6.884352875225879 })
   public latitude: number;
@@ -36,6 +30,23 @@ export class IncidentResDto {
 
   @ApiProperty({ example: 'high' })
   public riskLevel: string;
+}
+
+export class IncidentDetailResDto {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  public id: string;
+
+  @ApiProperty({ example: 'Pembegalan' })
+  public category: string;
+
+  @ApiProperty({ example: 'high' })
+  public riskLevel: string;
+
+  @ApiProperty({
+    example:
+      'Jalan Warung Contong, Setiamanah, Cimahi, Jawa Barat, Jawa, 40524, Indonesia',
+  })
+  public location: string;
 
   @ApiProperty({ example: '19 Februari 2025' })
   public date: string;
