@@ -1,21 +1,23 @@
-export type RawIncidentRow = {
+export type IncidentPreviewResult = {
   id: string;
-  status: string;
   risk_level: string;
+  latitude: number;
+  longitude: number;
+};
+
+export type IncidentDetailResult = IncidentPreviewResult & {
+  category: string;
+  status: string;
   date_start: Date;
   date_end: Date;
   time_start: Date;
   time_end: Date;
-  latitude: number;
-  longitude: number;
-  category: string;
 };
 
-export type IncidentSelection = RawIncidentRow & {
+export type IncidentSelection = IncidentDetailResult & {
   reports: {
     id: string;
-    incidentId: string;
     description: string;
-    attachments: string[];
+    attachments: { uri: string }[];
   }[];
 };

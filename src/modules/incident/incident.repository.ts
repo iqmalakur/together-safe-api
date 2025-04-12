@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { IncidentSelection, RawIncidentRow } from './incident.type';
+import {
+  IncidentDetailResult,
+  IncidentPreviewResult,
+  IncidentSelection,
+} from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
+import { handleError } from 'src/utils/common.util';
+import { ReportPreviewResult } from '../report/report.type';
 
 export interface IIncidentRepository {
-  getIncidents(
+  findNearbyIncidents(
     latitude: number,
     longitude: number,
-  ): Promise<IncidentSelection[]>;
+  ): Promise<IncidentPreviewResult[]>;
+  findIncidentById(id: string): Promise<IncidentSelection | null>;
+  getReportsByIncidentId(incidentId: string): Promise<ReportPreviewResult[]>;
 }
 
 @Injectable()
@@ -14,59 +22,85 @@ export class IncidentRepository
   extends BaseRepository
   implements IIncidentRepository
 {
-  public async getIncidents(
+  public async findNearbyIncidents(
     latitude: number,
     longitude: number,
-  ): Promise<IncidentSelection[]> {
-    const incidents = await this.prisma.$queryRaw<RawIncidentRow[]>`
+  ): Promise<IncidentPreviewResult[]> {
+    try {
+      return await this.prisma.$queryRaw<IncidentPreviewResult[]>`
+        SELECT
+          id,
+          risk_level,
+          ST_Y(location_point) AS latitude,
+          ST_X(location_point) AS longitude
+        FROM "Incident"
+        WHERE ST_DWithin(
+          location_point::geography,
+          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+          1000 -- TODO: set radius dynamically based on user zoom level
+        )
+      `;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async findIncidentById(id: string): Promise<IncidentSelection | null> {
+    try {
+      const result = await this.prisma.$queryRaw<IncidentDetailResult[]>`
       SELECT
-        i."id"::text,
-        i."status",
-        i."risk_level",
-        i."date_start",
-        i."date_end",
-        i."time_start",
-        i."time_end",
+        i.id,
+        i.status,
+        i.risk_level,
+        i.date_start,
+        i.date_end,
+        i.time_start,
+        i.time_end,
         ST_Y(location_point) AS latitude,
         ST_X(location_point) AS longitude,
-        ic."name" AS category
+        ic.name AS category
       FROM "Incident" i
-      JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
-      WHERE ST_DWithin(
-        i.location_point::geography,
-        ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-        1000 -- TODO: set radius dynamically based on user zoom level
-      )
+      JOIN "IncidentCategory" ic ON ic.id = i.category_id
+      WHERE i.id = ${id}::uuid
     `;
 
-    const incidentIds = incidents.map((incident) => incident.id);
-    const reports = await this.prisma.report.findMany({
-      select: {
-        id: true,
-        incidentId: true,
-        description: true,
-        attachments: { select: { uri: true } },
-      },
-      where: { incidentId: { in: incidentIds } },
-    });
-
-    const groupedReports: Record<string, IncidentSelection['reports']> = {};
-
-    for (const report of reports) {
-      if (!groupedReports[report.incidentId]) {
-        groupedReports[report.incidentId] = [];
+      const incident = result[0];
+      if (!incident) {
+        return null;
       }
-      groupedReports[report.incidentId].push({
-        id: report.id,
-        incidentId: report.incidentId,
-        description: report.description,
-        attachments: report.attachments.map((a) => a.uri),
-      });
-    }
 
-    return incidents.map((incident) => ({
-      ...incident,
-      reports: groupedReports[incident.id] ?? [],
-    }));
+      const reports = await this.prisma.report.findMany({
+        select: {
+          id: true,
+          description: true,
+          attachments: {
+            select: { uri: true },
+            take: 3,
+          },
+        },
+        where: { incidentId: incident.id },
+        take: 5,
+      });
+
+      return {
+        ...incident,
+        reports,
+      };
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async getReportsByIncidentId(
+    incidentId: string,
+  ): Promise<ReportPreviewResult[]> {
+    try {
+      return await this.prisma.report.findMany({
+        where: { incidentId },
+        select: { id: true, description: true },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
   }
 }
