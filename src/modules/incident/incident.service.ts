@@ -13,14 +13,12 @@ export class IncidentService extends BaseService<IIncidentRepository> {
     super(repository);
   }
 
-  public async handleGetIncident(
+  public async handleGetNearbyIncident(
     latitude: number,
     longitude: number,
   ): Promise<IncidentResDto[]> {
-    const incidents: IncidentSelection[] = await this.repository.getIncidents(
-      latitude,
-      longitude,
-    );
+    const incidents: IncidentSelection[] =
+      await this.repository.findNearbyIncidents(latitude, longitude);
     const response: IncidentResDto[] = [];
 
     for (const incident of incidents) {

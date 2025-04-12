@@ -3,7 +3,7 @@ import { IncidentSelection, RawIncidentRow } from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
 
 export interface IIncidentRepository {
-  getIncidents(
+  findNearbyIncidents(
     latitude: number,
     longitude: number,
   ): Promise<IncidentSelection[]>;
@@ -14,7 +14,7 @@ export class IncidentRepository
   extends BaseRepository
   implements IIncidentRepository
 {
-  public async getIncidents(
+  public async findNearbyIncidents(
     latitude: number,
     longitude: number,
   ): Promise<IncidentSelection[]> {

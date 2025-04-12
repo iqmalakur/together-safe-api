@@ -14,12 +14,12 @@ export class IncidentController extends BaseController {
 
   @Get()
   @ApiIncident()
-  public async getIncident(
+  public async getNearbyIncident(
     @Query() query: IncidentQueryDto,
   ): Promise<IncidentResDto[]> {
     const latitude = parseFloat(query.lat);
     const longitude = parseFloat(query.lon);
 
-    return await this.service.handleGetIncident(latitude, longitude);
+    return await this.service.handleGetNearbyIncident(latitude, longitude);
   }
 }
