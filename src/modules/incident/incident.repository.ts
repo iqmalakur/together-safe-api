@@ -37,7 +37,7 @@ export class IncidentRepository
         WHERE ST_DWithin(
           location_point::geography,
           ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-          1000 -- TODO: set radius dynamically based on user zoom level
+          15000
         )
       `;
     } catch (e) {
