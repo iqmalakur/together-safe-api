@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiToken } from './api-token.decorator';
 import {
+  CategoryResDto,
   IncidentDetailResDto,
   IncidentResDto,
 } from '../modules/incident/incident.dto';
@@ -60,6 +61,22 @@ export const ApiIncidentReport = (): MethodDecorator => {
       status: 200,
       description: 'List of incident reports successfully retrieved',
       type: ReportPreviewDto,
+      isArray: true,
+    }),
+    ApiServerError(),
+  );
+};
+
+export const ApiCategories = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get all incident categories',
+      description: 'retrieve a list of all incident categories.',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'list of incident categories successfully retrieved',
+      type: CategoryResDto,
       isArray: true,
     }),
     ApiServerError(),

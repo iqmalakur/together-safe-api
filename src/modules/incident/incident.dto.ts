@@ -78,3 +78,11 @@ export class IncidentParamDto {
   @IsUUID(4, { message: 'id tidak valid' })
   public readonly id: string;
 }
+
+export class CategoryResDto {
+  @ApiProperty({ example: 1 })
+  public id: number;
+
+  @ApiProperty({ example: 'Pembegalan' })
+  public name: string;
+}

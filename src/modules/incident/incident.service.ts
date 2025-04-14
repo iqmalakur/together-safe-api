@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import { getLocationName } from '../../utils/api.util';
-import { IncidentDetailResDto, IncidentResDto } from './incident.dto';
+import {
+  CategoryResDto,
+  IncidentDetailResDto,
+  IncidentResDto,
+} from './incident.dto';
 import { IIncidentRepository, IncidentRepository } from './incident.repository';
 import { BaseService } from '../shared/base.service';
 import { ReportPreviewDto } from '../report/report.dto';
@@ -68,6 +72,11 @@ export class IncidentService extends BaseService<IIncidentRepository> {
   ): Promise<ReportPreviewDto[]> {
     const result = await this.repository.getReportsByIncidentId(id);
     return result as ReportPreviewDto[];
+  }
+
+  public async handleGetCategories(): Promise<CategoryResDto[]> {
+    const result = await this.repository.getCategories();
+    return result as CategoryResDto[];
   }
 
   private getDateRange(dateStart: Date, dateEnd: Date) {
