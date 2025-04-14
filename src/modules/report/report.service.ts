@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -92,6 +93,11 @@ export class ReportService extends BaseService<IReportRepository> {
     data: ReportReqDto,
   ): Promise<SuccessCreateDto> {
     const { categoryId, description, date, time, location, media } = data;
+
+    const isCategoryExists = await this.repository.checkCategory(categoryId);
+    if (!isCategoryExists) {
+      throw new BadRequestException('kategori tidak valid');
+    }
 
     const splittedLocation = location.split(',');
     const latitude = parseFloat(splittedLocation[0]);
