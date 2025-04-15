@@ -1,5 +1,6 @@
--- Make sure PostGIS extension active
+-- Make sure PostGIS and pgrouting extensions active
 CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pgrouting;
 
 -- CreateEnum
 CREATE TYPE "VoteType" AS ENUM ('upvote', 'downvote');
