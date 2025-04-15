@@ -14,6 +14,7 @@ import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 export interface IReportRepository {
   getReportByUserEmail(email: string): Promise<ReportPreviewResult[]>;
   getReportById(id: string): Promise<ReportDetailResult | null>;
+  checkCategory(categoryId: number): Promise<boolean>;
   createReport(
     incident: RelatedIncident,
     report: ReportInput,
@@ -48,7 +49,6 @@ export class ReportRepository
   }
 
   public async getReportById(id: string): Promise<ReportDetailResult | null> {
-    this.logger.debug(`id: ${id}`);
     return await this.prisma.report.findFirst({
       where: { id },
       select: {
@@ -91,6 +91,18 @@ export class ReportRepository
         },
       },
     });
+  }
+
+  public async checkCategory(categoryId: number): Promise<boolean> {
+    try {
+      const result = await this.prisma.incidentCategory.findFirst({
+        where: { id: categoryId },
+        select: { id: true },
+      });
+      return result != null;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
   }
 
   public async createReport(

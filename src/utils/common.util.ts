@@ -40,3 +40,8 @@ export const validateToken = (token: string): UserJwtPayload | null => {
 export const getFileUrl = (id: string) => {
   return `https://drive.google.com/uc?export=view&id=${id}`;
 };
+
+export const getFileUrlOrNull = (id: string | null = null) => {
+  if (id) return getFileUrl(id);
+  else return null;
+};

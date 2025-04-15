@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -12,7 +13,7 @@ import { UserJwtPayload } from '../shared/shared.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { getLocationName } from 'src/utils/api.util';
-import { getFileUrl } from 'src/utils/common.util';
+import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
 export class ReportService extends BaseService<IReportRepository> {
@@ -46,8 +47,11 @@ export class ReportService extends BaseService<IReportRepository> {
       id: comment.id,
       comment: comment.comment,
       createdAt: comment.createdAt,
-      isEdited: comment.updatedAt !== comment.createdAt,
-      user: comment.user,
+      isEdited: comment.updatedAt.getTime() !== comment.createdAt.getTime(),
+      user: {
+        ...comment.user,
+        profilePhoto: getFileUrlOrNull(comment.user.profilePhoto),
+      },
     }));
 
     const { latitude, longitude } = result;
@@ -67,7 +71,10 @@ export class ReportService extends BaseService<IReportRepository> {
       id: result.id,
       description: result.description,
       status: result.status,
-      user: result.user,
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
       date: getDateString(result.date),
       time: getTimeString(result.time, true),
       latitude: latitude,
@@ -86,6 +93,11 @@ export class ReportService extends BaseService<IReportRepository> {
     data: ReportReqDto,
   ): Promise<SuccessCreateDto> {
     const { categoryId, description, date, time, location, media } = data;
+
+    const isCategoryExists = await this.repository.checkCategory(categoryId);
+    if (!isCategoryExists) {
+      throw new BadRequestException('kategori tidak valid');
+    }
 
     const splittedLocation = location.split(',');
     const latitude = parseFloat(splittedLocation[0]);

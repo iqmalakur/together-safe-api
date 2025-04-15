@@ -30,7 +30,6 @@ import {
 import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Controller('report')
-@ApiSecurity('jwt')
 @ApiTags('Report')
 export class ReportController extends BaseController {
   public constructor(private readonly service: ReportService) {
@@ -38,6 +37,7 @@ export class ReportController extends BaseController {
   }
 
   @Get()
+  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiUserReport()
   public async getUserReport(
@@ -56,6 +56,7 @@ export class ReportController extends BaseController {
   }
 
   @Post()
+  @ApiSecurity('jwt')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FilesInterceptor('media'))
   @HttpCode(HttpStatus.CREATED)

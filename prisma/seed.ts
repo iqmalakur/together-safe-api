@@ -17,30 +17,42 @@ async function main() {
     });
 
     // Seed Users
-    const ucup = await tx.user.create({
+    const andi = await tx.user.create({
       data: {
-        email: 'ucup@gmail.com',
-        name: 'Ucup',
-        password: bcrypt.hashSync('ucup123', 10),
-        phone: '081234567891',
+        email: 'andi.pratama@gmail.com',
+        name: 'Andi Pratama',
+        password: bcrypt.hashSync('Andi123!', 10),
+        phone: '081234567890',
+        profilePhoto: '1dX61J5_x4f-TUNay4wf5kiQwCQGJ0t90',
       },
     });
 
     const budi = await tx.user.create({
       data: {
-        email: 'budi@gmail.com',
-        name: 'Budi',
-        password: bcrypt.hashSync('budi123', 10),
-        phone: '081234567893',
+        email: 'budi.santoso@example.com',
+        name: 'Budi Santoso',
+        password: bcrypt.hashSync('BudiS@123', 10),
+        phone: '082134567891',
       },
     });
 
-    const wati = await tx.user.create({
+    const siti = await tx.user.create({
       data: {
-        email: 'wati@gmail.com',
-        name: 'Wati',
-        password: bcrypt.hashSync('wati123', 10),
-        phone: '081234567894',
+        email: 'siti.nurhaliza@example.com',
+        name: 'Siti Nurhaliza',
+        password: bcrypt.hashSync('Siti@1234', 10),
+        phone: '086178901235',
+        profilePhoto: '1ay4HPdjOFzHhq2aJi_WMiXeYdk2woxsR',
+      },
+    });
+
+    const ayu = await tx.user.create({
+      data: {
+        email: 'ayu.lestari@example.com',
+        name: 'Ayu Lestari',
+        password: bcrypt.hashSync('AyuLestari_21', 10),
+        phone: '087189012346',
+        profilePhoto: '169VSqQ5BDMkVo_7zHpNo5edhfqW2aB1w',
       },
     });
 
@@ -79,7 +91,7 @@ async function main() {
     // Seed Reports
     const report1 = await tx.report.create({
       data: {
-        userEmail: ucup.email,
+        userEmail: siti.email,
         description: 'Pembegalan motor di jalan ibu ganirah cimahi',
         latitude: -6.884275453943853,
         longitude: 107.52424339838008,
@@ -103,7 +115,7 @@ async function main() {
 
     const report3 = await tx.report.create({
       data: {
-        userEmail: wati.email,
+        userEmail: andi.email,
         description:
           'Pelaku begal merampas tas pengendara di jalan ibu ganirah',
         latitude: -6.884422385888235,
@@ -117,32 +129,36 @@ async function main() {
     // Seed Votes
     await tx.vote.createMany({
       data: [
-        { type: 'upvote', reportId: report1.id, userEmail: wati.email },
+        { type: 'upvote', reportId: report1.id, userEmail: siti.email },
         { type: 'upvote', reportId: report1.id, userEmail: budi.email },
-        { type: 'upvote', reportId: report2.id, userEmail: ucup.email },
-        { type: 'upvote', reportId: report2.id, userEmail: wati.email },
-        { type: 'upvote', reportId: report3.id, userEmail: ucup.email },
+        { type: 'upvote', reportId: report2.id, userEmail: andi.email },
+        { type: 'upvote', reportId: report2.id, userEmail: siti.email },
+        { type: 'upvote', reportId: report3.id, userEmail: andi.email },
         { type: 'upvote', reportId: report3.id, userEmail: budi.email },
       ],
     });
 
     // Seed Comments
+    const now = new Date();
+
     await tx.comment.createMany({
       data: [
         {
           reportId: report1.id,
-          userEmail: wati.email,
+          userEmail: budi.email,
           comment:
             'Wah, serem banget! Gue sering lewat sini malem-malem, harus lebih hati-hati nih.',
+          createdAt: now,
+          updatedAt: new Date(now.getTime() + 5000),
         },
         {
           reportId: report1.id,
-          userEmail: budi.email,
+          userEmail: ayu.email,
           comment: 'Korbannya gapapa kan?',
         },
         {
-          reportId: report2.id,
-          userEmail: ucup.email,
+          reportId: report1.id,
+          userEmail: andi.email,
           comment: 'Anjir, deket kampus ini.',
         },
       ],
@@ -153,15 +169,15 @@ async function main() {
       data: [
         {
           reportId: report1.id,
-          uri: 'https://static.promediateknologi.id/crop/266x0:666x144/750x500/webp/photo/p1/338/2024/08/20/VideoCapture_20240819-202046-1782971598.jpg',
+          uri: '1kH0xU1DQXqU10i8Js-plHsvgQaQKJzxa',
         },
         {
           reportId: report1.id,
-          uri: 'https://assets.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/2023/06/24/image_2023-06-24_095907624-957526239.png',
+          uri: '1KWlz-FsGqcDp9PuzsZIf_0fyC7ee_IRQ',
         },
         {
           reportId: report1.id,
-          uri: 'https://kabar6.com/wp-content/uploads/IMG-20240627-WA00001.jpg',
+          uri: '1-3-wosWj9NbGmr3A441W9AquoqU9UaE-',
         },
       ],
     });

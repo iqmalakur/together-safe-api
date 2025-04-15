@@ -7,6 +7,7 @@ import {
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import { ReportPreviewResult } from '../report/report.type';
+import { IncidentCategory } from '@prisma/client';
 
 export interface IIncidentRepository {
   findNearbyIncidents(
@@ -15,6 +16,7 @@ export interface IIncidentRepository {
   ): Promise<IncidentPreviewResult[]>;
   findIncidentById(id: string): Promise<IncidentSelection | null>;
   getReportsByIncidentId(incidentId: string): Promise<ReportPreviewResult[]>;
+  getCategories(): Promise<IncidentCategory[]>;
 }
 
 @Injectable()
@@ -37,7 +39,7 @@ export class IncidentRepository
         WHERE ST_DWithin(
           location_point::geography,
           ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-          1000 -- TODO: set radius dynamically based on user zoom level
+          15000
         )
       `;
     } catch (e) {
@@ -98,6 +100,16 @@ export class IncidentRepository
       return await this.prisma.report.findMany({
         where: { incidentId },
         select: { id: true, description: true },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async getCategories(): Promise<IncidentCategory[]> {
+    try {
+      return await this.prisma.incidentCategory.findMany({
+        orderBy: { name: 'asc' },
       });
     } catch (e) {
       throw handleError(e, this.logger);

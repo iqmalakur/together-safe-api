@@ -3,12 +3,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../shared/base.controller';
 import { IncidentService } from './incident.service';
 import {
+  CategoryResDto,
   IncidentDetailResDto,
   IncidentParamDto,
   IncidentQueryDto,
   IncidentResDto,
 } from './incident.dto';
 import {
+  ApiCategories,
   ApiIncident,
   ApiIncidentDetail,
   ApiIncidentReport,
@@ -31,6 +33,12 @@ export class IncidentController extends BaseController {
     const longitude = parseFloat(query.lon);
 
     return await this.service.handleGetNearbyIncident(latitude, longitude);
+  }
+
+  @Get('categories')
+  @ApiCategories()
+  public async getCategories(): Promise<CategoryResDto[]> {
+    return await this.service.handleGetCategories();
   }
 
   @Get(':id')
