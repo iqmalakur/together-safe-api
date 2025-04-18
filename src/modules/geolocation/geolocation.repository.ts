@@ -4,21 +4,8 @@ import axios from 'axios';
 import { handleError } from '../../utils/common.util';
 import { BaseRepository } from '../shared/base.repository';
 
-export interface IGeolocationRepository {
-  findLocation(query: string): Promise<NominatimResponse[]>;
-  findSafeRouteWithAStar(
-    startLat: number,
-    startLng: number,
-    endLat: number,
-    endLng: number,
-  ): Promise<RouteResult[]>;
-}
-
 @Injectable()
-export class GeolocationRepository
-  extends BaseRepository
-  implements IGeolocationRepository
-{
+export class GeolocationRepository extends BaseRepository {
   public async findLocation(query: string): Promise<NominatimResponse[]> {
     try {
       const result = await axios.get<NominatimResponse[]>(

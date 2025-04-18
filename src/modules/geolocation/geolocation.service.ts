@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
-import {
-  GeolocationRepository,
-  IGeolocationRepository,
-} from './geolocation.repository';
+import { GeolocationRepository } from './geolocation.repository';
 import { GeoJSONFeatureDTO, GeocodingResDto } from './geolocation.dto';
 import { Geometry } from './geolocation.type';
 
 @Injectable()
-export class GeolocationService extends BaseService<IGeolocationRepository> {
-  public constructor(repository: GeolocationRepository) {
-    super(repository);
+export class GeolocationService extends BaseService {
+  public constructor(private readonly repository: GeolocationRepository) {
+    super();
   }
 
   public async handleSearchLocation(query: string): Promise<GeocodingResDto[]> {

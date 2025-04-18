@@ -6,15 +6,15 @@ import {
   IncidentDetailResDto,
   IncidentResDto,
 } from './incident.dto';
-import { IIncidentRepository, IncidentRepository } from './incident.repository';
+import { IncidentRepository } from './incident.repository';
 import { BaseService } from '../shared/base.service';
 import { ReportPreviewDto } from '../report/report.dto';
 import { getFileUrl } from 'src/utils/common.util';
 
 @Injectable()
-export class IncidentService extends BaseService<IIncidentRepository> {
-  public constructor(repository: IncidentRepository) {
-    super(repository);
+export class IncidentService extends BaseService {
+  public constructor(private readonly repository: IncidentRepository) {
+    super();
   }
 
   public async handleGetNearbyIncident(

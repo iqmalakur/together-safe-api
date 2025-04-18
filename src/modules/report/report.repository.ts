@@ -11,28 +11,8 @@ import {
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
-export interface IReportRepository {
-  getReportByUserEmail(email: string): Promise<ReportPreviewResult[]>;
-  getReportById(id: string): Promise<ReportDetailResult | null>;
-  checkCategory(categoryId: number): Promise<boolean>;
-  createReport(
-    incident: RelatedIncident,
-    report: ReportInput,
-  ): Promise<ReportResult>;
-  findRelatedIncident(report: ReportInput): Promise<RelatedIncident | null>;
-  createIncident(report: ReportInput): Promise<RelatedIncident>;
-  checkReportEligibility(
-    userEmail: string,
-    incidentId: string,
-    date: Date,
-  ): Promise<boolean>;
-}
-
 @Injectable()
-export class ReportRepository
-  extends BaseRepository
-  implements IReportRepository
-{
+export class ReportRepository extends BaseRepository {
   private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
   private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
   private readonly RADIUS_METERS = 100; // Radius from centroid

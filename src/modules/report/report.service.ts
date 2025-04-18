@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BaseService } from '../shared/base.service';
-import { IReportRepository, ReportRepository } from './report.repository';
+import { ReportRepository } from './report.repository';
 import { ReportPreviewDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
@@ -16,12 +16,12 @@ import { getLocationName } from 'src/utils/api.util';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
-export class ReportService extends BaseService<IReportRepository> {
+export class ReportService extends BaseService {
   public constructor(
     private readonly uploadService: UploadService,
-    repository: ReportRepository,
+    private readonly repository: ReportRepository,
   ) {
-    super(repository);
+    super();
   }
 
   public async handleGetUserReport(

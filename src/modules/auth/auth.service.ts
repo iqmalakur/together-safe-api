@@ -7,18 +7,18 @@ import { BaseService } from '../shared/base.service';
 import { compareSync } from 'bcrypt';
 import { AuthResDto, RegisterReqDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
-import { AuthRepository, IAuthRepository } from './auth.repository';
+import { AuthRepository } from './auth.repository';
 import { validateToken } from '../../utils/common.util';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { SuccessCreateDto } from '../shared/shared.dto';
 
 @Injectable()
-export class AuthService extends BaseService<IAuthRepository> {
+export class AuthService extends BaseService {
   public constructor(
     private readonly uploadService: UploadService,
-    repository: AuthRepository,
+    private readonly repository: AuthRepository,
   ) {
-    super(repository);
+    super();
   }
 
   public async handleLogin(
