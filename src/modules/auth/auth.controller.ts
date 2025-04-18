@@ -8,7 +8,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { BaseController } from '../shared/base.controller';
 import {
   LoginReqDto,
   AuthResDto,
@@ -24,10 +23,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { plainToInstance } from 'class-transformer';
 import { SuccessCreateDto } from '../shared/shared.dto';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('auth')
 @ApiTags('Auth')
-export class AuthController extends BaseController {
+export class AuthController extends AbstractLogger {
   public constructor(private readonly service: AuthService) {
     super();
   }
@@ -61,7 +61,7 @@ export class AuthController extends BaseController {
       profilePhoto: data.profilePhoto?.originalname,
     });
 
-    return this.service.handleRegister(data);
+    return await this.service.handleRegister(data);
   }
 
   @Post('validate_token')

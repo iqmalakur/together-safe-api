@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BaseController } from '../shared/base.controller';
 import { IncidentService } from './incident.service';
 import {
   CategoryResDto,
@@ -16,10 +15,11 @@ import {
   ApiIncidentReport,
 } from '../../decorators/api-incident.decorator';
 import { ReportPreviewDto } from '../report/report.dto';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('incident')
 @ApiTags('Incident')
-export class IncidentController extends BaseController {
+export class IncidentController extends AbstractLogger {
   public constructor(private readonly service: IncidentService) {
     super();
   }

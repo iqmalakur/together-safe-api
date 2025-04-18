@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { BaseService } from '../shared/base.service';
 import { compareSync } from 'bcrypt';
 import { AuthResDto, RegisterReqDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
@@ -11,9 +10,10 @@ import { AuthRepository } from './auth.repository';
 import { validateToken } from '../../utils/common.util';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { SuccessCreateDto } from '../shared/shared.dto';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Injectable()
-export class AuthService extends BaseService {
+export class AuthService extends AbstractLogger {
   public constructor(
     private readonly uploadService: UploadService,
     private readonly repository: AuthRepository,

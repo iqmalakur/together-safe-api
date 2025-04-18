@@ -7,12 +7,12 @@ import {
   IncidentResDto,
 } from './incident.dto';
 import { IncidentRepository } from './incident.repository';
-import { BaseService } from '../shared/base.service';
 import { ReportPreviewDto } from '../report/report.dto';
 import { getFileUrl } from 'src/utils/common.util';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Injectable()
-export class IncidentService extends BaseService {
+export class IncidentService extends AbstractLogger {
   public constructor(private readonly repository: IncidentRepository) {
     super();
   }

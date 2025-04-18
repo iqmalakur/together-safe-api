@@ -1,18 +1,18 @@
 import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { BaseController } from '../shared/base.controller';
 import { GeolocationService } from './geolocation.service';
 import {
-  GeoJSONFeatureDTO,
+  SafeRouteResDto,
   GeocodingResDto,
   GeocodingQueryDto,
   SafeRouteQueryDto,
 } from './geolocation.dto';
 import { ApiSearch } from 'src/decorators/api-geolocation.decorator';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('geolocation')
 @ApiTags('Geolocation')
-export class GeolocationController extends BaseController {
+export class GeolocationController extends AbstractLogger {
   public constructor(private readonly service: GeolocationService) {
     super();
   }
@@ -32,7 +32,7 @@ export class GeolocationController extends BaseController {
   // @ApiSafeRoute()
   public async getSafeRoute(
     @Query() queryParam: SafeRouteQueryDto,
-  ): Promise<GeoJSONFeatureDTO> {
+  ): Promise<SafeRouteResDto> {
     return await this.service.handleGetSafeRoute(
       queryParam.startLatLon,
       queryParam.endLatLon,

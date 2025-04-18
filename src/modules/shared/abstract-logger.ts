@@ -1,6 +1,6 @@
-import { LoggerUtil } from '../../utils/logger.util';
+import { LoggerUtil } from 'src/utils/logger.util';
 
-export abstract class BaseController {
+export abstract class AbstractLogger {
   protected readonly logger: LoggerUtil;
   public constructor() {
     this.logger = new LoggerUtil(this.constructor.name);

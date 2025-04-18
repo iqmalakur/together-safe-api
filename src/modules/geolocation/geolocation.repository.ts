@@ -23,7 +23,7 @@ export class GeolocationRepository extends BaseRepository {
     }
   }
 
-  async findSafeRouteWithAStar(
+  public async findSafeRouteWithAStar(
     startLat: number,
     startLon: number,
     endLat: number,

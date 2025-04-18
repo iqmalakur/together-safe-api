@@ -4,7 +4,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseService } from '../shared/base.service';
 import { ReportRepository } from './report.repository';
 import { ReportPreviewDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
@@ -14,9 +13,10 @@ import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { getLocationName } from 'src/utils/api.util';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Injectable()
-export class ReportService extends BaseService {
+export class ReportService extends AbstractLogger {
   public constructor(
     private readonly uploadService: UploadService,
     private readonly repository: ReportRepository,

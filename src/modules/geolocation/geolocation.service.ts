@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../shared/base.service';
 import { GeolocationRepository } from './geolocation.repository';
-import { GeoJSONFeatureDTO, GeocodingResDto } from './geolocation.dto';
+import { SafeRouteResDto, GeocodingResDto } from './geolocation.dto';
 import { Geometry } from './geolocation.type';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Injectable()
-export class GeolocationService extends BaseService {
+export class GeolocationService extends AbstractLogger {
   public constructor(private readonly repository: GeolocationRepository) {
     super();
   }
@@ -25,7 +25,7 @@ export class GeolocationService extends BaseService {
   public async handleGetSafeRoute(
     start: string,
     end: string,
-  ): Promise<GeoJSONFeatureDTO> {
+  ): Promise<SafeRouteResDto> {
     const [startLat, startLon] = start
       .split(',')
       .map((coord) => parseFloat(coord));
@@ -38,29 +38,22 @@ export class GeolocationService extends BaseService {
       endLon,
     );
 
-    const coordinates: number[][] = [];
+    const routes: number[][] = [];
 
     routeResult.forEach((route) => {
       const json = JSON.parse(route.geojson) as Geometry;
       json.coordinates.forEach((coordinate) => {
-        const lastCoordinate = coordinates[coordinates.length - 1];
+        const lastCoordinate = routes[routes.length - 1];
 
         if (
-          coordinates.length == 0 ||
+          routes.length == 0 ||
           !this.isCoordinateEquals(coordinate, lastCoordinate)
         )
-          coordinates.push(coordinate);
+          routes.push(coordinate);
       });
     });
 
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates,
-      },
-      properties: {},
-    };
+    return { routes };
   }
 
   private isCoordinateEquals(first: number[], second: number[]): boolean {
