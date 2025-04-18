@@ -1,19 +1,15 @@
-export type NominatimFeature = {
-  properties: {
-    name: string;
-    display_name: string;
-  };
-  geometry: {
-    coordinates: number[];
-  };
-};
-
 export type NominatimResponse = {
-  features: NominatimFeature[];
+  name: string;
+  display_name: string;
+  lat: number;
+  lon: number;
 };
 
-export type GeolocationResult = {
-  name: string;
-  fullName: string;
-  coordinates: number[];
+export type RouteResult = {
+  geojson: string;
+};
+
+export type Geometry = {
+  type: string;
+  coordinates: number[][];
 };

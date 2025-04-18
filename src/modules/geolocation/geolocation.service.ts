@@ -4,7 +4,8 @@ import {
   GeolocationRepository,
   IGeolocationRepository,
 } from './geolocation.repository';
-import { GeolocationResDto } from './geolocation.dto';
+import { GeoJSONFeatureDTO, GeocodingResDto } from './geolocation.dto';
+import { Geometry } from './geolocation.type';
 
 @Injectable()
 export class GeolocationService extends BaseService<IGeolocationRepository> {
@@ -12,17 +13,60 @@ export class GeolocationService extends BaseService<IGeolocationRepository> {
     super(repository);
   }
 
-  public async handleSearchLocation(
-    query: string,
-  ): Promise<GeolocationResDto[]> {
+  public async handleSearchLocation(query: string): Promise<GeocodingResDto[]> {
     const locations = await this.repository.findLocation(query);
-    const result: GeolocationResDto[] = locations.map((location) => ({
+    const result: GeocodingResDto[] = locations.map((location) => ({
       name: location.name,
-      fullName: location.fullName,
-      longitude: location.coordinates[0],
-      latitude: location.coordinates[1],
+      fullName: location.display_name,
+      latitude: location.lat,
+      longitude: location.lon,
     }));
 
     return result;
+  }
+
+  public async handleGetSafeRoute(
+    start: string,
+    end: string,
+  ): Promise<GeoJSONFeatureDTO> {
+    const [startLat, startLon] = start
+      .split(',')
+      .map((coord) => parseFloat(coord));
+    const [endLat, endLon] = end.split(',').map((coord) => parseFloat(coord));
+
+    const routeResult = await this.repository.findSafeRouteWithAStar(
+      startLat,
+      startLon,
+      endLat,
+      endLon,
+    );
+
+    const coordinates: number[][] = [];
+
+    routeResult.forEach((route) => {
+      const json = JSON.parse(route.geojson) as Geometry;
+      json.coordinates.forEach((coordinate) => {
+        const lastCoordinate = coordinates[coordinates.length - 1];
+
+        if (
+          coordinates.length == 0 ||
+          !this.isCoordinateEquals(coordinate, lastCoordinate)
+        )
+          coordinates.push(coordinate);
+      });
+    });
+
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates,
+      },
+      properties: {},
+    };
+  }
+
+  private isCoordinateEquals(first: number[], second: number[]): boolean {
+    return first[0] === second[0] && first[1] === second[1];
   }
 }

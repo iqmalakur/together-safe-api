@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiBadRequest, ApiServerError } from './api-response.decorator';
-import { GeolocationResDto } from 'src/modules/geolocation/geolocation.dto';
+import { GeocodingResDto } from 'src/modules/geolocation/geolocation.dto';
 
 export const ApiSearch = (): MethodDecorator => {
   return applyDecorators(
@@ -12,7 +12,7 @@ export const ApiSearch = (): MethodDecorator => {
     ApiResponse({
       status: 200,
       description: 'search result',
-      type: GeolocationResDto,
+      type: GeocodingResDto,
       isArray: true,
     }),
     ApiBadRequest(

@@ -42,7 +42,7 @@ async function bootstrap() {
   logger.info('Access /api-json to see the Open API json file');
   logger.info('Access /api-yaml to see the Open API yaml file');
 
-  await app.listen(PORT);
+  await app.listen(PORT, '0.0.0.0');
   logger.info(`Application started on port ${PORT}`);
 }
 
