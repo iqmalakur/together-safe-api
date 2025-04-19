@@ -1,28 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { NominatimResponse, RouteResult } from './geolocation.type';
-import axios from 'axios';
-import { handleError } from '../../utils/common.util';
+import { RouteResult } from './geolocation.type';
 import { BaseRepository } from '../shared/base.repository';
 
 @Injectable()
 export class GeolocationRepository extends BaseRepository {
-  public async findLocation(query: string): Promise<NominatimResponse[]> {
-    try {
-      const result = await axios.get<NominatimResponse[]>(
-        `https://nominatim.openstreetmap.org/search?q=${query}&format=json`,
-        {
-          headers: {
-            'User-Agent': 'TogetherSafe/1.0 (iqmalak21@if.unjani.ac.id)',
-          },
-        },
-      );
-
-      return result.data;
-    } catch (e) {
-      throw handleError(e, this.logger);
-    }
-  }
-
   public async findSafeRouteWithAStar(
     startLat: number,
     startLon: number,

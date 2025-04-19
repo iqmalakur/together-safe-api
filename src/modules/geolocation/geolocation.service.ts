@@ -3,20 +3,24 @@ import { GeolocationRepository } from './geolocation.repository';
 import { SafeRouteResDto, GeocodingResDto } from './geolocation.dto';
 import { Geometry } from './geolocation.type';
 import { AbstractLogger } from '../shared/abstract-logger';
+import { ApiService } from 'src/infrastructures/api.service';
 
 @Injectable()
 export class GeolocationService extends AbstractLogger {
-  public constructor(private readonly repository: GeolocationRepository) {
+  public constructor(
+    private readonly apiService: ApiService,
+    private readonly repository: GeolocationRepository,
+  ) {
     super();
   }
 
   public async handleSearchLocation(query: string): Promise<GeocodingResDto[]> {
-    const locations = await this.repository.findLocation(query);
+    const locations = await this.apiService.geocode(query);
     const result: GeocodingResDto[] = locations.map((location) => ({
       name: location.name,
       fullName: location.display_name,
-      latitude: location.lat,
-      longitude: location.lon,
+      latitude: parseFloat(location.lat),
+      longitude: parseFloat(location.lon),
     }));
 
     return result;
