@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client';
-
 export type ReportInput = {
   userEmail: string;
   description: string;
@@ -11,7 +9,7 @@ export type ReportInput = {
   categoryId: number;
 };
 
-export type RelatedIncident = {
+export type ReportRelatedIncident = {
   id: string;
   date_start: Date;
   date_end: Date;
@@ -19,61 +17,61 @@ export type RelatedIncident = {
   time_end: Date;
 };
 
-export type ReportResult = Prisma.ReportGetPayload<{
-  select: {
-    id: true;
-    date: true;
-    time: true;
-    latitude: true;
-    longitude: true;
-  };
-}>;
+export type ReportResult = {
+  latitude: number;
+  longitude: number;
+  id: string;
+  date: Date;
+  time: Date;
+};
 
-export type ReportPreviewResult = Prisma.ReportGetPayload<{
-  select: {
-    id: true;
-    description: true;
-  };
-}>;
+export type ReportPreviewResult = {
+  id: string;
+  description: string;
+};
 
-export type ReportDetailResult = Prisma.ReportGetPayload<{
-  select: {
-    id: true;
-    description: true;
-    date: true;
-    time: true;
-    status: true;
-    latitude: true;
-    longitude: true;
-    incident: {
-      select: {
-        id: true;
-        category: { select: { name: true } };
-      };
-    };
-    user: {
-      select: {
-        name: true;
-        profilePhoto: true;
-        reputation: true;
-      };
-    };
-    attachments: { select: { uri: true } };
-    votes: { select: { type: true } };
-    comments: {
-      select: {
-        id: true;
-        comment: true;
-        createdAt: true;
-        updatedAt: true;
-        user: {
-          select: {
-            name: true;
-            profilePhoto: true;
-            reputation: true;
-          };
-        };
-      };
-    };
-  };
-}>;
+export type ReportCategory = {
+  name: string;
+};
+
+export type ReportIncident = {
+  id: string;
+  category: ReportCategory;
+};
+
+export type ReportUserProfile = {
+  name: string;
+  profilePhoto: string | null;
+  reputation: number;
+};
+
+export type ReportAttachment = {
+  uri: string;
+};
+
+export type ReportVote = {
+  type: string | null;
+};
+
+export type ReportComment = {
+  id: number;
+  comment: string;
+  createdAt: Date;
+  updatedAt: Date;
+  user: ReportUserProfile;
+};
+
+export type ReportDetailResult = {
+  id: string;
+  description: string;
+  date: Date;
+  time: Date;
+  status: string;
+  latitude: number;
+  longitude: number;
+  incident: ReportIncident;
+  user: ReportUserProfile;
+  attachments: ReportAttachment[];
+  votes: ReportVote[];
+  comments: ReportComment[];
+};

@@ -1,9 +1,10 @@
-import { Prisma } from '@prisma/client';
+export type UserAuthSelection = {
+  email: string;
+  password: string;
+  name: string;
+  profilePhoto: string | null;
+};
 
-export type UserAuthSelection = Prisma.UserGetPayload<{
-  select: { email: true; password: true; name: true; profilePhoto: true };
-}>;
-
-export type UserCreateSelection = Prisma.UserGetPayload<{
-  select: { email: true };
-}>;
+export type UserCreateSelection = {
+  email: string;
+};

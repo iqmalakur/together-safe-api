@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import {
-  RelatedIncident,
+  ReportRelatedIncident,
   ReportDetailResult,
   ReportInput,
   ReportPreviewResult,
@@ -86,7 +86,7 @@ export class ReportRepository extends BaseRepository {
   }
 
   public async createReport(
-    incident: RelatedIncident,
+    incident: ReportRelatedIncident,
     report: ReportInput,
   ): Promise<ReportResult> {
     try {
@@ -159,11 +159,13 @@ export class ReportRepository extends BaseRepository {
 
   public async findRelatedIncident(
     report: ReportInput,
-  ): Promise<RelatedIncident | null> {
+  ): Promise<ReportRelatedIncident | null> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
+      const result = await this.prisma.$queryRawUnsafe<
+        ReportRelatedIncident[]
+      >(`
         SELECT
           i."id"::text,
           i."date_start",
@@ -188,11 +190,15 @@ export class ReportRepository extends BaseRepository {
     }
   }
 
-  public async createIncident(report: ReportInput): Promise<RelatedIncident> {
+  public async createIncident(
+    report: ReportInput,
+  ): Promise<ReportRelatedIncident> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
+      const result = await this.prisma.$queryRawUnsafe<
+        ReportRelatedIncident[]
+      >(`
         INSERT INTO "Incident" (
           category_id,
           risk_level,
@@ -242,7 +248,7 @@ export class ReportRepository extends BaseRepository {
 
   private async updateIncident(
     tx: Prisma.TransactionClient,
-    incident: RelatedIncident,
+    incident: ReportRelatedIncident,
     report: ReportResult,
   ) {
     let data = '';

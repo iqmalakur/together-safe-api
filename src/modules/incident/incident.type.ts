@@ -14,10 +14,16 @@ export type IncidentDetailResult = IncidentPreviewResult & {
   time_end: Date;
 };
 
+export type IncidentAttachment = {
+  uri: string;
+};
+
+export type IncidentReportPreview = {
+  id: string;
+  description: string;
+  attachments: IncidentAttachment[];
+};
+
 export type IncidentSelection = IncidentDetailResult & {
-  reports: {
-    id: string;
-    description: string;
-    attachments: { uri: string }[];
-  }[];
+  reports: IncidentReportPreview[];
 };
