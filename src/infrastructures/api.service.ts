@@ -7,11 +7,6 @@ import { LoggerUtil } from 'src/utils/logger.util';
 @Injectable()
 export class ApiService {
   private readonly logger: LoggerUtil;
-  private readonly requestHeaders = {
-    headers: {
-      'User-Agent': 'TogetherSafe/1.0 (iqmalak21@if.unjani.ac.id)',
-    },
-  };
 
   public constructor() {
     this.logger = new LoggerUtil(this.constructor.name);
@@ -34,7 +29,11 @@ export class ApiService {
 
   private async sendRequest<TGeocode>(url: string): Promise<TGeocode> {
     try {
-      const result = await axios.get<TGeocode>(url, this.requestHeaders);
+      const result = await axios.get<TGeocode>(url, {
+        headers: {
+          'User-Agent': 'TogetherSafe/1.0 (iqmalak21@if.unjani.ac.id)',
+        },
+      });
       return result.data;
     } catch (e) {
       throw handleError(e, this.logger);
