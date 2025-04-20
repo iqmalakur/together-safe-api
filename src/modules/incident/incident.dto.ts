@@ -1,22 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, Matches } from 'class-validator';
+import { IsUUID } from 'class-validator';
 import { ReportPreviewDto } from '../report/report.dto';
-
-export class IncidentQueryDto {
-  @ApiProperty({ example: '-6.9175' })
-  @IsNotEmpty({ message: 'latitude wajib diisi' })
-  @Matches(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)+$/, {
-    message: 'latitude tidak valid',
-  })
-  public lat: string;
-
-  @ApiProperty({ example: '107.6191' })
-  @IsNotEmpty({ message: 'longitude wajib diisi' })
-  @Matches(/^[-+]?((1[0-7]\d)|([1-9]?\d))(\.\d+)?$|^[-+]?180(\.0+)?$/, {
-    message: 'longitude tidak valid',
-  })
-  public lon: string;
-}
 
 export class IncidentResDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })

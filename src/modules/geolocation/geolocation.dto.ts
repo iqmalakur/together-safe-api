@@ -1,6 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
+export class LatLonQueryDto {
+  @ApiProperty({ example: '-6.9175' })
+  @IsNotEmpty({ message: 'latitude wajib diisi' })
+  @Matches(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)+$/, {
+    message: 'latitude tidak valid',
+  })
+  public lat: string;
+
+  @ApiProperty({ example: '107.6191' })
+  @IsNotEmpty({ message: 'longitude wajib diisi' })
+  @Matches(/^[-+]?((1[0-7]\d)|([1-9]?\d))(\.\d+)?$|^[-+]?180(\.0+)?$/, {
+    message: 'longitude tidak valid',
+  })
+  public lon: string;
+}
+
 export class GeocodingQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
   @IsString({
