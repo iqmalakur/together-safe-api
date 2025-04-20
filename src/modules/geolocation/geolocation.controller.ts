@@ -6,8 +6,10 @@ import {
   GeocodingResDto,
   GeocodingQueryDto,
   SafeRouteQueryDto,
+  LatLonQueryDto,
 } from './geolocation.dto';
 import {
+  ApiLocation,
   ApiSafeRoute,
   ApiSearch,
 } from 'src/decorators/api-geolocation.decorator';
@@ -28,6 +30,17 @@ export class GeolocationController extends AbstractLogger {
   ): Promise<GeocodingResDto[]> {
     if (queryParam.q === '') return [];
     return this.service.handleSearchLocation(queryParam.q);
+  }
+
+  @Get('location')
+  @HttpCode(HttpStatus.OK)
+  @ApiLocation()
+  public async getLocation(
+    @Query() queryParam: LatLonQueryDto,
+  ): Promise<GeocodingResDto> {
+    const latitude = parseFloat(queryParam.lat);
+    const longitude = parseFloat(queryParam.lon);
+    return this.service.handleGetLocation(latitude, longitude);
   }
 
   @Get('safe-route')

@@ -26,6 +26,19 @@ export class GeolocationService extends AbstractLogger {
     return result;
   }
 
+  public async handleGetLocation(
+    latitude: number,
+    longitude: number,
+  ): Promise<GeocodingResDto> {
+    const result = await this.apiService.reverseGeocode(latitude, longitude);
+    return {
+      name: result.name,
+      fullName: result.display_name,
+      latitude: parseFloat(result.lat),
+      longitude: parseFloat(result.lon),
+    };
+  }
+
   public async handleGetSafeRoute(
     start: string,
     end: string,

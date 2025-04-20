@@ -26,6 +26,25 @@ export const ApiSearch = (): MethodDecorator => {
   );
 };
 
+export const ApiLocation = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get location detail',
+      description: 'get location information based on latitude and longitude',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'location result',
+      type: GeocodingResDto,
+    }),
+    ApiBadRequest(
+      'latitude tidak valid',
+      'missing or invalid latitude/longitude',
+    ),
+    ApiServerError(),
+  );
+};
+
 export const ApiSafeRoute = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({

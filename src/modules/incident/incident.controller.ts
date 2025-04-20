@@ -5,7 +5,6 @@ import {
   CategoryResDto,
   IncidentDetailResDto,
   IncidentParamDto,
-  IncidentQueryDto,
   IncidentResDto,
 } from './incident.dto';
 import {
@@ -16,6 +15,7 @@ import {
 } from '../../decorators/api-incident.decorator';
 import { ReportPreviewDto } from '../report/report.dto';
 import { AbstractLogger } from '../shared/abstract-logger';
+import { LatLonQueryDto } from '../geolocation/geolocation.dto';
 
 @Controller('incident')
 @ApiTags('Incident')
@@ -27,7 +27,7 @@ export class IncidentController extends AbstractLogger {
   @Get()
   @ApiIncident()
   public async getNearbyIncident(
-    @Query() query: IncidentQueryDto,
+    @Query() query: LatLonQueryDto,
   ): Promise<IncidentResDto[]> {
     const latitude = parseFloat(query.lat);
     const longitude = parseFloat(query.lon);
