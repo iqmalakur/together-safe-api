@@ -42,25 +42,13 @@ export class GeolocationService extends AbstractLogger {
       endLon,
     );
 
-    const routes: number[][] = [];
+    const routes: number[][][] = [];
 
     routeResult.forEach((route) => {
       const json = JSON.parse(route.geojson) as Geometry;
-      json.coordinates.forEach((coordinate) => {
-        const lastCoordinate = routes[routes.length - 1];
-
-        if (
-          routes.length == 0 ||
-          !this.isCoordinateEquals(coordinate, lastCoordinate)
-        )
-          routes.push(coordinate);
-      });
+      routes.push(json.coordinates);
     });
 
     return { routes };
-  }
-
-  private isCoordinateEquals(first: number[], second: number[]): boolean {
-    return first[0] === second[0] && first[1] === second[1];
   }
 }

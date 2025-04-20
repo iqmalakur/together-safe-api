@@ -51,7 +51,12 @@ export class SafeRouteQueryDto {
 
 export class SafeRouteResDto {
   @ApiProperty({
-    example: [[-6.887301617466124, 107.52252981811685]],
+    example: [
+      [
+        [107.5262377, -6.8869031],
+        [107.5262283, -6.8866081],
+      ],
+    ],
   })
-  public readonly routes: number[][];
+  public readonly routes: number[][][];
 }

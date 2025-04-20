@@ -7,7 +7,10 @@ import {
   GeocodingQueryDto,
   SafeRouteQueryDto,
 } from './geolocation.dto';
-import { ApiSearch } from 'src/decorators/api-geolocation.decorator';
+import {
+  ApiSafeRoute,
+  ApiSearch,
+} from 'src/decorators/api-geolocation.decorator';
 import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('geolocation')
@@ -29,7 +32,7 @@ export class GeolocationController extends AbstractLogger {
 
   @Get('safe-route')
   @HttpCode(HttpStatus.OK)
-  // @ApiSafeRoute()
+  @ApiSafeRoute()
   public async getSafeRoute(
     @Query() queryParam: SafeRouteQueryDto,
   ): Promise<SafeRouteResDto> {
