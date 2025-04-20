@@ -4,14 +4,8 @@ import { UserAuthSelection, UserCreateSelection } from './auth.type';
 import { Prisma } from '@prisma/client';
 import { handleError } from 'src/utils/common.util';
 
-export interface IAuthRepository {
-  findUserByEmail(email: string): Promise<UserAuthSelection | null>;
-  isUserExist(email: string): Promise<boolean>;
-  createUser(user: Prisma.UserCreateInput): Promise<UserCreateSelection>;
-}
-
 @Injectable()
-export class AuthRepository extends BaseRepository implements IAuthRepository {
+export class AuthRepository extends BaseRepository {
   public async findUserByEmail(
     email: string,
   ): Promise<UserAuthSelection | null> {

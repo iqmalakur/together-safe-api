@@ -1,20 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { getFormattedDate, getTimeString } from '../../utils/date.util';
-import { getLocationName } from '../../utils/api.util';
 import {
   CategoryResDto,
   IncidentDetailResDto,
   IncidentResDto,
 } from './incident.dto';
-import { IIncidentRepository, IncidentRepository } from './incident.repository';
-import { BaseService } from '../shared/base.service';
+import { IncidentRepository } from './incident.repository';
 import { ReportPreviewDto } from '../report/report.dto';
 import { getFileUrl } from 'src/utils/common.util';
+import { AbstractLogger } from '../shared/abstract-logger';
+import { ApiService } from 'src/infrastructures/api.service';
 
 @Injectable()
-export class IncidentService extends BaseService<IIncidentRepository> {
-  public constructor(repository: IncidentRepository) {
-    super(repository);
+export class IncidentService extends AbstractLogger {
+  public constructor(
+    private readonly apiService: ApiService,
+    private readonly repository: IncidentRepository,
+  ) {
+    super();
   }
 
   public async handleGetNearbyIncident(
@@ -54,12 +57,17 @@ export class IncidentService extends BaseService<IIncidentRepository> {
       mediaUrls.push(...urls);
     });
 
+    const location = await this.apiService.reverseGeocode(
+      incident.latitude,
+      incident.longitude,
+    );
+
     return {
       id: incident.id,
       category: incident.category,
       status: incident.status,
       riskLevel: incident.risk_level,
-      location: await getLocationName(incident.latitude, incident.longitude),
+      location: location.display_name,
       date: this.getDateRange(incident.date_start, incident.date_end),
       time: this.getTimeRange(incident.time_start, incident.time_end),
       reports,

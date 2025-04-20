@@ -9,21 +9,8 @@ import { handleError } from 'src/utils/common.util';
 import { ReportPreviewResult } from '../report/report.type';
 import { IncidentCategory } from '@prisma/client';
 
-export interface IIncidentRepository {
-  findNearbyIncidents(
-    latitude: number,
-    longitude: number,
-  ): Promise<IncidentPreviewResult[]>;
-  findIncidentById(id: string): Promise<IncidentSelection | null>;
-  getReportsByIncidentId(incidentId: string): Promise<ReportPreviewResult[]>;
-  getCategories(): Promise<IncidentCategory[]>;
-}
-
 @Injectable()
-export class IncidentRepository
-  extends BaseRepository
-  implements IIncidentRepository
-{
+export class IncidentRepository extends BaseRepository {
   public async findNearbyIncidents(
     latitude: number,
     longitude: number,

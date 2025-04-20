@@ -4,24 +4,25 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { BaseService } from '../shared/base.service';
-import { IReportRepository, ReportRepository } from './report.repository';
+import { ReportRepository } from './report.repository';
 import { ReportPreviewDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
-import { getLocationName } from 'src/utils/api.util';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
+import { AbstractLogger } from '../shared/abstract-logger';
+import { ApiService } from 'src/infrastructures/api.service';
 
 @Injectable()
-export class ReportService extends BaseService<IReportRepository> {
+export class ReportService extends AbstractLogger {
   public constructor(
+    private readonly apiService: ApiService,
     private readonly uploadService: UploadService,
-    repository: ReportRepository,
+    private readonly repository: ReportRepository,
   ) {
-    super(repository);
+    super();
   }
 
   public async handleGetUserReport(
@@ -55,7 +56,7 @@ export class ReportService extends BaseService<IReportRepository> {
     }));
 
     const { latitude, longitude } = result;
-    const location = await getLocationName(latitude, longitude);
+    const location = await this.apiService.reverseGeocode(latitude, longitude);
 
     const attachments = result.attachments.map(({ uri }) => getFileUrl(uri));
 
@@ -81,7 +82,7 @@ export class ReportService extends BaseService<IReportRepository> {
       longitude: longitude,
       incident,
       comments,
-      location,
+      location: location.display_name,
       upvote,
       downvote,
       attachments,

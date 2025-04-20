@@ -10,7 +10,6 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { BaseController } from '../shared/base.controller';
 import { ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -28,10 +27,11 @@ import {
   ApiUserReport,
 } from 'src/decorators/api-report.decorator';
 import { SuccessCreateDto } from '../shared/shared.dto';
+import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('report')
 @ApiTags('Report')
-export class ReportController extends BaseController {
+export class ReportController extends AbstractLogger {
   public constructor(private readonly service: ReportService) {
     super();
   }

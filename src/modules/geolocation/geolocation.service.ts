@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '../shared/base.service';
-import {
-  GeolocationRepository,
-  IGeolocationRepository,
-} from './geolocation.repository';
-import { GeoJSONFeatureDTO, GeocodingResDto } from './geolocation.dto';
+import { GeolocationRepository } from './geolocation.repository';
+import { SafeRouteResDto, GeocodingResDto } from './geolocation.dto';
 import { Geometry } from './geolocation.type';
+import { AbstractLogger } from '../shared/abstract-logger';
+import { ApiService } from 'src/infrastructures/api.service';
 
 @Injectable()
-export class GeolocationService extends BaseService<IGeolocationRepository> {
-  public constructor(repository: GeolocationRepository) {
-    super(repository);
+export class GeolocationService extends AbstractLogger {
+  public constructor(
+    private readonly apiService: ApiService,
+    private readonly repository: GeolocationRepository,
+  ) {
+    super();
   }
 
   public async handleSearchLocation(query: string): Promise<GeocodingResDto[]> {
-    const locations = await this.repository.findLocation(query);
+    const locations = await this.apiService.geocode(query);
     const result: GeocodingResDto[] = locations.map((location) => ({
       name: location.name,
       fullName: location.display_name,
-      latitude: location.lat,
-      longitude: location.lon,
+      latitude: parseFloat(location.lat),
+      longitude: parseFloat(location.lon),
     }));
 
     return result;
@@ -28,7 +29,7 @@ export class GeolocationService extends BaseService<IGeolocationRepository> {
   public async handleGetSafeRoute(
     start: string,
     end: string,
-  ): Promise<GeoJSONFeatureDTO> {
+  ): Promise<SafeRouteResDto> {
     const [startLat, startLon] = start
       .split(',')
       .map((coord) => parseFloat(coord));
@@ -41,32 +42,13 @@ export class GeolocationService extends BaseService<IGeolocationRepository> {
       endLon,
     );
 
-    const coordinates: number[][] = [];
+    const routes: number[][][] = [];
 
     routeResult.forEach((route) => {
       const json = JSON.parse(route.geojson) as Geometry;
-      json.coordinates.forEach((coordinate) => {
-        const lastCoordinate = coordinates[coordinates.length - 1];
-
-        if (
-          coordinates.length == 0 ||
-          !this.isCoordinateEquals(coordinate, lastCoordinate)
-        )
-          coordinates.push(coordinate);
-      });
+      routes.push(json.coordinates);
     });
 
-    return {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates,
-      },
-      properties: {},
-    };
-  }
-
-  private isCoordinateEquals(first: number[], second: number[]): boolean {
-    return first[0] === second[0] && first[1] === second[1];
+    return { routes };
   }
 }

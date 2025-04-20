@@ -1,7 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiBadRequest, ApiServerError } from './api-response.decorator';
-import { GeocodingResDto } from 'src/modules/geolocation/geolocation.dto';
+import {
+  GeocodingResDto,
+  SafeRouteResDto,
+} from 'src/modules/geolocation/geolocation.dto';
 
 export const ApiSearch = (): MethodDecorator => {
   return applyDecorators(
@@ -18,6 +21,25 @@ export const ApiSearch = (): MethodDecorator => {
     ApiBadRequest(
       "query parameter 'q' wajib diisi sebagai query pencarian",
       'missing or invalid search query',
+    ),
+    ApiServerError(),
+  );
+};
+
+export const ApiSafeRoute = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get safe route',
+      description: 'get recommended safe route between two coordinates',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'safe route result',
+      type: SafeRouteResDto,
+    }),
+    ApiBadRequest(
+      "query parameter 'startLatLon' wajib diisi sebagai lokasi awal",
+      'missing or invalid coordinates',
     ),
     ApiServerError(),
   );

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import {
-  RelatedIncident,
+  ReportRelatedIncident,
   ReportDetailResult,
   ReportInput,
   ReportPreviewResult,
@@ -11,28 +11,8 @@ import {
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
-export interface IReportRepository {
-  getReportByUserEmail(email: string): Promise<ReportPreviewResult[]>;
-  getReportById(id: string): Promise<ReportDetailResult | null>;
-  checkCategory(categoryId: number): Promise<boolean>;
-  createReport(
-    incident: RelatedIncident,
-    report: ReportInput,
-  ): Promise<ReportResult>;
-  findRelatedIncident(report: ReportInput): Promise<RelatedIncident | null>;
-  createIncident(report: ReportInput): Promise<RelatedIncident>;
-  checkReportEligibility(
-    userEmail: string,
-    incidentId: string,
-    date: Date,
-  ): Promise<boolean>;
-}
-
 @Injectable()
-export class ReportRepository
-  extends BaseRepository
-  implements IReportRepository
-{
+export class ReportRepository extends BaseRepository {
   private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
   private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
   private readonly RADIUS_METERS = 100; // Radius from centroid
@@ -106,7 +86,7 @@ export class ReportRepository
   }
 
   public async createReport(
-    incident: RelatedIncident,
+    incident: ReportRelatedIncident,
     report: ReportInput,
   ): Promise<ReportResult> {
     try {
@@ -179,11 +159,13 @@ export class ReportRepository
 
   public async findRelatedIncident(
     report: ReportInput,
-  ): Promise<RelatedIncident | null> {
+  ): Promise<ReportRelatedIncident | null> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
+      const result = await this.prisma.$queryRawUnsafe<
+        ReportRelatedIncident[]
+      >(`
         SELECT
           i."id"::text,
           i."date_start",
@@ -208,11 +190,15 @@ export class ReportRepository
     }
   }
 
-  public async createIncident(report: ReportInput): Promise<RelatedIncident> {
+  public async createIncident(
+    report: ReportInput,
+  ): Promise<ReportRelatedIncident> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<RelatedIncident[]>(`
+      const result = await this.prisma.$queryRawUnsafe<
+        ReportRelatedIncident[]
+      >(`
         INSERT INTO "Incident" (
           category_id,
           risk_level,
@@ -262,7 +248,7 @@ export class ReportRepository
 
   private async updateIncident(
     tx: Prisma.TransactionClient,
-    incident: RelatedIncident,
+    incident: ReportRelatedIncident,
     report: ReportResult,
   ) {
     let data = '';

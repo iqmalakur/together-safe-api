@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
-import { Geometry } from './geolocation.type';
 
 export class GeocodingQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
@@ -50,8 +49,14 @@ export class SafeRouteQueryDto {
   public readonly endLatLon: string;
 }
 
-export class GeoJSONFeatureDTO {
-  public readonly type: string;
-  public readonly geometry: Geometry;
-  public readonly properties: any;
+export class SafeRouteResDto {
+  @ApiProperty({
+    example: [
+      [
+        [107.5262377, -6.8869031],
+        [107.5262283, -6.8866081],
+      ],
+    ],
+  })
+  public readonly routes: number[][][];
 }
