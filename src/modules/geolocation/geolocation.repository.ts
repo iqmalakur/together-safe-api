@@ -24,16 +24,29 @@ export class GeolocationRepository extends BaseRepository {
           ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint(${endLon}, ${endLat}), 4326)
           LIMIT 1
         ),
-        route AS (
-          SELECT * FROM pgr_astar(
-            'SELECT gid as id, source, target, cost, reverse_cost, x1, y1, x2, y2 FROM ways',
+        routing AS (
+          SELECT seq, edge FROM pgr_aStar(
+            $$
+              SELECT 
+                gid AS id, source, target,
+                adjust_cost(i.risk_level, cost) AS cost,
+                adjust_cost(i.risk_level, reverse_cost) AS reverse_cost,
+                x1, y1, x2, y2
+              FROM ways w
+              LEFT JOIN LATERAL (
+                SELECT risk_level FROM "Incident" 
+                WHERE ST_Intersects(location_area, w.the_geom) 
+                ORDER BY risk_level ASC 
+                LIMIT 1
+              ) i ON TRUE
+            $$,
             (SELECT id FROM start_vertex),
             (SELECT id FROM end_vertex),
-            directed := false
+            directed := TRUE
           )
         )
-      SELECT ST_AsGeoJSON(w.the_geom) AS geojson
-        FROM route r
+      SELECT ST_AsGeoJSON(w.the_geom) AS geojson 
+      FROM routing r
       JOIN ways w ON r.edge = w.gid
       ORDER BY r.seq;
     `;

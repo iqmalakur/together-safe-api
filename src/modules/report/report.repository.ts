@@ -15,7 +15,7 @@ import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 export class ReportRepository extends BaseRepository {
   private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
   private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
-  private readonly RADIUS_METERS = 100; // Radius from centroid
+  private readonly RADIUS_METERS = 10; // Radius from centroid
   private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
   private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
 

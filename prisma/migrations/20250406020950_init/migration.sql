@@ -131,3 +131,15 @@ USING GIST (location_point);
 CREATE INDEX incident_location_area_idx
 ON "Incident"
 USING GIST (location_area);
+
+CREATE OR REPLACE FUNCTION adjust_cost(risk_level "RiskLevel", cost DOUBLE PRECISION)
+RETURNS DOUBLE PRECISION AS $$
+BEGIN
+    RETURN cost * CASE risk_level
+        WHEN 'high' THEN 3
+        WHEN 'medium' THEN 2
+        WHEN 'low' THEN 1.5
+        ELSE 1
+    END;
+END;
+$$ LANGUAGE plpgsql;
