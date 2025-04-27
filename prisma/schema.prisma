@@ -110,6 +110,15 @@ model Vote {
   @@id([userEmail, reportId])
 }
 
+model NominatimLocation {
+  osm_id       BigInt @id
+  name         String @db.VarChar(255)
+  display_name String @db.VarChar(255)
+  lat          String @db.VarChar(255)
+  lon          String @db.VarChar(255)
+  location     Unsupported("geometry(Polygon, 4326)")
+}
+
 enum VoteType {
   upvote
   downvote
