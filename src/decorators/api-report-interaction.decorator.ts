@@ -49,6 +49,31 @@ export const ApiComment = (): MethodDecorator => {
   );
 };
 
+export const ApiUpdateComment = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'update a comment on a report',
+      description:
+        'allow the authenticated user to update a comment on a specific report.',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'comment successfully updated',
+      type: CommentResDto,
+    }),
+    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiBadRequest(
+      'komentar tidak boleh kosong',
+      'invalid comment format or report id',
+    ),
+    ApiNotFound(
+      'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+      'the comment was not found or is not owned by the user',
+    ),
+    ApiServerError(),
+  );
+};
+
 export const ApiDeleteComment = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
@@ -62,10 +87,7 @@ export const ApiDeleteComment = (): MethodDecorator => {
       type: CommentResDto,
     }),
     ApiUnauthorized('token tidak valid', 'token is not valid'),
-    ApiBadRequest(
-      'token harus diisi',
-      'token is not provided or not in a valid format',
-    ),
+    ApiBadRequest('id komentar tidak valid', 'invalid report id'),
     ApiNotFound(
       'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
       'the comment was not found or is not owned by the user',

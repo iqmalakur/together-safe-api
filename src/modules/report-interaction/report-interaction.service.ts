@@ -41,6 +41,31 @@ export class ReportInteractionService extends AbstractLogger {
     };
   }
 
+  public async handleUpdateComment(
+    userEmail: string,
+    commentId: number,
+    comment: string,
+  ): Promise<CommentResDto> {
+    const result = await this.repository.editComment(
+      userEmail,
+      commentId,
+      comment,
+    );
+
+    if (!result) {
+      throw new NotFoundException(
+        'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+      );
+    }
+
+    return {
+      id: result.id,
+      userEmail: result.userEmail,
+      reportId: result.reportId,
+      comment: result.comment,
+    };
+  }
+
   public async handleDeleteComment(
     userEmail: string,
     commentId: number,

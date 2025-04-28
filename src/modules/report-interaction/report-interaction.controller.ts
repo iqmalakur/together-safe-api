@@ -25,6 +25,7 @@ import { VoteType } from '@prisma/client';
 import {
   ApiComment,
   ApiDeleteComment,
+  ApiUpdateComment,
   ApiVote,
 } from 'src/decorators/api-report-interaction.decorator';
 
@@ -69,6 +70,24 @@ export class ReportInteractionController extends AbstractLogger {
     const { comment } = body;
 
     return this.service.handleCreateComment(userEmail, reportId, comment);
+  }
+
+  @Patch('comment/:id')
+  @ApiSecurity('jwt')
+  @HttpCode(HttpStatus.OK)
+  @ApiUpdateComment()
+  public async updateComment(
+    @Request() req: AuthRequest,
+    @Param() param: CommentParamDto,
+    @Body() body: CommentReqDto,
+  ): Promise<CommentResDto> {
+    this.logger.debug('request body: ', body);
+
+    const userEmail = req.user.email;
+    const id = parseInt(param.id);
+    const { comment } = body;
+
+    return this.service.handleUpdateComment(userEmail, id, comment);
   }
 
   @Delete('comment/:id')
