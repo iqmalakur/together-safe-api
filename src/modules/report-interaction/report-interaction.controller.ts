@@ -7,13 +7,22 @@ import {
   HttpStatus,
   Param,
   Patch,
+  Post,
   Request,
 } from '@nestjs/common';
 import { ReportInteractionService } from './report-interaction.service';
-import { VoteParamDto, VoteReqDto, VoteResDto } from './report-interaction.dto';
+import {
+  CommentReqDto,
+  ReportIdParamDto,
+  VoteReqDto,
+  VoteResDto,
+} from './report-interaction.dto';
 import { AuthRequest } from '../shared/shared.type';
 import { VoteType } from '@prisma/client';
-import { ApiVote } from 'src/decorators/api-report-interaction.decorator';
+import {
+  ApiComment,
+  ApiVote,
+} from 'src/decorators/api-report-interaction.decorator';
 
 @Controller('report/:reportId')
 @ApiTags('Report Interaction')
@@ -28,7 +37,7 @@ export class ReportInteractionController extends AbstractLogger {
   @ApiVote()
   public async vote(
     @Request() req: AuthRequest,
-    @Param() param: VoteParamDto,
+    @Param() param: ReportIdParamDto,
     @Body() body: VoteReqDto,
   ): Promise<VoteResDto> {
     this.logger.debug('request body: ', body);
@@ -38,5 +47,23 @@ export class ReportInteractionController extends AbstractLogger {
     const { voteType } = body;
 
     return this.service.handleVote(userEmail, reportId, voteType as VoteType);
+  }
+
+  @Post('comment')
+  @ApiSecurity('jwt')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiComment()
+  public async comment(
+    @Request() req: AuthRequest,
+    @Param() param: ReportIdParamDto,
+    @Body() body: CommentReqDto,
+  ): Promise<VoteResDto> {
+    this.logger.debug('request body: ', body);
+
+    const userEmail = req.user.email;
+    const { reportId } = param;
+    const { comment } = body;
+
+    return this.service.handleComment(userEmail, reportId, comment);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { Vote, VoteType } from '@prisma/client';
+import { Vote, VoteType, Comment } from '@prisma/client';
 
 @Injectable()
 export class ReportInteractionRepository extends BaseRepository {
@@ -25,6 +25,24 @@ export class ReportInteractionRepository extends BaseRepository {
           type,
         },
         update: { type },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async createComment(
+    userEmail: string,
+    reportId: string,
+    comment: string,
+  ): Promise<Comment> {
+    try {
+      return this.prisma.comment.create({
+        data: {
+          userEmail,
+          reportId,
+          comment,
+        },
       });
     } catch (e) {
       throw handleError(e, this.logger);
