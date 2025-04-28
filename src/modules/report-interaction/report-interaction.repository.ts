@@ -48,4 +48,54 @@ export class ReportInteractionRepository extends BaseRepository {
       throw handleError(e, this.logger);
     }
   }
+
+  public async editComment(
+    userEmail: string,
+    commentId: number,
+    newComment: string,
+  ): Promise<Comment | null> {
+    try {
+      const comment = await this.prisma.comment.findFirst({
+        where: {
+          userEmail,
+          id: commentId,
+        },
+      });
+
+      if (!comment) {
+        return null;
+      }
+
+      return this.prisma.comment.update({
+        where: { id: commentId },
+        data: { comment: newComment, updatedAt: new Date() },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async deleteComment(
+    userEmail: string,
+    commentId: number,
+  ): Promise<Comment | null> {
+    try {
+      const comment = await this.prisma.comment.findFirst({
+        where: {
+          userEmail,
+          id: commentId,
+        },
+      });
+
+      if (!comment) {
+        return null;
+      }
+
+      return this.prisma.comment.delete({
+        where: { id: commentId },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
 }
