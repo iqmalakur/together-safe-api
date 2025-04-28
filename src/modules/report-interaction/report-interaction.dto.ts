@@ -1,11 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { VoteType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
 export class ReportIdParamDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   @IsUUID(4, { message: 'id laporan tidak valid' })
   public reportId: string;
+}
+
+export class CommentParamDto {
+  @ApiProperty({ example: '1' })
+  @IsNumberString({}, { message: 'id komentar tidak valid' })
+  public id: string;
 }
 
 export class VoteReqDto {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
 import { CommentResDto, VoteResDto } from './report-interaction.dto';
@@ -23,7 +23,7 @@ export class ReportInteractionService extends AbstractLogger {
     return result as VoteResDto;
   }
 
-  public async handleComment(
+  public async handleCreateComment(
     userEmail: string,
     reportId: string,
     comment: string,
@@ -33,6 +33,26 @@ export class ReportInteractionService extends AbstractLogger {
       reportId,
       comment,
     );
+    return {
+      id: result.id,
+      userEmail: result.userEmail,
+      reportId: result.reportId,
+      comment: result.comment,
+    };
+  }
+
+  public async handleDeleteComment(
+    userEmail: string,
+    commentId: number,
+  ): Promise<CommentResDto> {
+    const result = await this.repository.deleteComment(userEmail, commentId);
+
+    if (!result) {
+      throw new NotFoundException(
+        'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+      );
+    }
+
     return {
       id: result.id,
       userEmail: result.userEmail,
