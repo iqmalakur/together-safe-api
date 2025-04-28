@@ -10,9 +10,17 @@ import { AuthModule } from './modules/auth/auth.module';
 import { GeolocationModule } from './modules/geolocation/geolocation.module';
 import { ReportModule } from './modules/report/report.module';
 import { TokenMiddleware } from './middlewares/token.middleware';
+import { ReportInteractionModule } from './modules/report-interaction/report-interaction.module';
+import { ReportInteractionController } from './modules/report-interaction/report-interaction.controller';
 
 @Module({
-  imports: [AuthModule, IncidentModule, ReportModule, GeolocationModule],
+  imports: [
+    AuthModule,
+    IncidentModule,
+    ReportModule,
+    ReportInteractionModule,
+    GeolocationModule,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -23,6 +31,7 @@ export class AppModule implements NestModule {
       .forRoutes(
         { path: 'report', method: RequestMethod.GET },
         { path: 'report', method: RequestMethod.POST },
+        ReportInteractionController,
       );
   }
 }
