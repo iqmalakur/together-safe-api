@@ -65,7 +65,7 @@ export class ReportService extends AbstractLogger {
 
     result.votes.forEach((vote) => {
       if (vote.type === 'upvote') upvote++;
-      else downvote++;
+      else if (vote.type === 'downvote') downvote++;
     });
 
     return {
