@@ -30,6 +30,7 @@ import {
 } from 'src/decorators/api-report-interaction.decorator';
 
 @Controller('report')
+@ApiSecurity('jwt')
 @ApiTags('Report Interaction')
 export class ReportInteractionController extends AbstractLogger {
   public constructor(private readonly service: ReportInteractionService) {
@@ -37,7 +38,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Patch(':reportId/vote')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiVote()
   public async vote(
@@ -55,7 +55,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Post(':reportId/comment')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.CREATED)
   @ApiComment()
   public async createComment(
@@ -73,7 +72,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Patch('comment/:id')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiUpdateComment()
   public async updateComment(
@@ -91,7 +89,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Delete('comment/:id')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiDeleteComment()
   public async deleteComment(
