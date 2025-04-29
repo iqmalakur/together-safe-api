@@ -10,10 +10,27 @@ export class ReportInteractionService extends AbstractLogger {
     super();
   }
 
+  public async handleUserVote(
+    userEmail: string,
+    reportId: string,
+  ): Promise<VoteResDto> {
+    const result = await this.repository.findUserVote(userEmail, reportId);
+
+    if (!result) {
+      return {
+        userEmail,
+        reportId,
+        voteType: null as unknown as undefined,
+      };
+    }
+
+    return result as VoteResDto;
+  }
+
   public async handleVote(
     userEmail: string,
     reportId: string,
-    voteType: VoteType,
+    voteType?: VoteType,
   ): Promise<VoteResDto> {
     const result = await this.repository.createOrUpdateVote(
       userEmail,

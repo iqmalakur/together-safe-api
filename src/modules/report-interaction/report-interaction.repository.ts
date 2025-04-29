@@ -5,6 +5,19 @@ import { Vote, VoteType, Comment } from '@prisma/client';
 
 @Injectable()
 export class ReportInteractionRepository extends BaseRepository {
+  public async findUserVote(
+    userEmail: string,
+    reportId: string,
+  ): Promise<Vote | null> {
+    try {
+      return this.prisma.vote.findFirst({
+        where: { userEmail, reportId },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
   public async createOrUpdateVote(
     userEmail: string,
     reportId: string,

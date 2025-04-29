@@ -11,6 +11,27 @@ import {
   VoteResDto,
 } from 'src/modules/report-interaction/report-interaction.dto';
 
+export const ApiUserVote = (): MethodDecorator => {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'get user vote on a report',
+      description:
+        'retrieve the vote submitted by the authenticated user for a specific report.',
+    }),
+    ApiResponse({
+      status: 200,
+      description: 'user vote retrieved successfully',
+      type: VoteResDto,
+    }),
+    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiBadRequest(
+      'token harus diisi atau reportId tidak valid',
+      'token is missing or reportId is invalid',
+    ),
+    ApiServerError(),
+  );
+};
+
 export const ApiVote = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({

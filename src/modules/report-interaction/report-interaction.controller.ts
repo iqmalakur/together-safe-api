@@ -4,6 +4,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -26,6 +27,7 @@ import {
   ApiComment,
   ApiDeleteComment,
   ApiUpdateComment,
+  ApiUserVote,
   ApiVote,
 } from 'src/decorators/api-report-interaction.decorator';
 
@@ -35,6 +37,19 @@ import {
 export class ReportInteractionController extends AbstractLogger {
   public constructor(private readonly service: ReportInteractionService) {
     super();
+  }
+
+  @Get(':reportId/vote')
+  @HttpCode(HttpStatus.OK)
+  @ApiUserVote()
+  public async userVote(
+    @Request() req: AuthRequest,
+    @Param() param: ReportIdParamDto,
+  ): Promise<VoteResDto> {
+    const userEmail = req.user.email;
+    const { reportId } = param;
+
+    return this.service.handleUserVote(userEmail, reportId);
   }
 
   @Patch(':reportId/vote')
