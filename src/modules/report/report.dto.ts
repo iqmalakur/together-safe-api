@@ -62,6 +62,9 @@ export class ReportParamDto {
 }
 
 class ReportUserDto {
+  @ApiProperty({ example: 'john@gmail.com' })
+  public readonly email: string;
+
   @ApiProperty({ example: 'John Marston' })
   public readonly name: string;
 
