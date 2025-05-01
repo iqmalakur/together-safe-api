@@ -4,6 +4,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -26,18 +27,32 @@ import {
   ApiComment,
   ApiDeleteComment,
   ApiUpdateComment,
+  ApiUserVote,
   ApiVote,
 } from 'src/decorators/api-report-interaction.decorator';
 
 @Controller('report')
+@ApiSecurity('jwt')
 @ApiTags('Report Interaction')
 export class ReportInteractionController extends AbstractLogger {
   public constructor(private readonly service: ReportInteractionService) {
     super();
   }
 
+  @Get(':reportId/vote')
+  @HttpCode(HttpStatus.OK)
+  @ApiUserVote()
+  public async userVote(
+    @Request() req: AuthRequest,
+    @Param() param: ReportIdParamDto,
+  ): Promise<VoteResDto> {
+    const userEmail = req.user.email;
+    const { reportId } = param;
+
+    return this.service.handleUserVote(userEmail, reportId);
+  }
+
   @Patch(':reportId/vote')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiVote()
   public async vote(
@@ -55,14 +70,13 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Post(':reportId/comment')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.CREATED)
   @ApiComment()
   public async createComment(
     @Request() req: AuthRequest,
     @Param() param: ReportIdParamDto,
     @Body() body: CommentReqDto,
-  ): Promise<VoteResDto> {
+  ): Promise<CommentResDto> {
     this.logger.debug('request body: ', body);
 
     const userEmail = req.user.email;
@@ -73,7 +87,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Patch('comment/:id')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiUpdateComment()
   public async updateComment(
@@ -91,7 +104,6 @@ export class ReportInteractionController extends AbstractLogger {
   }
 
   @Delete('comment/:id')
-  @ApiSecurity('jwt')
   @HttpCode(HttpStatus.OK)
   @ApiDeleteComment()
   public async deleteComment(

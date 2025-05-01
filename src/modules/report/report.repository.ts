@@ -47,6 +47,7 @@ export class ReportRepository extends BaseRepository {
         },
         user: {
           select: {
+            email: true,
             name: true,
             profilePhoto: true,
             reputation: true,
@@ -62,12 +63,14 @@ export class ReportRepository extends BaseRepository {
             updatedAt: true,
             user: {
               select: {
+                email: true,
                 name: true,
                 profilePhoto: true,
                 reputation: true,
               },
             },
           },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });

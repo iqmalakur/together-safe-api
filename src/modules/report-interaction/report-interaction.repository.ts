@@ -1,10 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { Vote, VoteType, Comment } from '@prisma/client';
+import { Vote, VoteType } from '@prisma/client';
+import { ReportComment } from './report-interaction.type';
 
 @Injectable()
 export class ReportInteractionRepository extends BaseRepository {
+  public async findUserVote(
+    userEmail: string,
+    reportId: string,
+  ): Promise<Vote | null> {
+    try {
+      return this.prisma.vote.findFirst({
+        where: { userEmail, reportId },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
   public async createOrUpdateVote(
     userEmail: string,
     reportId: string,
@@ -35,13 +49,23 @@ export class ReportInteractionRepository extends BaseRepository {
     userEmail: string,
     reportId: string,
     comment: string,
-  ): Promise<Comment> {
+  ): Promise<ReportComment> {
     try {
       return this.prisma.comment.create({
         data: {
           userEmail,
           reportId,
           comment,
+        },
+        include: {
+          user: {
+            select: {
+              email: true,
+              name: true,
+              profilePhoto: true,
+              reputation: true,
+            },
+          },
         },
       });
     } catch (e) {
@@ -53,7 +77,7 @@ export class ReportInteractionRepository extends BaseRepository {
     userEmail: string,
     commentId: number,
     newComment: string,
-  ): Promise<Comment | null> {
+  ): Promise<ReportComment | null> {
     try {
       const comment = await this.prisma.comment.findFirst({
         where: {
@@ -69,6 +93,16 @@ export class ReportInteractionRepository extends BaseRepository {
       return this.prisma.comment.update({
         where: { id: commentId },
         data: { comment: newComment, updatedAt: new Date() },
+        include: {
+          user: {
+            select: {
+              email: true,
+              name: true,
+              profilePhoto: true,
+              reputation: true,
+            },
+          },
+        },
       });
     } catch (e) {
       throw handleError(e, this.logger);
@@ -78,7 +112,7 @@ export class ReportInteractionRepository extends BaseRepository {
   public async deleteComment(
     userEmail: string,
     commentId: number,
-  ): Promise<Comment | null> {
+  ): Promise<ReportComment | null> {
     try {
       const comment = await this.prisma.comment.findFirst({
         where: {
@@ -93,6 +127,16 @@ export class ReportInteractionRepository extends BaseRepository {
 
       return this.prisma.comment.delete({
         where: { id: commentId },
+        include: {
+          user: {
+            select: {
+              email: true,
+              name: true,
+              profilePhoto: true,
+              reputation: true,
+            },
+          },
+        },
       });
     } catch (e) {
       throw handleError(e, this.logger);

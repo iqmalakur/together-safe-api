@@ -47,19 +47,40 @@ export class CommentReqDto {
   public comment: string;
 }
 
-export class CommentResDto {
-  @ApiProperty({ example: 1 })
-  public id: number;
+export class ReportUserDto {
+  @ApiProperty({ example: 'john@gmail.com' })
+  public readonly email: string;
 
-  @ApiProperty({ example: 'john@example.com' })
-  public userEmail: string;
-
-  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
-  public reportId: string;
+  @ApiProperty({ example: 'John Marston' })
+  public readonly name: string;
 
   @ApiProperty({
     example:
-      'Wah, serem banget! Gue sering lewat sini malem-malem, harus lebih hati-hati nih.',
+      'https://lh3.googleusercontent.com/d/22ZximVkuhxCuS_j_Vve2CKTyHiju0aY=s220',
   })
-  public comment: string;
+  public readonly profilePhoto: string | null;
+
+  @ApiProperty({ example: 10 })
+  public readonly reputation: number;
+}
+
+export class CommentResDto {
+  @ApiProperty({ example: 1 })
+  public readonly id: number;
+
+  @ApiProperty({ example: 'Saya juga melihat kejadian ini' })
+  public readonly comment: string;
+
+  @ApiProperty({
+    example: '2025-01-01T21:30:00.000Z',
+    type: 'string',
+    format: 'date-time',
+  })
+  public readonly createdAt: Date;
+
+  @ApiProperty({ example: false })
+  public readonly isEdited: boolean;
+
+  @ApiProperty({ type: ReportUserDto })
+  public readonly user: ReportUserDto;
 }

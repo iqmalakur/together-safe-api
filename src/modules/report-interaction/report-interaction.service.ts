@@ -3,6 +3,7 @@ import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
 import { CommentResDto, VoteResDto } from './report-interaction.dto';
 import { VoteType } from '@prisma/client';
+import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
 export class ReportInteractionService extends AbstractLogger {
@@ -10,10 +11,27 @@ export class ReportInteractionService extends AbstractLogger {
     super();
   }
 
+  public async handleUserVote(
+    userEmail: string,
+    reportId: string,
+  ): Promise<VoteResDto> {
+    const result = await this.repository.findUserVote(userEmail, reportId);
+
+    if (!result) {
+      return {
+        userEmail,
+        reportId,
+        voteType: null as unknown as undefined,
+      };
+    }
+
+    return result as VoteResDto;
+  }
+
   public async handleVote(
     userEmail: string,
     reportId: string,
-    voteType: VoteType,
+    voteType?: VoteType,
   ): Promise<VoteResDto> {
     const result = await this.repository.createOrUpdateVote(
       userEmail,
@@ -35,9 +53,13 @@ export class ReportInteractionService extends AbstractLogger {
     );
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 
@@ -60,9 +82,13 @@ export class ReportInteractionService extends AbstractLogger {
 
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 
@@ -80,9 +106,13 @@ export class ReportInteractionService extends AbstractLogger {
 
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 }
