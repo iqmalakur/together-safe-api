@@ -76,7 +76,7 @@ export class ReportInteractionController extends AbstractLogger {
     @Request() req: AuthRequest,
     @Param() param: ReportIdParamDto,
     @Body() body: CommentReqDto,
-  ): Promise<VoteResDto> {
+  ): Promise<CommentResDto> {
     this.logger.debug('request body: ', body);
 
     const userEmail = req.user.email;

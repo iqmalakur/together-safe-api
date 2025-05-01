@@ -1,3 +1,8 @@
+import {
+  ReportComment,
+  ReportUserProfile,
+} from '../report-interaction/report-interaction.type';
+
 export type ReportInput = {
   userEmail: string;
   description: string;
@@ -39,27 +44,12 @@ export type ReportIncident = {
   category: ReportCategory;
 };
 
-export type ReportUserProfile = {
-  email: string;
-  name: string;
-  profilePhoto: string | null;
-  reputation: number;
-};
-
 export type ReportAttachment = {
   uri: string;
 };
 
 export type ReportVote = {
   type: string | null;
-};
-
-export type ReportComment = {
-  id: number;
-  comment: string;
-  createdAt: Date;
-  updatedAt: Date;
-  user: ReportUserProfile;
 };
 
 export type ReportDetailResult = {

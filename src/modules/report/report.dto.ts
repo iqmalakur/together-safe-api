@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUUID, Matches } from 'class-validator';
+import {
+  CommentResDto,
+  ReportUserDto,
+} from '../report-interaction/report-interaction.dto';
 
 export class ReportReqDto {
   @ApiProperty({ description: '`1`: Pembegalan, `2`: Kecelakaan' })
@@ -61,44 +65,6 @@ export class ReportParamDto {
   public readonly id: string;
 }
 
-class ReportUserDto {
-  @ApiProperty({ example: 'john@gmail.com' })
-  public readonly email: string;
-
-  @ApiProperty({ example: 'John Marston' })
-  public readonly name: string;
-
-  @ApiProperty({
-    example:
-      'https://lh3.googleusercontent.com/d/22ZximVkuhxCuS_j_Vve2CKTyHiju0aY=s220',
-  })
-  public readonly profilePhoto: string | null;
-
-  @ApiProperty({ example: 10 })
-  public readonly reputation: number;
-}
-
-class CommentDto {
-  @ApiProperty({ example: 1 })
-  public readonly id: number;
-
-  @ApiProperty({ example: 'Saya juga melihat kejadian ini' })
-  public readonly comment: string;
-
-  @ApiProperty({
-    example: '2025-01-01T21:30:00.000Z',
-    type: 'string',
-    format: 'date-time',
-  })
-  public readonly createdAt: Date;
-
-  @ApiProperty({ example: false })
-  public readonly isEdited: boolean;
-
-  @ApiProperty({ type: ReportUserDto })
-  public readonly user: ReportUserDto;
-}
-
 export class IncidentDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   public readonly id: string;
@@ -148,8 +114,8 @@ export class ReportResDto {
   })
   public readonly attachments: string[];
 
-  @ApiProperty({ type: CommentDto, isArray: true })
-  public readonly comments: CommentDto[];
+  @ApiProperty({ type: CommentResDto, isArray: true })
+  public readonly comments: CommentResDto[];
 
   @ApiProperty({ example: 12 })
   public readonly upvote: number;

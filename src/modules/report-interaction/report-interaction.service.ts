@@ -3,6 +3,7 @@ import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
 import { CommentResDto, VoteResDto } from './report-interaction.dto';
 import { VoteType } from '@prisma/client';
+import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
 export class ReportInteractionService extends AbstractLogger {
@@ -52,9 +53,13 @@ export class ReportInteractionService extends AbstractLogger {
     );
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 
@@ -77,9 +82,13 @@ export class ReportInteractionService extends AbstractLogger {
 
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 
@@ -97,9 +106,13 @@ export class ReportInteractionService extends AbstractLogger {
 
     return {
       id: result.id,
-      userEmail: result.userEmail,
-      reportId: result.reportId,
       comment: result.comment,
+      createdAt: result.createdAt,
+      isEdited: result.updatedAt.getTime() !== result.createdAt.getTime(),
+      user: {
+        ...result.user,
+        profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
+      },
     };
   }
 }

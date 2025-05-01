@@ -70,6 +70,7 @@ export class ReportRepository extends BaseRepository {
               },
             },
           },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
