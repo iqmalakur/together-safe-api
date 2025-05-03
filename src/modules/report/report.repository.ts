@@ -276,10 +276,10 @@ export class ReportRepository extends BaseRepository {
     }
 
     if (data === '') return;
-    data = data.replace(/, $/, '');
 
     await tx.$executeRawUnsafe(`
-      UPDATE "Incident" SET ${data}
+      UPDATE "Incident"
+        SET ${data} updated_at = NOW()
       WHERE id = '${incident.id}'
     `);
 
