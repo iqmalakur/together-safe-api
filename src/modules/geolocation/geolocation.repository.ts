@@ -35,7 +35,7 @@ export class GeolocationRepository extends BaseRepository {
               FROM ways w
               LEFT JOIN LATERAL (
                 SELECT risk_level FROM "Incident" 
-                WHERE ST_Intersects(location_area, w.the_geom) 
+                WHERE ST_DWithin(location::geography, w.the_geom::geography, 10) 
                 ORDER BY risk_level ASC 
                 LIMIT 1
               ) i ON TRUE

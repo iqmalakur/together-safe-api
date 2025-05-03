@@ -20,11 +20,12 @@ export class IncidentRepository extends BaseRepository {
         SELECT
           id,
           risk_level,
-          ST_Y(location_point) AS latitude,
-          ST_X(location_point) AS longitude
+          radius,
+          ST_Y(location) AS latitude,
+          ST_X(location) AS longitude
         FROM "Incident"
         WHERE ST_DWithin(
-          location_point::geography,
+          location::geography,
           ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
           15000
         )
@@ -37,21 +38,21 @@ export class IncidentRepository extends BaseRepository {
   public async findIncidentById(id: string): Promise<IncidentSelection | null> {
     try {
       const result = await this.prisma.$queryRaw<IncidentDetailResult[]>`
-      SELECT
-        i.id,
-        i.status,
-        i.risk_level,
-        i.date_start,
-        i.date_end,
-        i.time_start,
-        i.time_end,
-        ST_Y(location_point) AS latitude,
-        ST_X(location_point) AS longitude,
-        ic.name AS category
-      FROM "Incident" i
-      JOIN "IncidentCategory" ic ON ic.id = i.category_id
-      WHERE i.id = ${id}::uuid
-    `;
+        SELECT
+          i.id,
+          i.status,
+          i.risk_level,
+          i.date_start,
+          i.date_end,
+          i.time_start,
+          i.time_end,
+          ST_Y(location) AS latitude,
+          ST_X(location) AS longitude,
+          ic.name AS category
+        FROM "Incident" i
+        JOIN "IncidentCategory" ic ON ic.id = i.category_id
+        WHERE i.id = ${id}::uuid
+      `;
 
       const incident = result[0];
       if (!incident) {

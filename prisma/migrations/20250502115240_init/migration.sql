@@ -50,8 +50,8 @@ CREATE TABLE "Incident" (
     "status" "IncidentStatus" NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "location_area" geometry(Polygon, 4326) NOT NULL,
-    "location_point" geometry(Point, 4326) NOT NULL,
+    "radius" INT NOT NULL,
+    "location" geometry(Point, 4326) NOT NULL,
     "date_start" DATE NOT NULL,
     "date_end" DATE NOT NULL,
     "time_start" TIME NOT NULL,
@@ -99,6 +99,18 @@ CREATE TABLE "Vote" (
     CONSTRAINT "Vote_pkey" PRIMARY KEY ("user_email","report_id")
 );
 
+-- CreateTable
+CREATE TABLE "NominatimLocation" (
+    "osm_id" BIGINT NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "display_name" VARCHAR(255) NOT NULL,
+    "lat" VARCHAR(255) NOT NULL,
+    "lon" VARCHAR(255) NOT NULL,
+    "location" geometry(Polygon, 4326) NOT NULL,
+
+    CONSTRAINT "NominatimLocation_pkey" PRIMARY KEY ("osm_id")
+);
+
 -- AddForeignKey
 ALTER TABLE "Report" ADD CONSTRAINT "Report_user_email_fkey" FOREIGN KEY ("user_email") REFERENCES "User"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -123,15 +135,17 @@ ALTER TABLE "Vote" ADD CONSTRAINT "Vote_user_email_fkey" FOREIGN KEY ("user_emai
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_report_id_fkey" FOREIGN KEY ("report_id") REFERENCES "Report"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- Add index to spatial field
-CREATE INDEX incident_location_point_idx
+-- Add spatial index
+CREATE INDEX incident_location_idx
 ON "Incident"
-USING GIST (location_point);
+USING GIST (location);
 
-CREATE INDEX incident_location_area_idx
-ON "Incident"
-USING GIST (location_area);
+-- Add spatial index
+CREATE INDEX nominatim_location_idx
+ON "NominatimLocation"
+USING GIST (location);
 
+-- Adjust cost function
 CREATE OR REPLACE FUNCTION adjust_cost(risk_level "RiskLevel", cost DOUBLE PRECISION)
 RETURNS DOUBLE PRECISION AS $$
 BEGIN

@@ -12,6 +12,9 @@ export class IncidentResDto {
   @ApiProperty({ example: 107.52420901126096 })
   public longitude: number;
 
+  @ApiProperty({ example: 10 })
+  public radius: number;
+
   @ApiProperty({ example: 'high' })
   public riskLevel: string;
 }

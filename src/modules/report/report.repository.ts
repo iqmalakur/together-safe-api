@@ -15,7 +15,7 @@ import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 export class ReportRepository extends BaseRepository {
   private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
   private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
-  private readonly RADIUS_METERS = 10; // Radius from centroid
+  private readonly RADIUS_METERS = 25; // Radius from centroid
   private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
   private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
 
@@ -171,6 +171,7 @@ export class ReportRepository extends BaseRepository {
       >(`
         SELECT
           i."id"::text,
+          i."radius",
           i."date_start",
           i."date_end",
           i."time_start",
@@ -178,9 +179,10 @@ export class ReportRepository extends BaseRepository {
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
         WHERE ic."id" = ${categoryId}
-          AND ST_Intersects(
-            ST_Expand(i."location_area", ${this.RADIUS_METERS}),
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geometry
+          AND ST_DWithin(
+            i."location"::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geography,
+            i."radius" + ${this.RADIUS_METERS}
           )
           AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '${this.DATE_TOLERANCE_DAYS} day') AND (i."date_end" + INTERVAL '${this.DATE_TOLERANCE_DAYS} day')
           AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '${this.TIME_TOLERANCE_HOURS} hour') AND (i."time_end" + INTERVAL '${this.TIME_TOLERANCE_HOURS} hour')
@@ -210,8 +212,8 @@ export class ReportRepository extends BaseRepository {
           date_end,
           time_start,
           time_end,
-          location_point,
-          location_area
+          radius,
+          location
         )
         VALUES (
           ${categoryId},
@@ -221,19 +223,8 @@ export class ReportRepository extends BaseRepository {
           '${date}',
           '${time}',
           '${time}',
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84}),
-          ST_Transform(
-            ST_Envelope(
-              ST_Buffer(
-                ST_Transform(
-                  ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84}),
-                  ${this.SRID_WEB_MERCATOR}
-                ),
-                ${this.RADIUS_METERS}
-              )
-            ),
-            ${this.SRID_WGS84}
-          )
+          10,
+          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})
         )
         RETURNING id, date_start, date_end, time_start, time_end;
       `);
@@ -268,23 +259,23 @@ export class ReportRepository extends BaseRepository {
 
     const lat = report.latitude;
     const lon = report.longitude;
+    const reportPoint = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)::geography`;
 
-    const [{ contained }] = await tx.$queryRawUnsafe<{ contained: boolean }[]>(`
-      SELECT ST_Contains(location_area, ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)) as contained
-        FROM "Incident"
-      WHERE id = '${incident.id}'
+    const [{ distance }] = await tx.$queryRawUnsafe<{ distance: number }[]>(`
+      SELECT ST_Distance(
+        i."location"::geography,
+        ${reportPoint}
+      ) as distance
+      FROM "Incident" i
+      WHERE i."id" = '${incident.id}'
     `);
 
-    if (!contained) {
-      const point = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)`;
-      const buffered = `ST_Buffer(${point}, 0.0001)`;
-      const newArea = `ST_Envelope(ST_Union(location_area, ${buffered}))`;
-
-      data += `location_area = ${newArea}, `;
-      data += `location_point = ST_Centroid(${newArea}), `;
+    if (distance > incident.radius) {
+      const newRadius = Math.ceil(distance);
+      data += `radius = ${newRadius}, `;
     }
 
-    if (data == '') return;
+    if (data === '') return;
     data = data.replace(/, $/, '');
 
     await tx.$executeRawUnsafe(`

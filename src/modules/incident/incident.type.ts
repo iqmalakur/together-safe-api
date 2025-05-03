@@ -10,6 +10,7 @@ export type IncidentReportPreview = {
 
 export interface IncidentPreviewResult {
   id: string;
+  radius: number;
   risk_level: string;
   latitude: number;
   longitude: number;

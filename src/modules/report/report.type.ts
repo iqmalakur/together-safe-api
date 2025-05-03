@@ -16,6 +16,7 @@ export type ReportInput = {
 
 export type ReportRelatedIncident = {
   id: string;
+  radius: number;
   date_start: Date;
   date_end: Date;
   time_start: Date;

@@ -62,7 +62,7 @@ async function main() {
     INSERT INTO "Incident" (
       "category_id", "status", "risk_level", 
       "date_start", "date_end", "time_start", "time_end", 
-      "location_point", "location_area"
+      "location", "radius"
     ) VALUES (
       $1, -- categoryId
       'active',
@@ -72,7 +72,7 @@ async function main() {
       $3::time,
       $4::time,
       ST_SetSRID(ST_MakePoint($5, $6), 4326), -- longitude, latitude
-      ST_MakeEnvelope($7, $8, $9, $10, 4326) -- xmin, ymin, xmax, ymax
+      $7
     )
     RETURNING id;
   `,
@@ -82,10 +82,7 @@ async function main() {
       '20:00', // timeEnd
       107.52420030957933, // centroid longitude
       -6.884348919916044, // centroid latitude
-      107.52415722077858, // longitude min
-      -6.884422385888235, // latitude min
-      107.52424339838008, // longitude max
-      -6.884275453943853, // latitude max
+      10, // radius
     );
 
     // Seed Reports

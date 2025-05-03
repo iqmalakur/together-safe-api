@@ -49,25 +49,25 @@ model Report {
 }
 
 model Incident {
-  id                 String                                 @id @default(uuid()) @db.Uuid()
-  riskLevel          RiskLevel                              @map("risk_level")
-  status             IncidentStatus
-  createdAt          DateTime                               @db.Timestamp() @default(now()) @map("created_at")
-  updatedAt          DateTime                               @db.Timestamp() @default(now()) @map("updated_at")
+  id         String                               @id @default(uuid()) @db.Uuid()
+  riskLevel  RiskLevel                            @map("risk_level")
+  status     IncidentStatus
+  createdAt  DateTime                             @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt  DateTime                             @db.Timestamp() @default(now()) @map("updated_at")
 
-  locationArea       Unsupported("geometry(Polygon, 4326)") @map("location_area")
-  locationPoint      Unsupported("geometry(Point, 4326)")   @map("location_point")
+  radius     Int
+  location   Unsupported("geometry(Point, 4326)") @map("location")
   
-  dateStart          DateTime                               @db.Date @map("date_start")
-  dateEnd            DateTime                               @db.Date @map("date_end")
+  dateStart  DateTime                             @db.Date @map("date_start")
+  dateEnd    DateTime                             @db.Date @map("date_end")
 
-  timeStart          DateTime                               @db.Time @map("time_start")
-  timeEnd            DateTime                               @db.Time @map("time_end")
+  timeStart  DateTime                             @db.Time @map("time_start")
+  timeEnd    DateTime                             @db.Time @map("time_end")
 
-  categoryId         Int                                    @map("category_id")
-  category           IncidentCategory                       @relation(fields: [categoryId], references: [id])
+  categoryId Int                                  @map("category_id")
+  category   IncidentCategory                     @relation(fields: [categoryId], references: [id])
 
-  reports            Report[]
+  reports    Report[]
 }
 
 model IncidentCategory {
@@ -86,36 +86,36 @@ model Attachment {
 }
 
 model Comment {
-  id        Int    @id @default(autoincrement())
-  comment   String @db.Text
-  createdAt  DateTime         @db.Timestamp() @default(now()) @map("created_at")
-  updatedAt  DateTime         @db.Timestamp() @default(now()) @map("updated_at")
+  id        Int       @id @default(autoincrement())
+  comment   String    @db.Text
+  createdAt DateTime  @db.Timestamp() @default(now()) @map("created_at")
+  updatedAt DateTime  @db.Timestamp() @default(now()) @map("updated_at")
   
-  userEmail String @map("user_email")
-  user      User   @relation(fields: [userEmail], references: [email])
+  userEmail String    @map("user_email")
+  user      User      @relation(fields: [userEmail], references: [email])
 
-  reportId  String @db.Uuid() @map("report_id")
-  report    Report @relation(fields: [reportId], references: [id])
+  reportId  String    @db.Uuid() @map("report_id")
+  report    Report    @relation(fields: [reportId], references: [id])
 }
 
 model Vote {
   type      VoteType?
 
-  userEmail String @map("user_email")
-  user      User   @relation(fields: [userEmail], references: [email])
+  userEmail String    @map("user_email")
+  user      User      @relation(fields: [userEmail], references: [email])
 
-  reportId  String @db.Uuid() @map("report_id")
-  report    Report @relation(fields: [reportId], references: [id])
+  reportId  String    @db.Uuid() @map("report_id")
+  report    Report    @relation(fields: [reportId], references: [id])
 
   @@id([userEmail, reportId])
 }
 
 model NominatimLocation {
-  osm_id       BigInt @id
-  name         String @db.VarChar(255)
-  display_name String @db.VarChar(255)
-  lat          String @db.VarChar(255)
-  lon          String @db.VarChar(255)
+  osm_id       BigInt                                 @id
+  name         String                                 @db.VarChar(255)
+  display_name String                                 @db.VarChar(255)
+  lat          String                                 @db.VarChar(255)
+  lon          String                                 @db.VarChar(255)
   location     Unsupported("geometry(Polygon, 4326)")
 }
 
