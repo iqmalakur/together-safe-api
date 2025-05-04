@@ -6,7 +6,7 @@ import {
   ReportRelatedIncident,
   ReportDetailResult,
   ReportInput,
-  ReportPreviewResult,
+  ReportItemResult,
   ReportResult,
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
@@ -21,10 +21,24 @@ export class ReportRepository extends BaseRepository {
 
   public async getReportByUserEmail(
     email: string,
-  ): Promise<ReportPreviewResult[]> {
+  ): Promise<ReportItemResult[]> {
     return await this.prisma.report.findMany({
       where: { userEmail: email },
-      select: { id: true, description: true },
+      select: {
+        id: true,
+        description: true,
+        date: true,
+        time: true,
+        status: true,
+        latitude: true,
+        longitude: true,
+        incident: {
+          select: {
+            id: true,
+            category: { select: { name: true } },
+          },
+        },
+      },
     });
   }
 

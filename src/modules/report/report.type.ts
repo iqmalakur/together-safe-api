@@ -31,18 +31,24 @@ export type ReportResult = {
   time: Date;
 };
 
-export type ReportPreviewResult = {
+export type ReportIncident = {
+  id: string;
+  category: ReportCategory;
+};
+
+export type ReportItemResult = {
   id: string;
   description: string;
+  incident: ReportIncident;
+  latitude: number;
+  longitude: number;
+  date: Date;
+  time: Date;
+  status: string;
 };
 
 export type ReportCategory = {
   name: string;
-};
-
-export type ReportIncident = {
-  id: string;
-  category: ReportCategory;
 };
 
 export type ReportAttachment = {

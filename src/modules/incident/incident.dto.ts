@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID } from 'class-validator';
-import { ReportPreviewDto } from '../report/report.dto';
+import { ReportItemDto } from '../report/report.dto';
 
 export class IncidentResDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
@@ -51,10 +51,10 @@ export class IncidentDetailResDto {
 
   @ApiProperty({
     description: 'Incident report',
-    type: ReportPreviewDto,
+    type: ReportItemDto,
     isArray: true,
   })
-  public reports: ReportPreviewDto[];
+  public reports: ReportItemDto[];
 }
 
 export class IncidentParamDto {

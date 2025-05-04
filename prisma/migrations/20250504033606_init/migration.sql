@@ -9,7 +9,7 @@ CREATE TYPE "VoteType" AS ENUM ('upvote', 'downvote');
 CREATE TYPE "RiskLevel" AS ENUM ('high', 'medium', 'low');
 
 -- CreateEnum
-CREATE TYPE "ReportStatus" AS ENUM ('verified', 'pending', 'invalid');
+CREATE TYPE "ReportStatus" AS ENUM ('crowdsourced', 'verified', 'invalid');
 
 -- CreateEnum
 CREATE TYPE "IncidentStatus" AS ENUM ('active', 'non_active');
@@ -34,7 +34,7 @@ CREATE TABLE "Report" (
     "longitude" DOUBLE PRECISION NOT NULL,
     "date" DATE NOT NULL,
     "time" TIME NOT NULL,
-    "status" "ReportStatus" NOT NULL DEFAULT 'pending',
+    "status" "ReportStatus" NOT NULL DEFAULT 'crowdsourced',
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP,
     "user_email" VARCHAR(320) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE "Incident" (
     "status" "IncidentStatus" NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "radius" INT NOT NULL,
+    "radius" INTEGER NOT NULL,
     "location" geometry(Point, 4326) NOT NULL,
     "date_start" DATE NOT NULL,
     "date_end" DATE NOT NULL,

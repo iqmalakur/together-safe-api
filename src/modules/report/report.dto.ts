@@ -48,12 +48,30 @@ export class ReportReqDto {
   public media: Array<Express.Multer.File>;
 }
 
-export class ReportPreviewDto {
-  @ApiProperty({ example: 'abcdefghijklmn' })
+export class ReportItemDto {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
   public id: string;
 
   @ApiProperty({ example: 'Terjadi pembegalan di cimahi' })
   public description: string;
+
+  @ApiProperty({ example: '2025-01-01' })
+  public date: string;
+
+  @ApiProperty({ example: '21:30' })
+  public time: string;
+
+  @ApiProperty({ example: 'crowdsourced' })
+  public status: string;
+
+  @ApiProperty({ example: 'Pembegalan' })
+  public category: string;
+
+  @ApiProperty({
+    example:
+      'Jalan Warung Contong, Setiamanah, Cimahi, Jawa Barat, Jawa, 40524, Indonesia',
+  })
+  public location: string;
 }
 
 export class ReportParamDto {

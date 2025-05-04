@@ -14,7 +14,7 @@ import { ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   ReportParamDto,
-  ReportPreviewDto,
+  ReportItemDto,
   ReportReqDto,
   ReportResDto,
 } from './report.dto';
@@ -42,7 +42,7 @@ export class ReportController extends AbstractLogger {
   @ApiUserReport()
   public async getUserReport(
     @Request() req: AuthRequest,
-  ): Promise<ReportPreviewDto[]> {
+  ): Promise<ReportItemDto[]> {
     return await this.service.handleGetUserReport(req.user);
   }
 

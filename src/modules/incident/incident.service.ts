@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { getFormattedDate, getTimeString } from '../../utils/date.util';
+import {
+  getDateString,
+  getFormattedDate,
+  getTimeString,
+} from '../../utils/date.util';
 import {
   CategoryResDto,
   IncidentDetailResDto,
   IncidentResDto,
 } from './incident.dto';
 import { IncidentRepository } from './incident.repository';
-import { ReportPreviewDto } from '../report/report.dto';
+import { ReportItemDto } from '../report/report.dto';
 import { getFileUrl } from 'src/utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ApiService } from 'src/infrastructures/api.service';
@@ -44,18 +48,28 @@ export class IncidentService extends AbstractLogger {
       throw new NotFoundException('insiden tidak ditemukan');
     }
 
-    const reports: ReportPreviewDto[] = [];
+    const reports: ReportItemDto[] = [];
     const mediaUrls: string[] = [];
 
-    incident.reports.forEach((report) => {
+    for (const report of incident.reports) {
+      const location = await this.apiService.reverseGeocode(
+        report.latitude,
+        report.longitude,
+      );
+
       reports.push({
         id: report.id,
         description: report.description,
+        date: getDateString(report.date),
+        time: getTimeString(report.time, true),
+        status: report.status,
+        location: location.display_name,
+        category: incident.category,
       });
 
       const urls = report.attachments.map(({ uri }) => getFileUrl(uri));
       mediaUrls.push(...urls);
-    });
+    }
 
     const location = await this.apiService.reverseGeocode(
       incident.latitude,
@@ -75,11 +89,28 @@ export class IncidentService extends AbstractLogger {
     };
   }
 
-  public async handleGetIncidentReports(
-    id: string,
-  ): Promise<ReportPreviewDto[]> {
-    const result = await this.repository.getReportsByIncidentId(id);
-    return result as ReportPreviewDto[];
+  public async handleGetIncidentReports(id: string): Promise<ReportItemDto[]> {
+    const reports = await this.repository.getReportsByIncidentId(id);
+    const result: ReportItemDto[] = [];
+
+    for (const report of reports) {
+      const location = await this.apiService.reverseGeocode(
+        report.latitude,
+        report.longitude,
+      );
+
+      result.push({
+        id: report.id,
+        description: report.description,
+        date: getDateString(report.date),
+        time: getTimeString(report.time, true),
+        status: report.status,
+        location: location.display_name,
+        category: report.incident.category.name,
+      });
+    }
+
+    return result;
   }
 
   public async handleGetCategories(): Promise<CategoryResDto[]> {

@@ -6,7 +6,7 @@ import {
 } from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { ReportPreviewResult } from '../report/report.type';
+import { ReportItemResult } from '../report/report.type';
 import { IncidentCategory } from '@prisma/client';
 
 @Injectable()
@@ -63,6 +63,11 @@ export class IncidentRepository extends BaseRepository {
         select: {
           id: true,
           description: true,
+          date: true,
+          time: true,
+          status: true,
+          latitude: true,
+          longitude: true,
           attachments: {
             select: { uri: true },
             take: 3,
@@ -83,11 +88,25 @@ export class IncidentRepository extends BaseRepository {
 
   public async getReportsByIncidentId(
     incidentId: string,
-  ): Promise<ReportPreviewResult[]> {
+  ): Promise<ReportItemResult[]> {
     try {
       return await this.prisma.report.findMany({
         where: { incidentId },
-        select: { id: true, description: true },
+        select: {
+          id: true,
+          description: true,
+          date: true,
+          time: true,
+          status: true,
+          latitude: true,
+          longitude: true,
+          incident: {
+            select: {
+              id: true,
+              category: { select: { name: true } },
+            },
+          },
+        },
       });
     } catch (e) {
       throw handleError(e, this.logger);

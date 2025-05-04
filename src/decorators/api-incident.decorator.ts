@@ -11,7 +11,7 @@ import {
   ApiNotFound,
   ApiServerError,
 } from './api-response.decorator';
-import { ReportPreviewDto } from 'src/modules/report/report.dto';
+import { ReportItemDto } from 'src/modules/report/report.dto';
 
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(
@@ -60,7 +60,7 @@ export const ApiIncidentReport = (): MethodDecorator => {
     ApiResponse({
       status: 200,
       description: 'List of incident reports successfully retrieved',
-      type: ReportPreviewDto,
+      type: ReportItemDto,
       isArray: true,
     }),
     ApiServerError(),

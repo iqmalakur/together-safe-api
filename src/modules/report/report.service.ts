@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
-import { ReportPreviewDto, ReportReqDto, ReportResDto } from './report.dto';
+import { ReportItemDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
@@ -27,9 +27,28 @@ export class ReportService extends AbstractLogger {
 
   public async handleGetUserReport(
     user: UserJwtPayload,
-  ): Promise<ReportPreviewDto[]> {
-    const result = await this.repository.getReportByUserEmail(user.email);
-    return result as ReportPreviewDto[];
+  ): Promise<ReportItemDto[]> {
+    const reports = await this.repository.getReportByUserEmail(user.email);
+    const result: ReportItemDto[] = [];
+
+    for (const report of reports) {
+      const location = await this.apiService.reverseGeocode(
+        report.latitude,
+        report.longitude,
+      );
+
+      result.push({
+        id: report.id,
+        description: report.description,
+        date: getDateString(report.date),
+        time: getTimeString(report.time, true),
+        status: report.status,
+        location: location.display_name,
+        category: report.incident.category.name,
+      });
+    }
+
+    return result;
   }
 
   public async handleGetReport(id: string): Promise<ReportResDto> {

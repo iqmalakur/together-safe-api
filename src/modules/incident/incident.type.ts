@@ -5,6 +5,11 @@ export type IncidentAttachment = {
 export type IncidentReportPreview = {
   id: string;
   description: string;
+  latitude: number;
+  longitude: number;
+  date: Date;
+  time: Date;
+  status: string;
   attachments: IncidentAttachment[];
 };
 

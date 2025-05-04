@@ -13,7 +13,7 @@ import {
   ApiIncidentDetail,
   ApiIncidentReport,
 } from '../../decorators/api-incident.decorator';
-import { ReportPreviewDto } from '../report/report.dto';
+import { ReportItemDto } from '../report/report.dto';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { LatLonQueryDto } from '../geolocation/geolocation.dto';
 
@@ -53,7 +53,7 @@ export class IncidentController extends AbstractLogger {
   @ApiIncidentReport()
   public async getIncidentReports(
     @Param() param: IncidentParamDto,
-  ): Promise<ReportPreviewDto[]> {
+  ): Promise<ReportItemDto[]> {
     return await this.service.handleGetIncidentReports(param.id);
   }
 }

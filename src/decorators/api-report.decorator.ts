@@ -7,7 +7,7 @@ import {
   ApiUnauthorized,
 } from './api-response.decorator';
 import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
-import { ReportPreviewDto, ReportResDto } from 'src/modules/report/report.dto';
+import { ReportItemDto, ReportResDto } from 'src/modules/report/report.dto';
 
 export const ApiUserReport = (): MethodDecorator => {
   return applyDecorators(
@@ -18,7 +18,7 @@ export const ApiUserReport = (): MethodDecorator => {
     ApiResponse({
       status: 200,
       description: 'List of user reports successfully retrieved',
-      type: ReportPreviewDto,
+      type: ReportItemDto,
       isArray: true,
     }),
     ApiUnauthorized('token tidak valid', 'token is not valid'),
