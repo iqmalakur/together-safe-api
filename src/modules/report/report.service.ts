@@ -116,7 +116,7 @@ export class ReportService extends AbstractLogger {
 
     const isCategoryExists = await this.repository.checkCategory(categoryId);
     if (!isCategoryExists) {
-      throw new BadRequestException('kategori tidak valid');
+      throw new BadRequestException('Kategori tidak valid');
     }
 
     const splittedLocation = location.split(',');
@@ -148,7 +148,9 @@ export class ReportService extends AbstractLogger {
       );
 
       if (!isEligible) {
-        throw new ConflictException('Laporan serupa telah anda kirim hari ini');
+        throw new ConflictException(
+          `Laporan serupa telah anda kirim tanggal ${date}`,
+        );
       }
     }
 

@@ -16,19 +16,19 @@ import { ReportItemDto } from 'src/modules/report/report.dto';
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get incident',
-      description: 'get incident data based on user location',
+      summary: 'Get incident',
+      description: 'Get incident data based on user location',
     }),
     ApiToken(),
     ApiResponse({
       status: 200,
-      description: 'success get incidents',
+      description: 'Success get incidents',
       type: IncidentResDto,
       isArray: true,
     }),
     ApiBadRequest(
-      'latitude tidak valid',
-      'latitude or longitude are not valid or not provided',
+      'Latitude tidak valid',
+      'Latitude or longitude are not valid or not provided',
     ),
     ApiServerError(),
   );
@@ -37,16 +37,16 @@ export const ApiIncident = (): MethodDecorator => {
 export const ApiIncidentDetail = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get detail incident',
-      description: 'get detail incident by incident id',
+      summary: 'Get detail incident',
+      description: 'Get detail incident by incident ID',
     }),
     ApiToken(),
     ApiResponse({
       status: 200,
-      description: 'success get detail incident',
+      description: 'Success get detail incident',
       type: IncidentDetailResDto,
     }),
-    ApiNotFound('insiden tidak ditemukan', 'Incident does not exist'),
+    ApiNotFound('Insiden tidak ditemukan', 'Incident does not exist'),
     ApiServerError(),
   );
 };
@@ -54,8 +54,8 @@ export const ApiIncidentDetail = (): MethodDecorator => {
 export const ApiIncidentReport = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get incident reports',
-      description: 'get a list of incident reports.',
+      summary: 'Get incident reports',
+      description: 'Get a list of incident reports',
     }),
     ApiResponse({
       status: 200,
@@ -70,12 +70,12 @@ export const ApiIncidentReport = (): MethodDecorator => {
 export const ApiCategories = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get all incident categories',
-      description: 'retrieve a list of all incident categories.',
+      summary: 'Get all incident categories',
+      description: 'Retrieve a list of all incident categories',
     }),
     ApiResponse({
       status: 200,
-      description: 'list of incident categories successfully retrieved',
+      description: 'List of incident categories successfully retrieved',
       type: CategoryResDto,
       isArray: true,
     }),

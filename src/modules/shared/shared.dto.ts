@@ -1,42 +1,45 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorDto {
-  @ApiProperty({ description: 'error message' })
+  @ApiProperty({ description: 'Error message' })
   public readonly message: string;
 
-  @ApiProperty({ description: 'error type' })
+  @ApiProperty({ description: 'Error type' })
   public readonly error: string;
 
-  @ApiProperty({ description: 'error status code' })
+  @ApiProperty({ description: 'HTTP status code' })
   public readonly statusCode: number;
 }
 
 export class ClientErrorDto {
-  @ApiProperty({ description: 'error message', isArray: true })
+  @ApiProperty({ description: 'Error message', isArray: true })
   public readonly message: string[];
 
-  @ApiProperty({ description: 'error type' })
+  @ApiProperty({ description: 'Error type' })
   public readonly error: string;
 
-  @ApiProperty({ description: 'error status code' })
+  @ApiProperty({ description: 'HTTP status code' })
   public readonly statusCode: number;
 }
 
 export class ServerErrorDto {
   @ApiProperty({
-    description: 'error message',
+    description: 'Error message',
     example: 'Internal Server Error',
   })
-  message: string;
+  public readonly message: string;
 
-  @ApiProperty({ description: 'error status code', example: 500 })
-  statusCode: number;
+  @ApiProperty({
+    description: 'HTTP status code',
+    example: 500,
+  })
+  public readonly statusCode: number;
 }
 
 export class SuccessCreateDto {
-  @ApiProperty({ description: 'success message' })
-  message: string;
+  @ApiProperty({ description: 'Success message' })
+  public readonly message: string;
 
-  @ApiProperty({ description: 'resource id' })
-  id: string | number;
+  @ApiProperty({ description: 'Resource ID' })
+  public readonly id: string | number;
 }

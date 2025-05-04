@@ -10,32 +10,32 @@ import {
 
 export class ReportIdParamDto {
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
-  @IsUUID(4, { message: 'id laporan tidak valid' })
-  public reportId: string;
+  @IsUUID(4, { message: 'ID laporan tidak valid' })
+  public readonly reportId: string;
 }
 
 export class CommentParamDto {
   @ApiProperty({ example: '1' })
-  @IsNumberString({}, { message: 'id komentar tidak valid' })
-  public id: string;
+  @IsNumberString({}, { message: 'ID komentar tidak valid' })
+  public readonly id: string;
 }
 
 export class VoteReqDto {
   @ApiProperty({ example: 'upvote' })
   @IsOptional()
-  @IsEnum(VoteType, { message: 'tipe vote tidak valid' })
-  public voteType?: VoteType;
+  @IsEnum(VoteType, { message: 'Tipe vote tidak valid' })
+  public readonly voteType?: VoteType;
 }
 
 export class VoteResDto {
   @ApiProperty({ example: 'john@example.com' })
-  public userEmail: string;
+  public readonly userEmail: string;
 
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
-  public reportId: string;
+  public readonly reportId: string;
 
   @ApiProperty({ example: 'upvote' })
-  public voteType?: VoteType;
+  public readonly voteType?: VoteType;
 }
 
 export class CommentReqDto {
@@ -43,8 +43,8 @@ export class CommentReqDto {
     example:
       'Wah, serem banget! Gue sering lewat sini malem-malem, harus lebih hati-hati nih.',
   })
-  @IsNotEmpty({ message: 'komentar tidak boleh kosong' })
-  public comment: string;
+  @IsNotEmpty({ message: 'Komentar tidak boleh kosong' })
+  public readonly comment: string;
 }
 
 export class ReportUserDto {

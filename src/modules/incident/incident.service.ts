@@ -59,7 +59,7 @@ export class IncidentService extends AbstractLogger {
     const incident = await this.repository.findIncidentById(id);
 
     if (!incident) {
-      throw new NotFoundException('insiden tidak ditemukan');
+      throw new NotFoundException('Insiden tidak ditemukan');
     }
 
     const reports: ReportItemDto[] = [];

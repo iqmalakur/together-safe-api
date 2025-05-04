@@ -32,7 +32,7 @@ export class AuthService extends AbstractLogger {
       : false;
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('email atau password salah!');
+      throw new UnauthorizedException('Email atau Password salah!');
     }
 
     return new AuthResDto(user!);
@@ -40,7 +40,7 @@ export class AuthService extends AbstractLogger {
 
   public async handleRegister(user: RegisterReqDto): Promise<SuccessCreateDto> {
     if (await this.repository.isUserExist(user.email)) {
-      throw new ConflictException('email sudah terdaftar!');
+      throw new ConflictException('Email sudah terdaftar!');
     }
 
     const password = bcrypt.hashSync(user.password, 10);
@@ -68,13 +68,13 @@ export class AuthService extends AbstractLogger {
     const tokenData = validateToken(token);
 
     if (!tokenData) {
-      throw new UnauthorizedException('token tidak valid!');
+      throw new UnauthorizedException('Token tidak valid!');
     }
 
     const user = await this.repository.findUserByEmail(tokenData.email);
 
     if (!user) {
-      throw new UnauthorizedException('token tidak valid!');
+      throw new UnauthorizedException('Token tidak valid!');
     }
 
     return new AuthResDto(user);

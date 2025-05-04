@@ -31,7 +31,7 @@ const createApiResponseDecorator = (
 
 export const ApiBadRequest = (
   message: string,
-  description: string = 'bad request',
+  description: string = 'Bad request',
 ): MethodDecorator =>
   createApiResponseDecorator(
     HttpStatus.BAD_REQUEST,
@@ -43,7 +43,7 @@ export const ApiBadRequest = (
 
 export const ApiUnauthorized = (
   message: string,
-  description: string = 'unauthorized',
+  description: string = 'Unauthorized',
 ): MethodDecorator =>
   createApiResponseDecorator(
     HttpStatus.UNAUTHORIZED,
@@ -54,7 +54,7 @@ export const ApiUnauthorized = (
 
 export const ApiNotFound = (
   message: string,
-  description: string = 'not found',
+  description: string = 'Not found',
 ): MethodDecorator =>
   createApiResponseDecorator(
     HttpStatus.NOT_FOUND,
@@ -65,7 +65,7 @@ export const ApiNotFound = (
 
 export const ApiConflict = (
   message: string,
-  description: string = 'conflict',
+  description: string = 'Conflict',
 ): MethodDecorator =>
   createApiResponseDecorator(
     HttpStatus.CONFLICT,
@@ -77,6 +77,6 @@ export const ApiConflict = (
 export const ApiServerError = (): MethodDecorator =>
   ApiResponse({
     status: 500,
-    description: 'an unexpected error occurred',
+    description: 'An unexpected error occurred',
     type: ServerErrorDto,
   });

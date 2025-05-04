@@ -16,57 +16,57 @@ export class ValidateTokenReqDto {
     example:
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkkujCJ9.eyJuaWsiOiIwMDEhugewNDU2MDA3MDEiLCJpYXQiOjE3MjcxMzczNjAsImV4cCI6MTcyNzc0MjE2MH0.uGwjj2AmJwJJ77QuZFf6nccBjkpbyW29Q2s0_69jjiE',
   })
-  @IsNotEmpty({ message: 'token harus diisi' })
+  @IsNotEmpty({ message: 'Token harus diisi' })
   public readonly token: string;
 }
 
 export class LoginReqDto {
   @ApiProperty({ example: 'john@example.com' })
-  @IsEmail({}, { message: 'email tidak valid' })
-  @IsNotEmpty({ message: 'email harus diisi' })
+  @IsEmail({}, { message: 'Email tidak valid' })
+  @IsNotEmpty({ message: 'Email harus diisi' })
   public readonly email: string;
 
   @ApiProperty({ example: 'rahasia' })
-  @IsNotEmpty({ message: 'password harus diisi' })
+  @IsNotEmpty({ message: 'Password harus diisi' })
   public readonly password: string;
 }
 
 export class RegisterReqDto {
   @ApiProperty({ description: 'example: john@example.com' })
-  @IsEmail({}, { message: 'email tidak valid' })
-  @IsNotEmpty({ message: 'email harus diisi' })
+  @IsEmail({}, { message: 'Email tidak valid' })
+  @IsNotEmpty({ message: 'Email harus diisi' })
   public readonly email: string;
 
   @ApiProperty({ description: 'example: rahasia' })
-  @IsNotEmpty({ message: 'password harus diisi' })
-  @MinLength(8, { message: 'password minimal terdiri dari 8 karakter' })
+  @IsNotEmpty({ message: 'Password harus diisi' })
+  @MinLength(8, { message: 'Password minimal terdiri dari 8 karakter' })
   @Matches(/[A-Z]/, {
-    message: 'password harus mengandung minimal satu huruf besar',
+    message: 'Password harus mengandung minimal satu huruf besar',
   })
   @Matches(/[a-z]/, {
-    message: 'password harus mengandung minimal satu huruf kecil',
+    message: 'Password harus mengandung minimal satu huruf kecil',
   })
   @Matches(/\d/, {
-    message: 'password harus mengandung minimal satu angka',
+    message: 'Password harus mengandung minimal satu angka',
   })
   public readonly password: string;
 
   @ApiProperty({ description: 'example: John Marston' })
-  @IsNotEmpty({ message: 'nama harus diisi' })
+  @IsNotEmpty({ message: 'Nama harus diisi' })
   public readonly name: string;
 
   @ApiProperty({ description: 'example: 08123456789' })
-  @IsNotEmpty({ message: 'nomor telepon harus diisi' })
+  @IsNotEmpty({ message: 'Nomor telepon harus diisi' })
   @Length(10, 13, {
-    message: 'nomor telepon harus terdiri dari 10 hingga 13 digit',
+    message: 'Nomor telepon harus terdiri dari 10 hingga 13 digit',
   })
   @Matches(/^08\d+$/, {
-    message: 'nomor telepon harus dimulai dengan 08 dan hanya mengandung angka',
+    message: 'Nomor telepon harus dimulai dengan 08 dan hanya mengandung angka',
   })
   public readonly phone: string;
 
   @ApiProperty({
-    description: 'profile photo (file)',
+    description: 'Profile photo (file)',
     type: 'string',
     format: 'binary',
   })
