@@ -1,9 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  getDateString,
-  getFormattedDate,
-  getTimeString,
-} from '../../utils/date.util';
+import { getFormattedDate, getTimeString } from '../../utils/date.util';
 import {
   CategoryResDto,
   IncidentDetailResDto,
@@ -32,11 +28,29 @@ export class IncidentService extends AbstractLogger {
       latitude,
       longitude,
     );
+    const result: IncidentResDto[] = [];
 
-    return incidents.map(({ risk_level, ...incident }) => ({
-      ...incident,
-      riskLevel: risk_level,
-    }));
+    for (const incident of incidents) {
+      const location = await this.apiService.reverseGeocode(
+        incident.latitude,
+        incident.longitude,
+      );
+
+      result.push({
+        id: incident.id,
+        date: this.getDateRange(incident.date_start, incident.date_end, true),
+        time: this.getTimeRange(incident.time_start, incident.time_end),
+        status: incident.status,
+        latitude: incident.latitude,
+        longitude: incident.longitude,
+        location: location.display_name,
+        category: incident.category,
+        radius: incident.radius,
+        riskLevel: incident.risk_level,
+      });
+    }
+
+    return result;
   }
 
   public async handleGetIncidentDetail(
@@ -60,7 +74,7 @@ export class IncidentService extends AbstractLogger {
       reports.push({
         id: report.id,
         description: report.description,
-        date: getDateString(report.date),
+        date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
         status: report.status,
         location: location.display_name,
@@ -102,7 +116,7 @@ export class IncidentService extends AbstractLogger {
       result.push({
         id: report.id,
         description: report.description,
-        date: getDateString(report.date),
+        date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
         status: report.status,
         location: location.display_name,
@@ -118,9 +132,13 @@ export class IncidentService extends AbstractLogger {
     return result as CategoryResDto[];
   }
 
-  private getDateRange(dateStart: Date, dateEnd: Date) {
-    const formattedDateStart = getFormattedDate(dateStart);
-    const formattedDateEnd = getFormattedDate(dateEnd);
+  private getDateRange(
+    dateStart: Date,
+    dateEnd: Date,
+    simpleDate: boolean = false,
+  ) {
+    const formattedDateStart = getFormattedDate(dateStart, simpleDate);
+    const formattedDateEnd = getFormattedDate(dateEnd, simpleDate);
 
     if (formattedDateStart === formattedDateEnd) return formattedDateStart;
     return `${formattedDateStart} ~ ${formattedDateEnd}`;

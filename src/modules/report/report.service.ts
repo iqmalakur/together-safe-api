@@ -9,7 +9,7 @@ import { ReportItemDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
-import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
+import { getDate, getFormattedDate, getTimeString } from 'src/utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
@@ -40,7 +40,7 @@ export class ReportService extends AbstractLogger {
       result.push({
         id: report.id,
         description: report.description,
-        date: getDateString(report.date),
+        date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
         status: report.status,
         location: location.display_name,
@@ -95,7 +95,7 @@ export class ReportService extends AbstractLogger {
         ...result.user,
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
       },
-      date: getDateString(result.date),
+      date: getFormattedDate(result.date),
       time: getTimeString(result.time, true),
       latitude: latitude,
       longitude: longitude,

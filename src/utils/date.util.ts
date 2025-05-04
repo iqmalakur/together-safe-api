@@ -25,10 +25,11 @@ const months = [
   'Desember',
 ];
 
-export const getFormattedDate = (date: Date) => {
+export const getFormattedDate = (date: Date, simpleDate: boolean = false) => {
   const year = zeroPadding(date.getFullYear(), 4);
   const day = zeroPadding(date.getDate(), 2);
-  const month = months[date.getMonth()];
+  const fullMonth = months[date.getMonth()];
+  const month = simpleDate ? fullMonth.slice(0, 3) : fullMonth;
 
   return `${day} ${month} ${year}`;
 };
