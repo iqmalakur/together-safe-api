@@ -7,14 +7,14 @@ export class LatLonQueryDto {
   @Matches(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)+$/, {
     message: 'Latitude tidak valid',
   })
-  public lat: string;
+  public readonly lat: string;
 
   @ApiProperty({ example: '107.6191' })
   @IsNotEmpty({ message: 'Longitude wajib diisi' })
   @Matches(/^[-+]?((1[0-7]\d)|([1-9]?\d))(\.\d+)?$|^[-+]?180(\.0+)?$/, {
     message: 'Longitude tidak valid',
   })
-  public lon: string;
+  public readonly lon: string;
 }
 
 export class GeocodingQueryDto {
