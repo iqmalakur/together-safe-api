@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { RouteResult } from './geolocation.type';
 import { BaseRepository } from '../shared/base.repository';
+import {
+  SAFE_ROUTE_RADIUS_METERS,
+  SRID_WGS84,
+} from 'src/constants/map.constant';
 
 @Injectable()
 export class GeolocationRepository extends BaseRepository {
@@ -15,13 +19,13 @@ export class GeolocationRepository extends BaseRepository {
         start_vertex AS (
           SELECT id
           FROM ways_vertices_pgr
-          ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint(${startLon}, ${startLat}), 4326)
+          ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint(${startLon}, ${startLat}), ${SRID_WGS84})
           LIMIT 1
         ),
         end_vertex AS (
           SELECT id
           FROM ways_vertices_pgr
-          ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint(${endLon}, ${endLat}), 4326)
+          ORDER BY the_geom <-> ST_SetSRID(ST_MakePoint(${endLon}, ${endLat}), ${SRID_WGS84})
           LIMIT 1
         ),
         routing AS (
@@ -35,7 +39,7 @@ export class GeolocationRepository extends BaseRepository {
               FROM ways w
               LEFT JOIN LATERAL (
                 SELECT risk_level FROM "Incident" 
-                WHERE ST_DWithin(location::geography, w.the_geom::geography, 10) 
+                WHERE ST_DWithin(location::geography, w.the_geom::geography, ${SAFE_ROUTE_RADIUS_METERS}) 
                 ORDER BY risk_level ASC 
                 LIMIT 1
               ) i ON TRUE

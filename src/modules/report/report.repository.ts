@@ -10,15 +10,15 @@ import {
   ReportResult,
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
+import {
+  DATE_TOLERANCE_DAYS,
+  REPORT_MATCH_RADIUS_METERS,
+  SRID_WGS84,
+  TIME_TOLERANCE_HOURS,
+} from 'src/constants/map.constant';
 
 @Injectable()
 export class ReportRepository extends BaseRepository {
-  private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
-  private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
-  private readonly RADIUS_METERS = 25; // Radius from centroid
-  private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
-  private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
-
   public async getReportByUserEmail(
     email: string,
   ): Promise<ReportItemResult[]> {
@@ -195,11 +195,11 @@ export class ReportRepository extends BaseRepository {
         WHERE ic."id" = ${categoryId}
           AND ST_DWithin(
             i."location"::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geography,
-            i."radius" + ${this.RADIUS_METERS}
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${SRID_WGS84})::geography,
+            i."radius" + ${REPORT_MATCH_RADIUS_METERS}
           )
-          AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '${this.DATE_TOLERANCE_DAYS} day') AND (i."date_end" + INTERVAL '${this.DATE_TOLERANCE_DAYS} day')
-          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '${this.TIME_TOLERANCE_HOURS} hour') AND (i."time_end" + INTERVAL '${this.TIME_TOLERANCE_HOURS} hour')
+          AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '${DATE_TOLERANCE_DAYS} day') AND (i."date_end" + INTERVAL '${DATE_TOLERANCE_DAYS} day')
+          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '${TIME_TOLERANCE_HOURS} hour') AND (i."time_end" + INTERVAL '${TIME_TOLERANCE_HOURS} hour')
         LIMIT 1
       `);
 
@@ -238,7 +238,7 @@ export class ReportRepository extends BaseRepository {
           '${time}',
           '${time}',
           10,
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})
+          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${SRID_WGS84})
         )
         RETURNING id, date_start, date_end, time_start, time_end;
       `);
@@ -273,7 +273,7 @@ export class ReportRepository extends BaseRepository {
 
     const lat = report.latitude;
     const lon = report.longitude;
-    const reportPoint = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)::geography`;
+    const reportPoint = `ST_SetSRID(ST_MakePoint(${lon}, ${lat}), ${SRID_WGS84})::geography`;
 
     const [{ distance }] = await tx.$queryRawUnsafe<{ distance: number }[]>(`
       SELECT ST_Distance(
