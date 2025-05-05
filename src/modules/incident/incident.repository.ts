@@ -33,6 +33,7 @@ export class IncidentRepository extends BaseRepository {
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
             15000
           )
+        ORDER BY i.created_at DESC
       `;
     } catch (e) {
       throw handleError(e, this.logger);
@@ -78,6 +79,7 @@ export class IncidentRepository extends BaseRepository {
             take: 3,
           },
         },
+        orderBy: { createdAt: 'desc' },
         where: { incidentId: incident.id },
         take: 5,
       });
@@ -112,6 +114,7 @@ export class IncidentRepository extends BaseRepository {
             },
           },
         },
+        orderBy: { createdAt: 'desc' },
       });
     } catch (e) {
       throw handleError(e, this.logger);
