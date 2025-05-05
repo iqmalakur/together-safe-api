@@ -12,16 +12,16 @@ import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
 export const ApiLogin = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'perform login',
-      description: 'perform user login and get a jwt token',
+      summary: 'Perform login',
+      description: 'Perform user login and get a JWT token',
     }),
     ApiResponse({
       status: 200,
-      description: 'login successful',
+      description: 'Login successful',
       type: AuthResDto,
     }),
-    ApiBadRequest('email harus diisi!', 'unfilled email or password'),
-    ApiUnauthorized('email atau password salah!', 'invalid email or password'),
+    ApiBadRequest('Email harus diisi!', 'Unfilled email or password'),
+    ApiUnauthorized('Email atau password salah!', 'Invalid email or password'),
     ApiServerError(),
   );
 };
@@ -29,12 +29,12 @@ export const ApiLogin = (): MethodDecorator => {
 export const ApiRegister = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'perform registration',
-      description: 'register a new user',
+      summary: 'Perform registration',
+      description: 'Register a new user',
     }),
     ApiResponse({
       status: 201,
-      description: 'registration successful',
+      description: 'Registration successful',
       type: SuccessCreateDto,
       example: {
         id: 'ucup@gmail.com',
@@ -42,10 +42,10 @@ export const ApiRegister = (): MethodDecorator => {
       },
     }),
     ApiBadRequest(
-      'email harus diisi!',
-      'unfilled email or password or other required fields',
+      'Email harus diisi!',
+      'Unfilled email or password or other required fields',
     ),
-    ApiConflict('email sudah terdaftar!', 'email already registered'),
+    ApiConflict('Email sudah terdaftar!', 'Email already registered'),
     ApiServerError(),
   );
 };
@@ -53,16 +53,16 @@ export const ApiRegister = (): MethodDecorator => {
 export const ApiValidateToken = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'validate token',
-      description: 'validate the provided jwt token',
+      summary: 'Validate token',
+      description: 'Validate the provided JWT token',
     }),
     ApiResponse({
       status: 200,
-      description: 'token is valid',
+      description: 'Token is valid',
       type: AuthResDto,
     }),
-    ApiBadRequest('token harus diisi!', 'unfilled token'),
-    ApiUnauthorized('token tidak valid!', 'invalid token'),
+    ApiBadRequest('Token harus diisi!', 'Unfilled token'),
+    ApiUnauthorized('Token tidak valid!', 'Invalid token'),
     ApiServerError(),
   );
 };

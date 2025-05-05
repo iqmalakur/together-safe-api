@@ -9,18 +9,18 @@ import {
 export const ApiSearch = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'search locations',
-      description: 'search locations based on query keyword',
+      summary: 'Search locations',
+      description: 'Search locations based on query keyword',
     }),
     ApiResponse({
       status: 200,
-      description: 'search result',
+      description: 'Search result',
       type: GeocodingResDto,
       isArray: true,
     }),
     ApiBadRequest(
-      "query parameter 'q' wajib diisi sebagai query pencarian",
-      'missing or invalid search query',
+      "Query parameter 'q' wajib diisi sebagai query pencarian",
+      'Missing or invalid search query',
     ),
     ApiServerError(),
   );
@@ -29,17 +29,17 @@ export const ApiSearch = (): MethodDecorator => {
 export const ApiLocation = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get location detail',
-      description: 'get location information based on latitude and longitude',
+      summary: 'Get location detail',
+      description: 'Get location information based on latitude and longitude',
     }),
     ApiResponse({
       status: 200,
-      description: 'location result',
+      description: 'Location result',
       type: GeocodingResDto,
     }),
     ApiBadRequest(
-      'latitude tidak valid',
-      'missing or invalid latitude/longitude',
+      'Latitude tidak valid',
+      'Missing or invalid latitude/longitude',
     ),
     ApiServerError(),
   );
@@ -48,17 +48,17 @@ export const ApiLocation = (): MethodDecorator => {
 export const ApiSafeRoute = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get safe route',
-      description: 'get recommended safe route between two coordinates',
+      summary: 'Get safe route',
+      description: 'Get recommended safe route between two coordinates',
     }),
     ApiResponse({
       status: 200,
-      description: 'safe route result',
+      description: 'Safe route result',
       type: SafeRouteResDto,
     }),
     ApiBadRequest(
-      "query parameter 'startLatLon' wajib diisi sebagai lokasi awal",
-      'missing or invalid coordinates',
+      "Query parameter 'startLatLon' wajib diisi sebagai lokasi awal",
+      'Missing or invalid coordinates',
     ),
     ApiServerError(),
   );

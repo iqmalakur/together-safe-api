@@ -2,29 +2,31 @@ export type IncidentAttachment = {
   uri: string;
 };
 
-export type IncidentReportPreview = {
+export type IncidentReportItem = {
   id: string;
   description: string;
+  latitude: number;
+  longitude: number;
+  date: Date;
+  time: Date;
+  status: string;
   attachments: IncidentAttachment[];
 };
 
-export interface IncidentPreviewResult {
+export interface IncidentResult {
   id: string;
-  radius: number;
-  risk_level: string;
-  latitude: number;
-  longitude: number;
-}
-
-export interface IncidentDetailResult extends IncidentPreviewResult {
   category: string;
   status: string;
+  risk_level: string;
+  radius: number;
+  latitude: number;
+  longitude: number;
   date_start: Date;
   date_end: Date;
   time_start: Date;
   time_end: Date;
 }
 
-export interface IncidentSelection extends IncidentDetailResult {
-  reports: IncidentReportPreview[];
+export interface IncidentSelection extends IncidentResult {
+  reports: IncidentReportItem[];
 }

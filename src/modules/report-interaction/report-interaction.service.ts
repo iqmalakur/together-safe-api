@@ -76,7 +76,7 @@ export class ReportInteractionService extends AbstractLogger {
 
     if (!result) {
       throw new NotFoundException(
-        'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+        'Komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
       );
     }
 
@@ -100,7 +100,7 @@ export class ReportInteractionService extends AbstractLogger {
 
     if (!result) {
       throw new NotFoundException(
-        'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+        'Komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
       );
     }
 

@@ -7,61 +7,79 @@ import {
 
 export class ReportReqDto {
   @ApiProperty({ description: '`1`: Pembegalan, `2`: Kecelakaan' })
-  @IsNotEmpty({ message: 'kategori id tidak boleh kosong' })
-  public categoryId: number;
+  @IsNotEmpty({ message: 'Kategori ID tidak boleh kosong' })
+  public readonly categoryId: number;
 
   @ApiProperty({ description: 'example: Terjadi pembegalan di Cimahi' })
-  @IsNotEmpty({ message: 'deskripsi tidak boleh kosong' })
-  public description: string;
+  @IsNotEmpty({ message: 'Deskripsi tidak boleh kosong' })
+  public readonly description: string;
 
   @ApiProperty({
     description: 'example: -6.8862571,107.5205219 (latitude,longitude)',
   })
-  @IsNotEmpty({ message: 'lokasi tidak boleh kosong' })
+  @IsNotEmpty({ message: 'Lokasi tidak boleh kosong' })
   @Matches(/^-?\d{1,2}\.\d+,-?\d{1,3}\.\d+$/, {
-    message: 'format lokasi harus latitude,longitude',
+    message: 'Format lokasi harus `latitude,longitude`',
   })
-  public location: string;
+  public readonly location: string;
 
   @ApiProperty({ description: 'example: 2025-01-01' })
-  @IsNotEmpty({ message: 'tanggal tidak boleh kosong' })
+  @IsNotEmpty({ message: 'Tanggal tidak boleh kosong' })
   @Matches(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'format tanggal harus YYYY-MM-DD',
+    message: 'Format tanggal harus YYYY-MM-DD',
   })
-  public date: string;
+  public readonly date: string;
 
   @ApiProperty({ description: 'example: 21:30' })
-  @IsNotEmpty({ message: 'waktu tidak boleh kosong' })
+  @IsNotEmpty({ message: 'Waktu tidak boleh kosong' })
   @Matches(/^\d{2}:\d{2}$/, {
-    message: 'format waktu harus HH:mm',
+    message: 'Format waktu harus HH:mm',
   })
-  public time: string;
+  public readonly time: string;
 
   @ApiProperty({
-    description: 'media (multiple file)',
+    description: 'Media (multiple file)',
     type: 'array',
     items: {
       type: 'string',
       format: 'binary',
     },
   })
-  public media: Array<Express.Multer.File>;
+  public readonly media: Array<Express.Multer.File>;
 }
 
-export class ReportPreviewDto {
-  @ApiProperty({ example: 'abcdefghijklmn' })
-  public id: string;
+export class ReportItemDto {
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  public readonly id: string;
 
-  @ApiProperty({ example: 'Terjadi pembegalan di cimahi' })
-  public description: string;
+  @ApiProperty({ example: 'Terjadi pembegalan di Cimahi' })
+  public readonly description: string;
+
+  @ApiProperty({ example: '2025-01-01' })
+  public readonly date: string;
+
+  @ApiProperty({ example: '21:30' })
+  public readonly time: string;
+
+  @ApiProperty({ example: 'crowdsourced' })
+  public readonly status: string;
+
+  @ApiProperty({ example: 'Pembegalan' })
+  public readonly category: string;
+
+  @ApiProperty({
+    example:
+      'Jalan Warung Contong, Setiamanah, Cimahi, Jawa Barat, Jawa, 40524, Indonesia',
+  })
+  public readonly location: string;
 }
 
 export class ReportParamDto {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'report id',
+    description: 'Report ID',
   })
-  @IsUUID(4, { message: 'id tidak valid' })
+  @IsUUID(4, { message: 'ID tidak valid' })
   public readonly id: string;
 }
 

@@ -3,7 +3,7 @@ import { ApiBadRequest, ApiUnauthorized } from './api-response.decorator';
 
 export const ApiToken = (): MethodDecorator => {
   return applyDecorators(
-    ApiBadRequest('token is required', 'token is required'),
-    ApiUnauthorized('token tidak valid', 'invalid token'),
+    ApiBadRequest('Token harus diisi', 'Token is required'),
+    ApiUnauthorized('Token tidak valid', 'Invalid token'),
   );
 };

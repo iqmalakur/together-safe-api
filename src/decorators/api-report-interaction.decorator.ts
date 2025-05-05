@@ -14,19 +14,19 @@ import {
 export const ApiUserVote = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'get user vote on a report',
+      summary: 'Get user vote on a report',
       description:
-        'retrieve the vote submitted by the authenticated user for a specific report.',
+        'Retrieve the vote submitted by the authenticated user for a specific report',
     }),
     ApiResponse({
       status: 200,
-      description: 'user vote retrieved successfully',
+      description: 'User vote retrieved successfully',
       type: VoteResDto,
     }),
-    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest(
-      'token harus diisi atau reportId tidak valid',
-      'token is missing or reportId is invalid',
+      'Token harus diisi atau reportId tidak valid',
+      'Token is missing or reportId is invalid',
     ),
     ApiServerError(),
   );
@@ -35,16 +35,16 @@ export const ApiUserVote = (): MethodDecorator => {
 export const ApiVote = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'vote on a report',
-      description: 'allow the authenticated user to vote on a specific report.',
+      summary: 'Vote on a report',
+      description: 'Allow the authenticated user to vote on a specific report',
     }),
     ApiResponse({
       status: 200,
-      description: 'vote successfully recorded',
+      description: 'Vote successfully recorded',
       type: VoteResDto,
     }),
-    ApiUnauthorized('token tidak valid', 'token is not valid'),
-    ApiBadRequest('tipe vote tidak valid', 'invalid vote type or report id'),
+    ApiUnauthorized('Token tidak valid', 'Token is not valid'),
+    ApiBadRequest('Tipe vote tidak valid', 'Invalid vote type or report ID'),
     ApiServerError(),
   );
 };
@@ -52,19 +52,19 @@ export const ApiVote = (): MethodDecorator => {
 export const ApiComment = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'post a comment on a report',
+      summary: 'Post a comment on a report',
       description:
-        'allow the authenticated user to post a comment on a specific report.',
+        'Allow the authenticated user to post a comment on a specific report',
     }),
     ApiResponse({
       status: 201,
-      description: 'comment successfully posted',
+      description: 'Comment successfully posted',
       type: CommentResDto,
     }),
-    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest(
-      'komentar tidak boleh kosong',
-      'invalid comment format or report id',
+      'Komentar tidak boleh kosong',
+      'Invalid comment format or report ID',
     ),
     ApiServerError(),
   );
@@ -73,23 +73,23 @@ export const ApiComment = (): MethodDecorator => {
 export const ApiUpdateComment = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'update a comment on a report',
+      summary: 'Update a comment on a report',
       description:
-        'allow the authenticated user to update a comment on a specific report.',
+        'Allow the authenticated user to update a comment on a specific report',
     }),
     ApiResponse({
       status: 200,
-      description: 'comment successfully updated',
+      description: 'Comment successfully updated',
       type: CommentResDto,
     }),
-    ApiUnauthorized('token tidak valid', 'token is not valid'),
+    ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest(
-      'komentar tidak boleh kosong',
-      'invalid comment format or report id',
+      'Komentar tidak boleh kosong',
+      'Invalid comment format or report ID',
     ),
     ApiNotFound(
-      'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
-      'the comment was not found or is not owned by the user',
+      'Komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+      'The comment was not found or is not owned by the user',
     ),
     ApiServerError(),
   );
@@ -98,20 +98,20 @@ export const ApiUpdateComment = (): MethodDecorator => {
 export const ApiDeleteComment = (): MethodDecorator => {
   return applyDecorators(
     ApiOperation({
-      summary: 'delete a comment from a report',
+      summary: 'Delete a comment from a report',
       description:
-        'allow the authenticated user to delete a specific comment from a report.',
+        'Allow the authenticated user to delete a specific comment from a report',
     }),
     ApiResponse({
       status: 200,
-      description: 'comment successfully deleted',
+      description: 'Comment successfully deleted',
       type: CommentResDto,
     }),
-    ApiUnauthorized('token tidak valid', 'token is not valid'),
-    ApiBadRequest('id komentar tidak valid', 'invalid report id'),
+    ApiUnauthorized('Token tidak valid', 'Token is not valid'),
+    ApiBadRequest('ID komentar tidak valid', 'Invalid report ID'),
     ApiNotFound(
-      'komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
-      'the comment was not found or is not owned by the user',
+      'Komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+      'The comment was not found or is not owned by the user',
     ),
     ApiServerError(),
   );

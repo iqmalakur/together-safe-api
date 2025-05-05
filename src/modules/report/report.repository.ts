@@ -6,25 +6,34 @@ import {
   ReportRelatedIncident,
   ReportDetailResult,
   ReportInput,
-  ReportPreviewResult,
+  ReportItemResult,
   ReportResult,
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
 
 @Injectable()
 export class ReportRepository extends BaseRepository {
-  private readonly SRID_WGS84 = 4326; // Standard GPS coordinate system
-  private readonly SRID_WEB_MERCATOR = 3857; // Used for Web mapping (meters)
-  private readonly RADIUS_METERS = 25; // Radius from centroid
-  private readonly DATE_TOLERANCE_DAYS = 1; // Date tolerance before/after
-  private readonly TIME_TOLERANCE_HOURS = 1; // Time tolerance before/after
-
   public async getReportByUserEmail(
     email: string,
-  ): Promise<ReportPreviewResult[]> {
+  ): Promise<ReportItemResult[]> {
     return await this.prisma.report.findMany({
       where: { userEmail: email },
-      select: { id: true, description: true },
+      select: {
+        id: true,
+        description: true,
+        date: true,
+        time: true,
+        status: true,
+        latitude: true,
+        longitude: true,
+        incident: {
+          select: {
+            id: true,
+            category: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -181,11 +190,11 @@ export class ReportRepository extends BaseRepository {
         WHERE ic."id" = ${categoryId}
           AND ST_DWithin(
             i."location"::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})::geography,
-            i."radius" + ${this.RADIUS_METERS}
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            i."radius" + 25
           )
-          AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '${this.DATE_TOLERANCE_DAYS} day') AND (i."date_end" + INTERVAL '${this.DATE_TOLERANCE_DAYS} day')
-          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '${this.TIME_TOLERANCE_HOURS} hour') AND (i."time_end" + INTERVAL '${this.TIME_TOLERANCE_HOURS} hour')
+          AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '7 day') AND (i."date_end" + INTERVAL '7 day')
+          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
         LIMIT 1
       `);
 
@@ -224,7 +233,7 @@ export class ReportRepository extends BaseRepository {
           '${time}',
           '${time}',
           10,
-          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${this.SRID_WGS84})
+          ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)
         )
         RETURNING id, date_start, date_end, time_start, time_end;
       `);
@@ -276,10 +285,10 @@ export class ReportRepository extends BaseRepository {
     }
 
     if (data === '') return;
-    data = data.replace(/, $/, '');
 
     await tx.$executeRawUnsafe(`
-      UPDATE "Incident" SET ${data}
+      UPDATE "Incident"
+        SET ${data} updated_at = NOW()
       WHERE id = '${incident.id}'
     `);
 

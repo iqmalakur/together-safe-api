@@ -5,11 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
-import { ReportPreviewDto, ReportReqDto, ReportResDto } from './report.dto';
+import { ReportItemDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
-import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
+import { getDate, getFormattedDate, getTimeString } from 'src/utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
@@ -27,9 +27,28 @@ export class ReportService extends AbstractLogger {
 
   public async handleGetUserReport(
     user: UserJwtPayload,
-  ): Promise<ReportPreviewDto[]> {
-    const result = await this.repository.getReportByUserEmail(user.email);
-    return result as ReportPreviewDto[];
+  ): Promise<ReportItemDto[]> {
+    const reports = await this.repository.getReportByUserEmail(user.email);
+    const result: ReportItemDto[] = [];
+
+    for (const report of reports) {
+      const location = await this.apiService.reverseGeocode(
+        report.latitude,
+        report.longitude,
+      );
+
+      result.push({
+        id: report.id,
+        description: report.description,
+        date: getFormattedDate(report.date),
+        time: getTimeString(report.time, true),
+        status: report.status,
+        location: location.display_name,
+        category: report.incident.category.name,
+      });
+    }
+
+    return result;
   }
 
   public async handleGetReport(id: string): Promise<ReportResDto> {
@@ -76,7 +95,7 @@ export class ReportService extends AbstractLogger {
         ...result.user,
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
       },
-      date: getDateString(result.date),
+      date: getFormattedDate(result.date),
       time: getTimeString(result.time, true),
       latitude: latitude,
       longitude: longitude,
@@ -97,7 +116,7 @@ export class ReportService extends AbstractLogger {
 
     const isCategoryExists = await this.repository.checkCategory(categoryId);
     if (!isCategoryExists) {
-      throw new BadRequestException('kategori tidak valid');
+      throw new BadRequestException('Kategori tidak valid');
     }
 
     const splittedLocation = location.split(',');
@@ -129,7 +148,9 @@ export class ReportService extends AbstractLogger {
       );
 
       if (!isEligible) {
-        throw new ConflictException('Laporan serupa telah anda kirim hari ini');
+        throw new ConflictException(
+          `Laporan serupa telah anda kirim tanggal ${date}`,
+        );
       }
     }
 

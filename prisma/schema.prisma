@@ -33,7 +33,7 @@ model Report {
   longitude   Float
   date        DateTime         @db.Date
   time        DateTime         @db.Time
-  status      ReportStatus     @default(pending)
+  status      ReportStatus     @default(crowdsourced)
   createdAt   DateTime         @db.Timestamp() @default(now()) @map("created_at")
   deletedAt   DateTime?        @db.Timestamp() @map("deleted_at")
 
@@ -131,8 +131,8 @@ enum RiskLevel {
 }
 
 enum ReportStatus {
+  crowdsourced
   verified
-  pending
   invalid
 }
 

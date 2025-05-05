@@ -3,24 +3,24 @@ import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class LatLonQueryDto {
   @ApiProperty({ example: '-6.9175' })
-  @IsNotEmpty({ message: 'latitude wajib diisi' })
+  @IsNotEmpty({ message: 'Latitude wajib diisi' })
   @Matches(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)+$/, {
-    message: 'latitude tidak valid',
+    message: 'Latitude tidak valid',
   })
-  public lat: string;
+  public readonly lat: string;
 
   @ApiProperty({ example: '107.6191' })
-  @IsNotEmpty({ message: 'longitude wajib diisi' })
+  @IsNotEmpty({ message: 'Longitude wajib diisi' })
   @Matches(/^[-+]?((1[0-7]\d)|([1-9]?\d))(\.\d+)?$|^[-+]?180(\.0+)?$/, {
-    message: 'longitude tidak valid',
+    message: 'Longitude tidak valid',
   })
-  public lon: string;
+  public readonly lon: string;
 }
 
 export class GeocodingQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
   @IsString({
-    message: 'query parameter harus berupa teks',
+    message: 'Query parameter harus berupa teks',
   })
   public readonly q: string;
 }
@@ -45,10 +45,10 @@ export class SafeRouteQueryDto {
     description: 'start location',
   })
   @IsNotEmpty({
-    message: "query parameter 'startLatLon' wajib diisi sebagai lokasi awal",
+    message: "Query parameter 'startLatLon' wajib diisi sebagai lokasi awal",
   })
   @Matches(/^-?\d{1,2}\.\d+,-?\d{1,3}\.\d+$/, {
-    message: 'format lokasi awal harus latitude,longitude',
+    message: 'Format lokasi awal harus latitude,longitude',
   })
   public readonly startLatLon: string;
 
@@ -57,10 +57,10 @@ export class SafeRouteQueryDto {
     description: 'end location',
   })
   @IsNotEmpty({
-    message: "query parameter 'endLatLon' wajib diisi sebagai lokasi akhir",
+    message: "Query parameter 'endLatLon' wajib diisi sebagai lokasi akhir",
   })
   @Matches(/^-?\d{1,2}\.\d+,-?\d{1,3}\.\d+$/, {
-    message: 'format lokasi akhir harus latitude,longitude',
+    message: 'Format lokasi akhir harus latitude,longitude',
   })
   public readonly endLatLon: string;
 }
