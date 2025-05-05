@@ -4,7 +4,6 @@ import { GeocodeResult } from 'src/modules/shared/shared.type';
 import { handleError } from 'src/utils/common.util';
 import { LoggerUtil } from 'src/utils/logger.util';
 import { PrismaService } from './prisma.service';
-import { SRID_WGS84 } from 'src/constants/map.constant';
 
 @Injectable()
 export class ApiService {
@@ -27,7 +26,7 @@ export class ApiService {
     const cached = await this.prisma.$queryRawUnsafe<GeocodeResult[]>(`
       SELECT name, display_name, lat, lon
       FROM "NominatimLocation"
-      WHERE ST_Contains(location, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${SRID_WGS84}))
+      WHERE ST_Contains(location, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
       LIMIT 1;
     `);
 

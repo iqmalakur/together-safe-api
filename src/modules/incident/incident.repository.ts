@@ -4,10 +4,6 @@ import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import { ReportItemResult } from '../report/report.type';
 import { IncidentCategory } from '@prisma/client';
-import {
-  USER_NEARBY_RADIUS_METERS,
-  SRID_WGS84,
-} from 'src/constants/map.constant';
 
 @Injectable()
 export class IncidentRepository extends BaseRepository {
@@ -34,8 +30,8 @@ export class IncidentRepository extends BaseRepository {
         WHERE status = 'active' AND
           ST_DWithin(
             location::geography,
-            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), ${SRID_WGS84})::geography,
-            ${USER_NEARBY_RADIUS_METERS}
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            15000
           )
       `;
     } catch (e) {
