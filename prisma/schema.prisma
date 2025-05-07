@@ -34,6 +34,7 @@ model Report {
   date        DateTime         @db.Date
   time        DateTime         @db.Time
   status      ReportStatus     @default(crowdsourced)
+  isAnonymous Boolean          @default(false) @map("is_anonymous")
   createdAt   DateTime         @db.Timestamp() @default(now()) @map("created_at")
   deletedAt   DateTime?        @db.Timestamp() @map("deleted_at")
 

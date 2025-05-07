@@ -35,6 +35,7 @@ CREATE TABLE "Report" (
     "date" DATE NOT NULL,
     "time" TIME NOT NULL,
     "status" "ReportStatus" NOT NULL DEFAULT 'crowdsourced',
+    "is_anonymous" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP,
     "user_email" VARCHAR(320) NOT NULL,

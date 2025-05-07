@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID, Matches } from 'class-validator';
+import {
+  IsBooleanString,
+  IsNotEmpty,
+  IsNumberString,
+  IsUUID,
+  Matches,
+} from 'class-validator';
 import {
   CommentResDto,
   ReportUserDto,
@@ -8,7 +14,8 @@ import {
 export class ReportReqDto {
   @ApiProperty({ description: '`1`: Pembegalan, `2`: Kecelakaan' })
   @IsNotEmpty({ message: 'Kategori ID tidak boleh kosong' })
-  public readonly categoryId: number;
+  @IsNumberString({}, { message: 'Kategori ID tidak valid' })
+  public readonly categoryId: string;
 
   @ApiProperty({ description: 'example: Terjadi pembegalan di Cimahi' })
   @IsNotEmpty({ message: 'Deskripsi tidak boleh kosong' })
@@ -36,6 +43,11 @@ export class ReportReqDto {
     message: 'Format waktu harus HH:mm',
   })
   public readonly time: string;
+
+  @ApiProperty({ description: 'example: false' })
+  @IsNotEmpty({ message: 'IsAnonymous tidak boleh kosong' })
+  @IsBooleanString({ message: 'IsAnonymous tidak valid' })
+  public readonly isAnonymous: string;
 
   @ApiProperty({
     description: 'Media (multiple file)',
@@ -100,6 +112,9 @@ export class ReportResDto {
 
   @ApiProperty({ type: ReportUserDto })
   public readonly user: ReportUserDto;
+
+  @ApiProperty({ example: false })
+  public readonly isAnonymous: boolean;
 
   @ApiProperty({ example: 'Terjadi pembegalan motor di Cimahi' })
   public readonly description: string;

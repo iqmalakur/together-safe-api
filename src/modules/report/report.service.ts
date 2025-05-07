@@ -90,6 +90,7 @@ export class ReportService extends AbstractLogger {
     return {
       id: result.id,
       description: result.description,
+      isAnonymous: result.isAnonymous,
       status: result.status,
       user: {
         ...result.user,
@@ -112,7 +113,9 @@ export class ReportService extends AbstractLogger {
     user: UserJwtPayload,
     data: ReportReqDto,
   ): Promise<SuccessCreateDto> {
-    const { categoryId, description, date, time, location, media } = data;
+    const { description, date, time, location, media } = data;
+    const categoryId = parseInt(data.categoryId);
+    const isAnonymous = data.isAnonymous.toLowerCase() === 'true';
 
     const isCategoryExists = await this.repository.checkCategory(categoryId);
     if (!isCategoryExists) {
@@ -125,6 +128,7 @@ export class ReportService extends AbstractLogger {
 
     const reportInput: ReportInput = {
       categoryId,
+      isAnonymous,
       description,
       date,
       time,
