@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { IncidentResult, IncidentSelection } from './incident.type';
+import {
+  IncidentResult,
+  IncidentSelection,
+  VoteCountResult,
+} from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
 import { ReportItemResult } from '../report/report.type';
@@ -28,12 +32,14 @@ export class IncidentRepository extends BaseRepository {
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic.id = i.category_id
         WHERE status = 'active' AND
+          -- CURRENT_DATE BETWEEN i.date_start AND (i.date_end + INTERVAL '7 days') AND
+          -- CURRENT_TIME BETWEEN (i.time_start - INTERVAL '30 minutes') AND (i.time_end + INTERVAL '30 minutes') AND
           ST_DWithin(
             location::geography,
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
             15000
           )
-        ORDER BY i.created_at DESC
+        ORDER BY i.updated_at DESC
       `;
     } catch (e) {
       throw handleError(e, this.logger);
@@ -84,8 +90,20 @@ export class IncidentRepository extends BaseRepository {
         take: 5,
       });
 
+      this.logger.debug(`Incident ID: ${incident.id}`);
+
+      const votes = await this.prisma.$queryRaw<VoteCountResult[]>`
+        SELECT
+          COUNT(*) FILTER (WHERE v."type" = 'upvote')::int AS upvote_count,
+          COUNT(*) FILTER (WHERE v."type" = 'downvote')::int AS downvote_count
+        FROM "Vote" v
+        INNER JOIN "Report" r ON v."report_id" = r."id"
+        WHERE r."incident_id" = ${incident.id}::uuid
+      `;
+
       return {
         ...incident,
+        ...votes[0],
         reports,
       };
     } catch (e) {

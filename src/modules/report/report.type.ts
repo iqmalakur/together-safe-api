@@ -12,6 +12,7 @@ export type ReportInput = {
   time: string;
   mediaUrls: string[];
   categoryId: number;
+  isAnonymous: boolean;
 };
 
 export type ReportRelatedIncident = {
@@ -62,6 +63,7 @@ export type ReportVote = {
 export type ReportDetailResult = {
   id: string;
   description: string;
+  isAnonymous: boolean;
   date: Date;
   time: Date;
   status: string;

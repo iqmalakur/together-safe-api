@@ -98,6 +98,8 @@ export class IncidentService extends AbstractLogger {
       location: location.display_name,
       date: this.getDateRange(incident.date_start, incident.date_end),
       time: this.getTimeRange(incident.time_start, incident.time_end),
+      upvoteCount: incident.upvote_count,
+      downvoteCount: incident.downvote_count,
       reports,
       mediaUrls,
     };

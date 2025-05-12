@@ -43,6 +43,7 @@ export class ReportRepository extends BaseRepository {
       select: {
         id: true,
         description: true,
+        isAnonymous: true,
         date: true,
         time: true,
         status: true,
@@ -103,6 +104,7 @@ export class ReportRepository extends BaseRepository {
   ): Promise<ReportResult> {
     try {
       const {
+        isAnonymous,
         userEmail,
         description,
         latitude,
@@ -116,6 +118,7 @@ export class ReportRepository extends BaseRepository {
         const report = await tx.report.create({
           data: {
             userEmail,
+            isAnonymous,
             incidentId: incident.id,
             description,
             latitude,
