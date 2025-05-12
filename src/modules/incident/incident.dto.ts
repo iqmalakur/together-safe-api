@@ -62,6 +62,12 @@ export class IncidentDetailResDto {
   @ApiProperty({ example: 'active' })
   public readonly status: string;
 
+  @ApiProperty({ example: 10 })
+  public readonly upvoteCount: number;
+
+  @ApiProperty({ example: 2 })
+  public readonly downvoteCount: number;
+
   @ApiProperty({
     example: ['https://example.com/image.jpg', 'https://example.com/video.mp4'],
   })

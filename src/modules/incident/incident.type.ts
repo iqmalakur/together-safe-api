@@ -27,6 +27,11 @@ export interface IncidentResult {
   time_end: Date;
 }
 
-export interface IncidentSelection extends IncidentResult {
+export interface VoteCountResult {
+  upvote_count: 0;
+  downvote_count: 0;
+}
+
+export interface IncidentSelection extends IncidentResult, VoteCountResult {
   reports: IncidentReportItem[];
 }
