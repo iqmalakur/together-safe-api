@@ -10,10 +10,22 @@ async function main() {
   await prisma.$transaction(async (tx) => {
     // Seed IncidentCategory
     const categoryPembegalan = await tx.incidentCategory.create({
-      data: { name: 'Pembegalan' },
+      data: { name: 'Pembegalan', riskLevel: 'high' },
     });
-    await tx.incidentCategory.create({
-      data: { name: 'Kecelakaan' },
+    await tx.incidentCategory.createMany({
+      data: [
+        { name: 'Kecelakaan', riskLevel: 'high' },
+        { name: 'Perampasan atau Paksaan', riskLevel: 'high' },
+        { name: 'Kebakaran dan Ledakan', riskLevel: 'high' },
+        { name: 'Bencana Alam dan Kondisi Darurat', riskLevel: 'high' },
+        { name: 'Kekerasan Fisik dan Kriminalitas', riskLevel: 'high' },
+        { name: 'Pencurian dan Perampokan', riskLevel: 'medium' },
+        { name: 'Pelecehan dan Ancaman Pribadi', riskLevel: 'medium' },
+        { name: 'Situasi Darurat Medis', riskLevel: 'medium' },
+        { name: 'Kecelakaan dan Kejadian Lalu Lintas', riskLevel: 'medium' },
+        { name: 'Gangguan Ketertiban Umum', riskLevel: 'low' },
+        { name: 'Gangguan Keamanan Lingkungan', riskLevel: 'low' },
+      ],
     });
 
     // Seed Users
