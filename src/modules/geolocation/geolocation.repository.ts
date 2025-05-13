@@ -35,7 +35,8 @@ export class GeolocationRepository extends BaseRepository {
               FROM ways w
               LEFT JOIN LATERAL (
                 SELECT risk_level FROM "Incident" 
-                WHERE ST_DWithin(location::geography, w.the_geom::geography, 10) 
+                WHERE ST_DWithin(location::geography, w.the_geom::geography, 10)
+                  AND status = 'active' 
                 ORDER BY risk_level ASC 
                 LIMIT 1
               ) i ON TRUE
