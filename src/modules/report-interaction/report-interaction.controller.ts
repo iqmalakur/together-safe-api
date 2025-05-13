@@ -18,6 +18,7 @@ import {
   CommentReqDto,
   CommentResDto,
   ReportIdParamDto,
+  UserVoteResDto,
   VoteReqDto,
   VoteResDto,
 } from './report-interaction.dto';
@@ -45,7 +46,7 @@ export class ReportInteractionController extends AbstractLogger {
   public async userVote(
     @Request() req: AuthRequest,
     @Param() param: ReportIdParamDto,
-  ): Promise<VoteResDto> {
+  ): Promise<UserVoteResDto> {
     const userEmail = req.user.email;
     const { reportId } = param;
 
@@ -64,9 +65,14 @@ export class ReportInteractionController extends AbstractLogger {
 
     const userEmail = req.user.email;
     const { reportId } = param;
-    const { voteType } = body;
+    const { prevVoteType, newVoteType } = body;
 
-    return this.service.handleVote(userEmail, reportId, voteType as VoteType);
+    return this.service.handleVote(
+      userEmail,
+      reportId,
+      prevVoteType as VoteType,
+      newVoteType as VoteType,
+    );
   }
 
   @Post(':reportId/comment')

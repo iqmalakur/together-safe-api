@@ -19,6 +19,18 @@ export class ReportInteractionRepository extends BaseRepository {
     }
   }
 
+  public async getReporterEmail(reportId: string): Promise<string | null> {
+    try {
+      const result = await this.prisma.report.findFirst({
+        where: { id: reportId },
+        select: { userEmail: true },
+      });
+      return result?.userEmail || null;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
   public async createOrUpdateVote(
     userEmail: string,
     reportId: string,
@@ -40,6 +52,22 @@ export class ReportInteractionRepository extends BaseRepository {
         },
         update: { type },
       });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async updateAndGetUserReputation(
+    reporterEmail: string,
+    delta: number,
+  ): Promise<number> {
+    try {
+      const result = await this.prisma.user.update({
+        where: { email: reporterEmail },
+        data: { reputation: { increment: delta } },
+        select: { reputation: true },
+      });
+      return result.reputation;
     } catch (e) {
       throw handleError(e, this.logger);
     }

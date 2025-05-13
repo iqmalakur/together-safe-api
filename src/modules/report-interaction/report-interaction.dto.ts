@@ -24,10 +24,15 @@ export class VoteReqDto {
   @ApiProperty({ example: 'upvote' })
   @IsOptional()
   @IsEnum(VoteType, { message: 'Tipe vote tidak valid' })
-  public readonly voteType?: VoteType;
+  public readonly prevVoteType?: VoteType;
+
+  @ApiProperty({ example: 'upvote' })
+  @IsOptional()
+  @IsEnum(VoteType, { message: 'Tipe vote tidak valid' })
+  public readonly newVoteType?: VoteType;
 }
 
-export class VoteResDto {
+export class UserVoteResDto {
   @ApiProperty({ example: 'john@example.com' })
   public readonly userEmail: string;
 
@@ -36,6 +41,11 @@ export class VoteResDto {
 
   @ApiProperty({ example: 'upvote' })
   public readonly voteType?: VoteType;
+}
+
+export class VoteResDto extends UserVoteResDto {
+  @ApiProperty({ example: 10 })
+  public readonly reporterReputation: number;
 }
 
 export class CommentReqDto {

@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   ApiBadRequest,
+  ApiConflict,
   ApiNotFound,
   ApiServerError,
   ApiUnauthorized,
@@ -27,6 +28,11 @@ export const ApiUserVote = (): MethodDecorator => {
     ApiBadRequest(
       'Token harus diisi atau reportId tidak valid',
       'Token is missing or reportId is invalid',
+    ),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
+    ApiConflict(
+      'Anda tidak dapat melakukan vote pada laporan Anda',
+      'Self vote',
     ),
     ApiServerError(),
   );
