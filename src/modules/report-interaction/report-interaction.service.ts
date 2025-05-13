@@ -1,7 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
-import { CommentResDto, VoteResDto } from './report-interaction.dto';
+import {
+  CommentResDto,
+  UserVoteResDto,
+  VoteResDto,
+} from './report-interaction.dto';
 import { VoteType } from '@prisma/client';
 import { getFileUrlOrNull } from 'src/utils/common.util';
 
@@ -14,7 +22,7 @@ export class ReportInteractionService extends AbstractLogger {
   public async handleUserVote(
     userEmail: string,
     reportId: string,
-  ): Promise<VoteResDto> {
+  ): Promise<UserVoteResDto> {
     const result = await this.repository.findUserVote(userEmail, reportId);
 
     if (!result) {
@@ -25,20 +33,50 @@ export class ReportInteractionService extends AbstractLogger {
       };
     }
 
-    return result as VoteResDto;
+    return result as UserVoteResDto;
   }
 
   public async handleVote(
     userEmail: string,
     reportId: string,
-    voteType?: VoteType,
+    prevVoteType: VoteType,
+    newVoteType: VoteType,
   ): Promise<VoteResDto> {
+    const reporterEmail = await this.repository.getReporterEmail(reportId);
+
+    if (!reporterEmail) {
+      throw new NotFoundException('Laporan tidak ditemukan');
+    } else if (userEmail === reporterEmail) {
+      throw new ConflictException(
+        'Anda tidak dapat melakukan vote pada laporan Anda',
+      );
+    }
+
     const result = await this.repository.createOrUpdateVote(
       userEmail,
       reportId,
-      voteType,
+      newVoteType,
     );
-    return result as VoteResDto;
+
+    let reputationDelta = 0;
+    if (!prevVoteType && newVoteType === 'upvote') reputationDelta = 1;
+    else if (!prevVoteType && newVoteType === 'downvote') reputationDelta = -1;
+    else if (prevVoteType === 'upvote' && newVoteType === 'downvote')
+      reputationDelta = -2;
+    else if (prevVoteType === 'upvote' && !newVoteType) reputationDelta = -1;
+    else if (prevVoteType === 'downvote' && newVoteType === 'upvote')
+      reputationDelta = 2;
+    else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
+
+    const reputation = await this.repository.updateAndGetUserReputation(
+      reporterEmail,
+      reputationDelta,
+    );
+
+    return {
+      ...result,
+      reporterReputation: reputation,
+    };
   }
 
   public async handleCreateComment(
