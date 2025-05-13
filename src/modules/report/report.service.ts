@@ -138,11 +138,22 @@ export class ReportService extends AbstractLogger {
       mediaUrls: [],
     };
 
+    const riskLevel = await this.repository.getRiskLevelByCategory(
+      reportInput.categoryId,
+    );
+
+    if (!riskLevel) {
+      throw new BadRequestException('Kategori tidak valid');
+    }
+
     let relatedIncident =
       await this.repository.findRelatedIncident(reportInput);
 
     if (!relatedIncident) {
-      relatedIncident = await this.repository.createIncident(reportInput);
+      relatedIncident = await this.repository.createIncident(
+        reportInput,
+        riskLevel,
+      );
       this.logger.info(`New incident created with ID ${relatedIncident.id}`);
     } else {
       const isEligible = await this.repository.checkReportEligibility(

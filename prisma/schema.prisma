@@ -74,6 +74,7 @@ model Incident {
 model IncidentCategory {
   id        Int        @id @default(autoincrement())
   name      String     @db.VarChar(100)
+  riskLevel RiskLevel
 
   incidents Incident[]
 }

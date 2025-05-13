@@ -207,8 +207,23 @@ export class ReportRepository extends BaseRepository {
     }
   }
 
+  public async getRiskLevelByCategory(
+    categoryId: number,
+  ): Promise<string | undefined> {
+    try {
+      const result = await this.prisma.incidentCategory.findFirst({
+        where: { id: categoryId },
+        select: { riskLevel: true },
+      });
+      return result?.riskLevel;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
   public async createIncident(
     report: ReportInput,
+    riskLevel: string,
   ): Promise<ReportRelatedIncident> {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
@@ -229,7 +244,7 @@ export class ReportRepository extends BaseRepository {
         )
         VALUES (
           ${categoryId},
-          'medium',
+          '${riskLevel}',
           'active',
           '${date}',
           '${date}',
