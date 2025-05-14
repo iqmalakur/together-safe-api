@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { Vote, VoteType } from '@prisma/client';
-import { ReportComment } from './report-interaction.type';
+import { ReportStatus, Vote, VoteType } from '@prisma/client';
+import { ReportComment, ReportVoteResult } from './report-interaction.type';
 
 @Injectable()
 export class ReportInteractionRepository extends BaseRepository {
@@ -19,13 +19,23 @@ export class ReportInteractionRepository extends BaseRepository {
     }
   }
 
-  public async getReporterEmail(reportId: string): Promise<string | null> {
+  public async findReport(reportId: string): Promise<ReportVoteResult | null> {
     try {
-      const result = await this.prisma.report.findFirst({
+      return this.prisma.report.findFirst({
         where: { id: reportId },
-        select: { userEmail: true },
+        select: { userEmail: true, votes: { select: { type: true } } },
       });
-      return result?.userEmail || null;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async updateReportStatus(reportId: string, status: ReportStatus) {
+    try {
+      await this.prisma.report.update({
+        where: { id: reportId },
+        data: { status },
+      });
     } catch (e) {
       throw handleError(e, this.logger);
     }

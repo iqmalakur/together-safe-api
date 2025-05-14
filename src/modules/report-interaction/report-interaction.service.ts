@@ -10,7 +10,7 @@ import {
   UserVoteResDto,
   VoteResDto,
 } from './report-interaction.dto';
-import { VoteType } from '@prisma/client';
+import { ReportStatus, VoteType } from '@prisma/client';
 import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
@@ -42,11 +42,11 @@ export class ReportInteractionService extends AbstractLogger {
     prevVoteType: VoteType,
     newVoteType: VoteType,
   ): Promise<VoteResDto> {
-    const reporterEmail = await this.repository.getReporterEmail(reportId);
+    const report = await this.repository.findReport(reportId);
 
-    if (!reporterEmail) {
+    if (!report) {
       throw new NotFoundException('Laporan tidak ditemukan');
-    } else if (userEmail === reporterEmail) {
+    } else if (userEmail === report.userEmail) {
       throw new ConflictException(
         'Anda tidak dapat melakukan vote pada laporan Anda',
       );
@@ -69,9 +69,11 @@ export class ReportInteractionService extends AbstractLogger {
     else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
 
     const reputation = await this.repository.updateAndGetUserReputation(
-      reporterEmail,
+      report.userEmail,
       reputationDelta,
     );
+
+    this.checkReportValidity(reportId);
 
     return {
       ...result,
@@ -152,5 +154,47 @@ export class ReportInteractionService extends AbstractLogger {
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
       },
     };
+  }
+
+  private async checkReportValidity(reportId: string) {
+    const report = await this.repository.findReport(reportId);
+
+    if (!report) {
+      this.logger.debug('Laporan tidak ditemukan');
+      return;
+    }
+
+    const upvotes = report.votes.filter(
+      (vote) => vote.type === 'upvote',
+    ).length;
+    const downvotes = report.votes.filter(
+      (vote) => vote.type === 'downvote',
+    ).length;
+
+    const status = this.calculateReportStatus(upvotes, downvotes);
+    await this.repository.updateReportStatus(reportId, status);
+  }
+
+  private calculateReportStatus(
+    upvotes: number,
+    downvotes: number,
+  ): ReportStatus {
+    const minVotes = 10;
+
+    const totalVotes = upvotes + downvotes;
+    if (totalVotes < minVotes) {
+      return 'crowdsourced';
+    }
+
+    const validPercentage = (upvotes / totalVotes) * 100;
+    const invalidPercentage = (downvotes / totalVotes) * 100;
+
+    if (validPercentage >= 80) {
+      return 'verified';
+    } else if (invalidPercentage >= 60) {
+      return 'invalid';
+    }
+
+    return 'crowdsourced';
   }
 }
