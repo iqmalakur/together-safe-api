@@ -23,7 +23,12 @@ export class ReportInteractionRepository extends BaseRepository {
     try {
       return this.prisma.report.findFirst({
         where: { id: reportId },
-        select: { userEmail: true, votes: { select: { type: true } } },
+        select: {
+          incidentId: true,
+          userEmail: true,
+          isAnonymous: true,
+          votes: { select: { type: true } },
+        },
       });
     } catch (e) {
       throw handleError(e, this.logger);

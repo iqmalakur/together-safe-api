@@ -59,14 +59,18 @@ export class ReportInteractionService extends AbstractLogger {
     );
 
     let reputationDelta = 0;
-    if (!prevVoteType && newVoteType === 'upvote') reputationDelta = 1;
-    else if (!prevVoteType && newVoteType === 'downvote') reputationDelta = -1;
-    else if (prevVoteType === 'upvote' && newVoteType === 'downvote')
-      reputationDelta = -2;
-    else if (prevVoteType === 'upvote' && !newVoteType) reputationDelta = -1;
-    else if (prevVoteType === 'downvote' && newVoteType === 'upvote')
-      reputationDelta = 2;
-    else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
+
+    if (!report.isAnonymous) {
+      if (!prevVoteType && newVoteType === 'upvote') reputationDelta = 1;
+      else if (!prevVoteType && newVoteType === 'downvote')
+        reputationDelta = -1;
+      else if (prevVoteType === 'upvote' && newVoteType === 'downvote')
+        reputationDelta = -2;
+      else if (prevVoteType === 'upvote' && !newVoteType) reputationDelta = -1;
+      else if (prevVoteType === 'downvote' && newVoteType === 'upvote')
+        reputationDelta = 2;
+      else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
+    }
 
     const reputation = await this.repository.updateAndGetUserReputation(
       report.userEmail,

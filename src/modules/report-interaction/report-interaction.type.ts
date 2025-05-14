@@ -1,7 +1,9 @@
 import { VoteType } from '@prisma/client';
 
 export type ReportVoteResult = {
+  incidentId: string;
   userEmail: string;
+  isAnonymous: boolean;
   votes: { type: VoteType | null }[];
 };
 
