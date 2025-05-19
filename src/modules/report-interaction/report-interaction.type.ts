@@ -11,7 +11,6 @@ export type ReportUserProfile = {
   email: string;
   name: string;
   profilePhoto: string | null;
-  reputation: number;
 };
 
 export type ReportComment = {

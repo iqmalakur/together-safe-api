@@ -42,7 +42,6 @@ export class ReportService extends AbstractLogger {
         description: report.description,
         date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
-        status: report.status,
         location: location.display_name,
         category: report.incident.category.name,
       });
@@ -91,7 +90,6 @@ export class ReportService extends AbstractLogger {
       id: result.id,
       description: result.description,
       isAnonymous: result.isAnonymous,
-      status: result.status,
       user: {
         ...result.user,
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
@@ -138,11 +136,9 @@ export class ReportService extends AbstractLogger {
       mediaUrls: [],
     };
 
-    const riskLevel = await this.repository.getRiskLevelByCategory(
-      reportInput.categoryId,
-    );
+    const category = await this.repository.getCategory(reportInput.categoryId);
 
-    if (!riskLevel) {
+    if (!category) {
       throw new BadRequestException('Kategori tidak valid');
     }
 
@@ -152,7 +148,7 @@ export class ReportService extends AbstractLogger {
     if (!relatedIncident) {
       relatedIncident = await this.repository.createIncident(
         reportInput,
-        riskLevel,
+        category.minRiskLevel,
       );
       this.logger.info(`New incident created with ID ${relatedIncident.id}`);
     } else {

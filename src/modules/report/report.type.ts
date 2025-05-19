@@ -45,7 +45,6 @@ export type ReportItemResult = {
   longitude: number;
   date: Date;
   time: Date;
-  status: string;
 };
 
 export type ReportCategory = {
@@ -66,7 +65,6 @@ export type ReportDetailResult = {
   isAnonymous: boolean;
   date: Date;
   time: Date;
-  status: string;
   latitude: number;
   longitude: number;
   incident: ReportIncident;

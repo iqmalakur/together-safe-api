@@ -30,7 +30,7 @@ export class IncidentResDto {
   @ApiProperty({ example: '20:00' })
   public readonly time: string;
 
-  @ApiProperty({ example: 'active' })
+  @ApiProperty({ example: 'pending' })
   public readonly status: string;
 
   @ApiProperty({ example: 10 })
@@ -59,7 +59,7 @@ export class IncidentDetailResDto {
   @ApiProperty({ example: '20:00' })
   public readonly time: string;
 
-  @ApiProperty({ example: 'active' })
+  @ApiProperty({ example: 'pending' })
   public readonly status: string;
 
   @ApiProperty({ example: 10 })

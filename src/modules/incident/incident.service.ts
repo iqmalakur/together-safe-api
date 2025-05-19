@@ -76,7 +76,6 @@ export class IncidentService extends AbstractLogger {
         description: report.description,
         date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
-        status: report.status,
         location: location.display_name,
         category: incident.category,
       });
@@ -120,7 +119,6 @@ export class IncidentService extends AbstractLogger {
         description: report.description,
         date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
-        status: report.status,
         location: location.display_name,
         category: report.incident.category.name,
       });

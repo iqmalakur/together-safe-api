@@ -31,7 +31,7 @@ export class IncidentRepository extends BaseRepository {
           ic.name AS category
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic.id = i.category_id
-        WHERE status = 'active' AND
+        WHERE status IN ('admin_verified', 'verified', 'pending') AND
           -- CURRENT_DATE BETWEEN i.date_start AND (i.date_end + INTERVAL '7 days') AND
           -- CURRENT_TIME BETWEEN (i.time_start - INTERVAL '30 minutes') AND (i.time_end + INTERVAL '30 minutes') AND
           ST_DWithin(
@@ -77,7 +77,6 @@ export class IncidentRepository extends BaseRepository {
           description: true,
           date: true,
           time: true,
-          status: true,
           latitude: true,
           longitude: true,
           attachments: {
@@ -122,7 +121,6 @@ export class IncidentRepository extends BaseRepository {
           description: true,
           date: true,
           time: true,
-          status: true,
           latitude: true,
           longitude: true,
           incident: {

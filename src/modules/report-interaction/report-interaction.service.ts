@@ -5,12 +5,8 @@ import {
 } from '@nestjs/common';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
-import {
-  CommentResDto,
-  UserVoteResDto,
-  VoteResDto,
-} from './report-interaction.dto';
-import { ReportStatus, VoteType } from '@prisma/client';
+import { CommentResDto, VoteResDto } from './report-interaction.dto';
+import { VoteType } from '@prisma/client';
 import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
@@ -22,7 +18,7 @@ export class ReportInteractionService extends AbstractLogger {
   public async handleUserVote(
     userEmail: string,
     reportId: string,
-  ): Promise<UserVoteResDto> {
+  ): Promise<VoteResDto> {
     const result = await this.repository.findUserVote(userEmail, reportId);
 
     if (!result) {
@@ -33,14 +29,13 @@ export class ReportInteractionService extends AbstractLogger {
       };
     }
 
-    return result as UserVoteResDto;
+    return result as VoteResDto;
   }
 
   public async handleVote(
     userEmail: string,
     reportId: string,
-    prevVoteType: VoteType,
-    newVoteType: VoteType,
+    voteType: VoteType,
   ): Promise<VoteResDto> {
     const report = await this.repository.findReport(reportId);
 
@@ -55,34 +50,12 @@ export class ReportInteractionService extends AbstractLogger {
     const result = await this.repository.createOrUpdateVote(
       userEmail,
       reportId,
-      newVoteType,
-    );
-
-    let reputationDelta = 0;
-
-    if (!report.isAnonymous) {
-      if (!prevVoteType && newVoteType === 'upvote') reputationDelta = 1;
-      else if (!prevVoteType && newVoteType === 'downvote')
-        reputationDelta = -1;
-      else if (prevVoteType === 'upvote' && newVoteType === 'downvote')
-        reputationDelta = -2;
-      else if (prevVoteType === 'upvote' && !newVoteType) reputationDelta = -1;
-      else if (prevVoteType === 'downvote' && newVoteType === 'upvote')
-        reputationDelta = 2;
-      else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
-    }
-
-    const reputation = await this.repository.updateAndGetUserReputation(
-      report.userEmail,
-      reputationDelta,
+      voteType,
     );
 
     this.checkReportValidity(reportId);
 
-    return {
-      ...result,
-      reporterReputation: reputation,
-    };
+    return result as VoteResDto;
   }
 
   public async handleCreateComment(
@@ -168,37 +141,37 @@ export class ReportInteractionService extends AbstractLogger {
       return;
     }
 
-    const upvotes = report.votes.filter(
-      (vote) => vote.type === 'upvote',
-    ).length;
-    const downvotes = report.votes.filter(
-      (vote) => vote.type === 'downvote',
-    ).length;
+    // const upvotes = report.votes.filter(
+    //   (vote) => vote.type === 'upvote',
+    // ).length;
+    // const downvotes = report.votes.filter(
+    //   (vote) => vote.type === 'downvote',
+    // ).length;
 
-    const status = this.calculateReportStatus(upvotes, downvotes);
-    await this.repository.updateReportStatus(reportId, status);
+    // const status = this.calculateReportStatus(upvotes, downvotes);
+    // await this.repository.updateReportStatus(reportId, status);
   }
 
-  private calculateReportStatus(
-    upvotes: number,
-    downvotes: number,
-  ): ReportStatus {
-    const minVotes = 10;
+  // private calculateReportStatus(
+  //   upvotes: number,
+  //   downvotes: number,
+  // ): ReportStatus {
+  //   const minVotes = 10;
 
-    const totalVotes = upvotes + downvotes;
-    if (totalVotes < minVotes) {
-      return 'crowdsourced';
-    }
+  //   const totalVotes = upvotes + downvotes;
+  //   if (totalVotes < minVotes) {
+  //     return 'crowdsourced';
+  //   }
 
-    const validPercentage = (upvotes / totalVotes) * 100;
-    const invalidPercentage = (downvotes / totalVotes) * 100;
+  //   const validPercentage = (upvotes / totalVotes) * 100;
+  //   const invalidPercentage = (downvotes / totalVotes) * 100;
 
-    if (validPercentage >= 80) {
-      return 'verified';
-    } else if (invalidPercentage >= 60) {
-      return 'invalid';
-    }
+  //   if (validPercentage >= 80) {
+  //     return 'verified';
+  //   } else if (invalidPercentage >= 60) {
+  //     return 'invalid';
+  //   }
 
-    return 'crowdsourced';
-  }
+  //   return 'crowdsourced';
+  // }
 }

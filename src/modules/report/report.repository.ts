@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { IncidentCategory, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
@@ -23,7 +23,6 @@ export class ReportRepository extends BaseRepository {
         description: true,
         date: true,
         time: true,
-        status: true,
         latitude: true,
         longitude: true,
         incident: {
@@ -46,7 +45,6 @@ export class ReportRepository extends BaseRepository {
         isAnonymous: true,
         date: true,
         time: true,
-        status: true,
         latitude: true,
         longitude: true,
         incident: {
@@ -60,7 +58,6 @@ export class ReportRepository extends BaseRepository {
             email: true,
             name: true,
             profilePhoto: true,
-            reputation: true,
           },
         },
         attachments: { select: { uri: true } },
@@ -76,7 +73,6 @@ export class ReportRepository extends BaseRepository {
                 email: true,
                 name: true,
                 profilePhoto: true,
-                reputation: true,
               },
             },
           },
@@ -207,15 +203,14 @@ export class ReportRepository extends BaseRepository {
     }
   }
 
-  public async getRiskLevelByCategory(
+  public async getCategory(
     categoryId: number,
-  ): Promise<string | undefined> {
+  ): Promise<IncidentCategory | null> {
     try {
       const result = await this.prisma.incidentCategory.findFirst({
         where: { id: categoryId },
-        select: { riskLevel: true },
       });
-      return result?.riskLevel;
+      return result;
     } catch (e) {
       throw handleError(e, this.logger);
     }
@@ -234,7 +229,6 @@ export class ReportRepository extends BaseRepository {
         INSERT INTO "Incident" (
           category_id,
           risk_level,
-          status,
           date_start,
           date_end,
           time_start,
@@ -245,7 +239,6 @@ export class ReportRepository extends BaseRepository {
         VALUES (
           ${categoryId},
           '${riskLevel}',
-          'active',
           '${date}',
           '${date}',
           '${time}',

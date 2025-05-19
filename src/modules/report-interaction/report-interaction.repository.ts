@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
-import { ReportStatus, Vote, VoteType } from '@prisma/client';
+import { Vote, VoteType } from '@prisma/client';
 import { ReportComment, ReportVoteResult } from './report-interaction.type';
 
 @Injectable()
@@ -35,16 +35,16 @@ export class ReportInteractionRepository extends BaseRepository {
     }
   }
 
-  public async updateReportStatus(reportId: string, status: ReportStatus) {
-    try {
-      await this.prisma.report.update({
-        where: { id: reportId },
-        data: { status },
-      });
-    } catch (e) {
-      throw handleError(e, this.logger);
-    }
-  }
+  // public async updateReportStatus(reportId: string, status: ReportStatus) {
+  //   try {
+  //     await this.prisma.report.update({
+  //       where: { id: reportId },
+  //       data: { status },
+  //     });
+  //   } catch (e) {
+  //     throw handleError(e, this.logger);
+  //   }
+  // }
 
   public async createOrUpdateVote(
     userEmail: string,
@@ -72,22 +72,6 @@ export class ReportInteractionRepository extends BaseRepository {
     }
   }
 
-  public async updateAndGetUserReputation(
-    reporterEmail: string,
-    delta: number,
-  ): Promise<number> {
-    try {
-      const result = await this.prisma.user.update({
-        where: { email: reporterEmail },
-        data: { reputation: { increment: delta } },
-        select: { reputation: true },
-      });
-      return result.reputation;
-    } catch (e) {
-      throw handleError(e, this.logger);
-    }
-  }
-
   public async createComment(
     userEmail: string,
     reportId: string,
@@ -106,7 +90,6 @@ export class ReportInteractionRepository extends BaseRepository {
               email: true,
               name: true,
               profilePhoto: true,
-              reputation: true,
             },
           },
         },
@@ -142,7 +125,6 @@ export class ReportInteractionRepository extends BaseRepository {
               email: true,
               name: true,
               profilePhoto: true,
-              reputation: true,
             },
           },
         },
@@ -176,7 +158,6 @@ export class ReportInteractionRepository extends BaseRepository {
               email: true,
               name: true,
               profilePhoto: true,
-              reputation: true,
             },
           },
         },
