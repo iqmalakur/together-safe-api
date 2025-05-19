@@ -9,9 +9,9 @@ async function main() {
 
   await prisma.$transaction(async (tx) => {
     // Seed IncidentCategory
-    const categoryPembegalan = await tx.incidentCategory.create({
+    const categoryKriminalitas = await tx.incidentCategory.create({
       data: {
-        name: 'Pembegalan dan Kriminalitas',
+        name: 'Kriminalitas',
         minRiskLevel: 'medium',
         maxRiskLevel: 'high',
         timeToLive: '7 days',
@@ -95,7 +95,7 @@ async function main() {
     )
     RETURNING id;
   `,
-      categoryPembegalan.id,
+      categoryKriminalitas.id,
       '2025-02-19', // dateStart & dateEnd
       '19:00', // timeStart
       '20:00', // timeEnd
