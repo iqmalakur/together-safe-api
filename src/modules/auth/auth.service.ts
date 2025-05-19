@@ -53,7 +53,6 @@ export class AuthService extends AbstractLogger {
     const result = await this.repository.createUser({
       email: user.email,
       name: user.name,
-      phone: user.phone,
       password: password,
       profilePhoto: filename,
     });

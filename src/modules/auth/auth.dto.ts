@@ -3,13 +3,7 @@ import { getFileUrlOrNull } from '../../utils/common.util';
 import { sign } from 'jsonwebtoken';
 import { SECRET_KEY } from '../../config/app.config';
 import { UserAuthSelection } from './auth.type';
-import {
-  IsEmail,
-  IsNotEmpty,
-  Length,
-  Matches,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
 export class ValidateTokenReqDto {
   @ApiProperty({
@@ -54,16 +48,6 @@ export class RegisterReqDto {
   @ApiProperty({ description: 'example: John Marston' })
   @IsNotEmpty({ message: 'Nama harus diisi' })
   public readonly name: string;
-
-  @ApiProperty({ description: 'example: 08123456789' })
-  @IsNotEmpty({ message: 'Nomor telepon harus diisi' })
-  @Length(10, 13, {
-    message: 'Nomor telepon harus terdiri dari 10 hingga 13 digit',
-  })
-  @Matches(/^08\d+$/, {
-    message: 'Nomor telepon harus dimulai dengan 08 dan hanya mengandung angka',
-  })
-  public readonly phone: string;
 
   @ApiProperty({
     description: 'Profile photo (file)',
