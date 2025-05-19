@@ -17,6 +17,9 @@ export type ReportInput = {
 
 export type ReportRelatedIncident = {
   id: string;
+  min_risk_level: string;
+  max_risk_level: string;
+  risk_level: string;
   radius: number;
   date_start: Date;
   date_end: Date;

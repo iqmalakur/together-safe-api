@@ -1,4 +1,4 @@
-import { IncidentCategory, Prisma } from '@prisma/client';
+import { IncidentCategory, Prisma, RiskLevel } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
@@ -180,6 +180,9 @@ export class ReportRepository extends BaseRepository {
         SELECT
           i."id"::text,
           i."radius",
+          ic."min_risk_level" AS min_risk_level,
+          ic."max_risk_level" AS max_risk_level,
+          i."risk_level",
           i."date_start",
           i."date_end",
           i."time_start",
@@ -255,6 +258,28 @@ export class ReportRepository extends BaseRepository {
       }
 
       return incident;
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async getReportCount(incidentId: string): Promise<number> {
+    try {
+      return await this.prisma.report.count({ where: { incidentId } });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async updateIncidentRiskLevel(
+    incidentId: string,
+    riskLevel: RiskLevel,
+  ) {
+    try {
+      await this.prisma.incident.update({
+        where: { id: incidentId },
+        data: { riskLevel },
+      });
     } catch (e) {
       throw handleError(e, this.logger);
     }

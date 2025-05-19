@@ -148,7 +148,7 @@ export class ReportInteractionService extends AbstractLogger {
 
     if (status !== incident.status) {
       this.logger.debug(`Incident status changed to ${status}`);
-      await this.repository.updateIncidentStatus(incident.id, status);
+      this.repository.updateIncidentStatus(incident.id, status);
     }
   }
 
