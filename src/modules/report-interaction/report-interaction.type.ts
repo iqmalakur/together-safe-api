@@ -7,6 +7,13 @@ export type ReportVoteResult = {
   votes: { type: VoteType | null }[];
 };
 
+export type IncidentVoteResult = {
+  id: string;
+  status: string;
+  upvote_count: number;
+  downvote_count: number;
+};
+
 export type ReportUserProfile = {
   email: string;
   name: string;

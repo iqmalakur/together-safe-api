@@ -6,7 +6,7 @@ import {
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
 import { CommentResDto, VoteResDto } from './report-interaction.dto';
-import { VoteType } from '@prisma/client';
+import { IncidentStatus, VoteType } from '@prisma/client';
 import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
@@ -53,7 +53,7 @@ export class ReportInteractionService extends AbstractLogger {
       voteType,
     );
 
-    this.checkReportValidity(reportId);
+    await this.checkIncidentValidity(reportId);
 
     return result as VoteResDto;
   }
@@ -133,45 +133,36 @@ export class ReportInteractionService extends AbstractLogger {
     };
   }
 
-  private async checkReportValidity(reportId: string) {
-    const report = await this.repository.findReport(reportId);
+  private async checkIncidentValidity(reportId: string) {
+    const incident = await this.repository.findIncident(reportId);
 
-    if (!report) {
-      this.logger.debug('Laporan tidak ditemukan');
+    if (!incident) {
+      this.logger.debug('Incident tidak ditemukan');
       return;
     }
 
-    // const upvotes = report.votes.filter(
-    //   (vote) => vote.type === 'upvote',
-    // ).length;
-    // const downvotes = report.votes.filter(
-    //   (vote) => vote.type === 'downvote',
-    // ).length;
+    const status = this.calculateIncidentStatus(
+      incident.upvote_count,
+      incident.downvote_count,
+    );
 
-    // const status = this.calculateReportStatus(upvotes, downvotes);
-    // await this.repository.updateReportStatus(reportId, status);
+    if (status !== incident.status) {
+      this.logger.debug(`Incident status changed to ${status}`);
+      await this.repository.updateIncidentStatus(incident.id, status);
+    }
   }
 
-  // private calculateReportStatus(
-  //   upvotes: number,
-  //   downvotes: number,
-  // ): ReportStatus {
-  //   const minVotes = 10;
+  private calculateIncidentStatus(
+    upvotes: number,
+    downvotes: number,
+  ): IncidentStatus {
+    const totalVotes = upvotes + downvotes;
 
-  //   const totalVotes = upvotes + downvotes;
-  //   if (totalVotes < minVotes) {
-  //     return 'crowdsourced';
-  //   }
+    if (totalVotes < 4) {
+      return 'pending';
+    }
 
-  //   const validPercentage = (upvotes / totalVotes) * 100;
-  //   const invalidPercentage = (downvotes / totalVotes) * 100;
-
-  //   if (validPercentage >= 80) {
-  //     return 'verified';
-  //   } else if (invalidPercentage >= 60) {
-  //     return 'invalid';
-  //   }
-
-  //   return 'crowdsourced';
-  // }
+    const ratio = upvotes / totalVotes;
+    return ratio >= 0.75 ? 'verified' : 'pending';
+  }
 }
