@@ -59,8 +59,8 @@ CREATE TABLE "Incident" (
 CREATE TABLE "IncidentCategory" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
-    "minRiskLevel" "RiskLevel" NOT NULL,
-    "maxRiskLevel" "RiskLevel" NOT NULL,
+    "min_risk_level" "RiskLevel" NOT NULL,
+    "max_risk_level" "RiskLevel" NOT NULL,
     "timeToLive" VARCHAR(20) NOT NULL,
 
     CONSTRAINT "IncidentCategory_pkey" PRIMARY KEY ("id")
@@ -131,6 +131,16 @@ ALTER TABLE "Vote" ADD CONSTRAINT "Vote_user_email_fkey" FOREIGN KEY ("user_emai
 
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_report_id_fkey" FOREIGN KEY ("report_id") REFERENCES "Report"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add spatial index
+CREATE INDEX incident_location_idx
+ON "Incident"
+USING GIST (location);
+
+-- Add spatial index
+CREATE INDEX nominatim_location_idx
+ON "NominatimLocation"
+USING GIST (location);
 
 -- Adjust cost function
 CREATE OR REPLACE FUNCTION adjust_cost(risk_level "RiskLevel", cost DOUBLE PRECISION)

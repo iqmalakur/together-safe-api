@@ -70,8 +70,8 @@ model Incident {
 model IncidentCategory {
   id           Int        @id @default(autoincrement())
   name         String     @db.VarChar(100)
-  minRiskLevel RiskLevel
-  maxRiskLevel RiskLevel
+  minRiskLevel RiskLevel  @map("min_risk_level")
+  maxRiskLevel RiskLevel  @map("max_risk_level")
   timeToLive   String     @db.VarChar(20)
 
   incidents    Incident[]
