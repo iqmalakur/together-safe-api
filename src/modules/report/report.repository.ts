@@ -10,6 +10,7 @@ import {
   ReportResult,
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
+import { getUpdatedTimeRange } from 'src/utils/time.util';
 
 @Injectable()
 export class ReportRepository extends BaseRepository {
@@ -193,7 +194,7 @@ export class ReportRepository extends BaseRepository {
           AND ST_DWithin(
             i."location"::geography,
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            i."radius" + 25
+            i."radius" + 50
           )
           AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '7 day') AND (i."date_end" + INTERVAL '7 day')
           AND (
@@ -311,10 +312,16 @@ export class ReportRepository extends BaseRepository {
     else if (report.date > incident.date_end)
       data += `date_end = '${getDateString(report.date)}', `;
 
-    if (report.time < incident.time_start)
-      data += `time_start = '${getTimeString(report.time, true)}', `;
-    else if (report.time > incident.time_end)
-      data += `time_end = '${getTimeString(report.time, true)}', `;
+    const timeUpdate = getUpdatedTimeRange(
+      incident.time_start,
+      incident.time_end,
+      report.time,
+    );
+
+    if (timeUpdate.updateStart)
+      data += `time_start = '${getTimeString(timeUpdate.updateStart, true)}', `;
+    if (timeUpdate.updateEnd)
+      data += `time_end = '${getTimeString(timeUpdate.updateEnd, true)}', `;
 
     const lat = report.latitude;
     const lon = report.longitude;
