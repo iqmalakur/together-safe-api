@@ -196,7 +196,21 @@ export class ReportRepository extends BaseRepository {
             i."radius" + 25
           )
           AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '7 day') AND (i."date_end" + INTERVAL '7 day')
-          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
+          AND (
+            (
+              i."time_start" <= i."time_end" AND
+              TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
+            )
+			      OR
+            (
+              i."time_start" - INTERVAL '5 hour' > i."time_end" + INTERVAL '5 hour'
+              AND (
+                TIME '${time}' >= (i."time_start" - INTERVAL '5 hour')
+                OR
+                TIME '${time}' <= (i."time_end" + INTERVAL '5 hour')
+              )
+            )
+		      )
         LIMIT 1
       `);
 
