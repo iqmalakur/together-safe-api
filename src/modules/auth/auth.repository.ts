@@ -9,16 +9,11 @@ export class AuthRepository extends BaseRepository {
   public async findUserByEmail(
     email: string,
   ): Promise<UserAuthSelection | null> {
-    return this.prisma.user.findFirst({
-      where: { email },
-      select: { email: true, name: true, password: true, profilePhoto: true },
-    });
+    return this.prisma.user.findFirst({ where: { email } });
   }
 
   public async isUserExist(email: string): Promise<boolean> {
-    const count = await this.prisma.user.count({
-      where: { email },
-    });
+    const count = await this.prisma.user.count({ where: { email } });
     return count > 0;
   }
 

@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { IncidentCategory, Prisma, RiskLevel } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { handleError } from 'src/utils/common.util';
@@ -10,6 +10,7 @@ import {
   ReportResult,
 } from './report.type';
 import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
+import { getUpdatedTimeRange } from 'src/utils/time.util';
 
 @Injectable()
 export class ReportRepository extends BaseRepository {
@@ -23,7 +24,6 @@ export class ReportRepository extends BaseRepository {
         description: true,
         date: true,
         time: true,
-        status: true,
         latitude: true,
         longitude: true,
         incident: {
@@ -46,7 +46,6 @@ export class ReportRepository extends BaseRepository {
         isAnonymous: true,
         date: true,
         time: true,
-        status: true,
         latitude: true,
         longitude: true,
         incident: {
@@ -60,7 +59,6 @@ export class ReportRepository extends BaseRepository {
             email: true,
             name: true,
             profilePhoto: true,
-            reputation: true,
           },
         },
         attachments: { select: { uri: true } },
@@ -76,7 +74,6 @@ export class ReportRepository extends BaseRepository {
                 email: true,
                 name: true,
                 profilePhoto: true,
-                reputation: true,
               },
             },
           },
@@ -184,6 +181,9 @@ export class ReportRepository extends BaseRepository {
         SELECT
           i."id"::text,
           i."radius",
+          ic."min_risk_level" AS min_risk_level,
+          ic."max_risk_level" AS max_risk_level,
+          i."risk_level",
           i."date_start",
           i."date_end",
           i."time_start",
@@ -194,10 +194,24 @@ export class ReportRepository extends BaseRepository {
           AND ST_DWithin(
             i."location"::geography,
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            i."radius" + 25
+            i."radius" + 50
           )
           AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '7 day') AND (i."date_end" + INTERVAL '7 day')
-          AND TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
+          AND (
+            (
+              i."time_start" <= i."time_end" AND
+              TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
+            )
+			      OR
+            (
+              i."time_start" - INTERVAL '5 hour' > i."time_end" + INTERVAL '5 hour'
+              AND (
+                TIME '${time}' >= (i."time_start" - INTERVAL '5 hour')
+                OR
+                TIME '${time}' <= (i."time_end" + INTERVAL '5 hour')
+              )
+            )
+		      )
         LIMIT 1
       `);
 
@@ -207,15 +221,14 @@ export class ReportRepository extends BaseRepository {
     }
   }
 
-  public async getRiskLevelByCategory(
+  public async getCategory(
     categoryId: number,
-  ): Promise<string | undefined> {
+  ): Promise<IncidentCategory | null> {
     try {
       const result = await this.prisma.incidentCategory.findFirst({
         where: { id: categoryId },
-        select: { riskLevel: true },
       });
-      return result?.riskLevel;
+      return result;
     } catch (e) {
       throw handleError(e, this.logger);
     }
@@ -234,7 +247,6 @@ export class ReportRepository extends BaseRepository {
         INSERT INTO "Incident" (
           category_id,
           risk_level,
-          status,
           date_start,
           date_end,
           time_start,
@@ -245,7 +257,6 @@ export class ReportRepository extends BaseRepository {
         VALUES (
           ${categoryId},
           '${riskLevel}',
-          'active',
           '${date}',
           '${date}',
           '${time}',
@@ -267,6 +278,28 @@ export class ReportRepository extends BaseRepository {
     }
   }
 
+  public async getReportCount(incidentId: string): Promise<number> {
+    try {
+      return await this.prisma.report.count({ where: { incidentId } });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
+  public async updateIncidentRiskLevel(
+    incidentId: string,
+    riskLevel: RiskLevel,
+  ) {
+    try {
+      await this.prisma.incident.update({
+        where: { id: incidentId },
+        data: { riskLevel },
+      });
+    } catch (e) {
+      throw handleError(e, this.logger);
+    }
+  }
+
   private async updateIncident(
     tx: Prisma.TransactionClient,
     incident: ReportRelatedIncident,
@@ -279,10 +312,16 @@ export class ReportRepository extends BaseRepository {
     else if (report.date > incident.date_end)
       data += `date_end = '${getDateString(report.date)}', `;
 
-    if (report.time < incident.time_start)
-      data += `time_start = '${getTimeString(report.time, true)}', `;
-    else if (report.time > incident.time_end)
-      data += `time_end = '${getTimeString(report.time, true)}', `;
+    const timeUpdate = getUpdatedTimeRange(
+      incident.time_start,
+      incident.time_end,
+      report.time,
+    );
+
+    if (timeUpdate.updateStart)
+      data += `time_start = '${getTimeString(timeUpdate.updateStart, true)}', `;
+    if (timeUpdate.updateEnd)
+      data += `time_end = '${getTimeString(timeUpdate.updateEnd, true)}', `;
 
     const lat = report.latitude;
     const lon = report.longitude;

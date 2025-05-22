@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ReportRepository } from './report.repository';
 import { ReportItemDto, ReportReqDto, ReportResDto } from './report.dto';
-import { ReportInput } from './report.type';
+import { ReportInput, ReportRelatedIncident } from './report.type';
 import { UploadService } from 'src/infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
 import { getDate, getFormattedDate, getTimeString } from 'src/utils/date.util';
@@ -14,6 +14,7 @@ import { SuccessCreateDto } from '../shared/shared.dto';
 import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ApiService } from 'src/infrastructures/api.service';
+import { RiskLevel } from '@prisma/client';
 
 @Injectable()
 export class ReportService extends AbstractLogger {
@@ -42,7 +43,6 @@ export class ReportService extends AbstractLogger {
         description: report.description,
         date: getFormattedDate(report.date),
         time: getTimeString(report.time, true),
-        status: report.status,
         location: location.display_name,
         category: report.incident.category.name,
       });
@@ -91,7 +91,6 @@ export class ReportService extends AbstractLogger {
       id: result.id,
       description: result.description,
       isAnonymous: result.isAnonymous,
-      status: result.status,
       user: {
         ...result.user,
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
@@ -138,11 +137,9 @@ export class ReportService extends AbstractLogger {
       mediaUrls: [],
     };
 
-    const riskLevel = await this.repository.getRiskLevelByCategory(
-      reportInput.categoryId,
-    );
+    const category = await this.repository.getCategory(reportInput.categoryId);
 
-    if (!riskLevel) {
+    if (!category) {
       throw new BadRequestException('Kategori tidak valid');
     }
 
@@ -152,7 +149,7 @@ export class ReportService extends AbstractLogger {
     if (!relatedIncident) {
       relatedIncident = await this.repository.createIncident(
         reportInput,
-        riskLevel,
+        category.minRiskLevel,
       );
       this.logger.info(`New incident created with ID ${relatedIncident.id}`);
     } else {
@@ -176,9 +173,30 @@ export class ReportService extends AbstractLogger {
       reportInput,
     );
 
+    this.checkIncidentRisk(relatedIncident);
+
     return {
       id: result.id,
       message: 'Berhasil membuat laporan insiden',
     };
+  }
+
+  private async checkIncidentRisk(incident: ReportRelatedIncident) {
+    const reportCount = await this.repository.getReportCount(incident.id);
+
+    if (reportCount < 4 && incident.risk_level !== incident.min_risk_level) {
+      await this.repository.updateIncidentRiskLevel(
+        incident.id,
+        incident.min_risk_level as RiskLevel,
+      );
+    } else if (
+      reportCount >= 4 &&
+      incident.risk_level !== incident.max_risk_level
+    ) {
+      await this.repository.updateIncidentRiskLevel(
+        incident.id,
+        incident.max_risk_level as RiskLevel,
+      );
+    }
   }
 }

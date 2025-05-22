@@ -9,22 +9,34 @@ async function main() {
 
   await prisma.$transaction(async (tx) => {
     // Seed IncidentCategory
-    const categoryPembegalan = await tx.incidentCategory.create({
-      data: { name: 'Pembegalan dan Kejahatan Jalanan', riskLevel: 'high' },
+    const categoryKriminalitas = await tx.incidentCategory.create({
+      data: {
+        name: 'Kriminalitas',
+        minRiskLevel: 'medium',
+        maxRiskLevel: 'high',
+        timeToLive: '7 days',
+      },
     });
     await tx.incidentCategory.createMany({
       data: [
-        { name: 'Kecelakaan Fatal', riskLevel: 'high' },
-        { name: 'Perampasan atau Paksaan', riskLevel: 'high' },
-        { name: 'Kebakaran dan Ledakan', riskLevel: 'high' },
-        { name: 'Bencana Alam dan Kondisi Darurat', riskLevel: 'high' },
-        { name: 'Kekerasan Fisik dan Kriminalitas', riskLevel: 'high' },
-        { name: 'Pencurian dan Perampokan', riskLevel: 'medium' },
-        { name: 'Pelecehan dan Ancaman Pribadi', riskLevel: 'medium' },
-        { name: 'Situasi Darurat Medis', riskLevel: 'medium' },
-        { name: 'Kecelakaan dan Kejadian Lalu Lintas', riskLevel: 'medium' },
-        { name: 'Gangguan Ketertiban Umum', riskLevel: 'low' },
-        { name: 'Gangguan Keamanan Lingkungan', riskLevel: 'low' },
+        {
+          name: 'Kecelakaan Lalu Lintas',
+          minRiskLevel: 'medium',
+          maxRiskLevel: 'high',
+          timeToLive: '3 hours',
+        },
+        {
+          name: 'Kebakaran',
+          minRiskLevel: 'medium',
+          maxRiskLevel: 'high',
+          timeToLive: '5 hours',
+        },
+        {
+          name: 'Kemacetan Lalu Lintas',
+          minRiskLevel: 'low',
+          maxRiskLevel: 'medium',
+          timeToLive: '3 hours',
+        },
       ],
     });
 
@@ -34,7 +46,6 @@ async function main() {
         email: 'andi.pratama@gmail.com',
         name: 'Andi Pratama',
         password: bcrypt.hashSync('Andi123!', 10),
-        phone: '081234567890',
         profilePhoto: '1dX61J5_x4f-TUNay4wf5kiQwCQGJ0t90',
       },
     });
@@ -44,7 +55,6 @@ async function main() {
         email: 'budi.santoso@example.com',
         name: 'Budi Santoso',
         password: bcrypt.hashSync('BudiS@123', 10),
-        phone: '082134567891',
       },
     });
 
@@ -53,7 +63,6 @@ async function main() {
         email: 'siti.nurhaliza@example.com',
         name: 'Siti Nurhaliza',
         password: bcrypt.hashSync('Siti@1234', 10),
-        phone: '086178901235',
         profilePhoto: '1ay4HPdjOFzHhq2aJi_WMiXeYdk2woxsR',
       },
     });
@@ -63,7 +72,6 @@ async function main() {
         email: 'ayu.lestari@example.com',
         name: 'Ayu Lestari',
         password: bcrypt.hashSync('AyuLestari_21', 10),
-        phone: '087189012346',
         profilePhoto: '169VSqQ5BDMkVo_7zHpNo5edhfqW2aB1w',
       },
     });
@@ -72,12 +80,11 @@ async function main() {
     const [incident] = await tx.$queryRawUnsafe<any[]>(
       `
     INSERT INTO "Incident" (
-      "category_id", "status", "risk_level", 
+      "category_id", "risk_level", 
       "date_start", "date_end", "time_start", "time_end", 
       "location", "radius"
     ) VALUES (
       $1, -- categoryId
-      'active',
       'high',
       $2::date,
       $2::date,
@@ -88,7 +95,7 @@ async function main() {
     )
     RETURNING id;
   `,
-      categoryPembegalan.id,
+      categoryKriminalitas.id,
       '2025-02-19', // dateStart & dateEnd
       '19:00', // timeStart
       '20:00', // timeEnd

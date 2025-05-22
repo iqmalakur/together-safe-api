@@ -9,19 +9,14 @@ CREATE TYPE "VoteType" AS ENUM ('upvote', 'downvote');
 CREATE TYPE "RiskLevel" AS ENUM ('high', 'medium', 'low');
 
 -- CreateEnum
-CREATE TYPE "ReportStatus" AS ENUM ('crowdsourced', 'verified', 'invalid');
-
--- CreateEnum
-CREATE TYPE "IncidentStatus" AS ENUM ('active', 'non_active');
+CREATE TYPE "IncidentStatus" AS ENUM ('admin_verified', 'admin_rejected', 'admin_resolved', 'pending', 'verified');
 
 -- CreateTable
 CREATE TABLE "User" (
     "email" VARCHAR(320) NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "phone" VARCHAR(15) NOT NULL,
     "profile_photo" VARCHAR(2083),
-    "reputation" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("email")
 );
@@ -34,10 +29,8 @@ CREATE TABLE "Report" (
     "longitude" DOUBLE PRECISION NOT NULL,
     "date" DATE NOT NULL,
     "time" TIME NOT NULL,
-    "status" "ReportStatus" NOT NULL DEFAULT 'crowdsourced',
     "is_anonymous" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "deleted_at" TIMESTAMP,
     "user_email" VARCHAR(320) NOT NULL,
     "incident_id" UUID NOT NULL,
 
@@ -48,7 +41,7 @@ CREATE TABLE "Report" (
 CREATE TABLE "Incident" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "risk_level" "RiskLevel" NOT NULL,
-    "status" "IncidentStatus" NOT NULL,
+    "status" "IncidentStatus" NOT NULL DEFAULT 'pending',
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "radius" INTEGER NOT NULL,
@@ -66,6 +59,9 @@ CREATE TABLE "Incident" (
 CREATE TABLE "IncidentCategory" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(100) NOT NULL,
+    "min_risk_level" "RiskLevel" NOT NULL,
+    "max_risk_level" "RiskLevel" NOT NULL,
+    "timeToLive" VARCHAR(20) NOT NULL,
 
     CONSTRAINT "IncidentCategory_pkey" PRIMARY KEY ("id")
 );
@@ -151,9 +147,9 @@ CREATE OR REPLACE FUNCTION adjust_cost(risk_level "RiskLevel", cost DOUBLE PRECI
 RETURNS DOUBLE PRECISION AS $$
 BEGIN
     RETURN cost * CASE risk_level
-        WHEN 'high' THEN 3
-        WHEN 'medium' THEN 2
-        WHEN 'low' THEN 1.5
+        WHEN 'high' THEN 5
+        WHEN 'medium' THEN 4
+        WHEN 'low' THEN 2
         ELSE 1
     END;
 END;

@@ -73,9 +73,6 @@ export class ReportItemDto {
   @ApiProperty({ example: '21:30' })
   public readonly time: string;
 
-  @ApiProperty({ example: 'crowdsourced' })
-  public readonly status: string;
-
   @ApiProperty({ example: 'Pembegalan' })
   public readonly category: string;
 
@@ -124,9 +121,6 @@ export class ReportResDto {
 
   @ApiProperty({ example: '21:30' })
   public readonly time: string;
-
-  @ApiProperty({ example: 'verified' })
-  public readonly status: string;
 
   @ApiProperty({
     example:

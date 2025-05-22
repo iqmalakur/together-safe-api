@@ -9,7 +9,6 @@ export type IncidentReportItem = {
   longitude: number;
   date: Date;
   time: Date;
-  status: string;
   attachments: IncidentAttachment[];
 };
 

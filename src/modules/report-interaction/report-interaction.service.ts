@@ -5,12 +5,8 @@ import {
 } from '@nestjs/common';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
-import {
-  CommentResDto,
-  UserVoteResDto,
-  VoteResDto,
-} from './report-interaction.dto';
-import { VoteType } from '@prisma/client';
+import { CommentResDto, VoteResDto } from './report-interaction.dto';
+import { IncidentStatus, VoteType } from '@prisma/client';
 import { getFileUrlOrNull } from 'src/utils/common.util';
 
 @Injectable()
@@ -22,7 +18,7 @@ export class ReportInteractionService extends AbstractLogger {
   public async handleUserVote(
     userEmail: string,
     reportId: string,
-  ): Promise<UserVoteResDto> {
+  ): Promise<VoteResDto> {
     const result = await this.repository.findUserVote(userEmail, reportId);
 
     if (!result) {
@@ -33,20 +29,19 @@ export class ReportInteractionService extends AbstractLogger {
       };
     }
 
-    return result as UserVoteResDto;
+    return result as VoteResDto;
   }
 
   public async handleVote(
     userEmail: string,
     reportId: string,
-    prevVoteType: VoteType,
-    newVoteType: VoteType,
+    voteType: VoteType,
   ): Promise<VoteResDto> {
-    const reporterEmail = await this.repository.getReporterEmail(reportId);
+    const report = await this.repository.findReport(reportId);
 
-    if (!reporterEmail) {
+    if (!report) {
       throw new NotFoundException('Laporan tidak ditemukan');
-    } else if (userEmail === reporterEmail) {
+    } else if (userEmail === report.userEmail) {
       throw new ConflictException(
         'Anda tidak dapat melakukan vote pada laporan Anda',
       );
@@ -55,28 +50,12 @@ export class ReportInteractionService extends AbstractLogger {
     const result = await this.repository.createOrUpdateVote(
       userEmail,
       reportId,
-      newVoteType,
+      voteType,
     );
 
-    let reputationDelta = 0;
-    if (!prevVoteType && newVoteType === 'upvote') reputationDelta = 1;
-    else if (!prevVoteType && newVoteType === 'downvote') reputationDelta = -1;
-    else if (prevVoteType === 'upvote' && newVoteType === 'downvote')
-      reputationDelta = -2;
-    else if (prevVoteType === 'upvote' && !newVoteType) reputationDelta = -1;
-    else if (prevVoteType === 'downvote' && newVoteType === 'upvote')
-      reputationDelta = 2;
-    else if (prevVoteType === 'downvote' && !newVoteType) reputationDelta = 1;
+    await this.checkIncidentValidity(reportId);
 
-    const reputation = await this.repository.updateAndGetUserReputation(
-      reporterEmail,
-      reputationDelta,
-    );
-
-    return {
-      ...result,
-      reporterReputation: reputation,
-    };
+    return result as VoteResDto;
   }
 
   public async handleCreateComment(
@@ -152,5 +131,38 @@ export class ReportInteractionService extends AbstractLogger {
         profilePhoto: getFileUrlOrNull(result.user.profilePhoto),
       },
     };
+  }
+
+  private async checkIncidentValidity(reportId: string) {
+    const incident = await this.repository.findIncident(reportId);
+
+    if (!incident) {
+      this.logger.debug('Incident tidak ditemukan');
+      return;
+    }
+
+    const status = this.calculateIncidentStatus(
+      incident.upvote_count,
+      incident.downvote_count,
+    );
+
+    if (status !== incident.status) {
+      this.logger.debug(`Incident status changed to ${status}`);
+      this.repository.updateIncidentStatus(incident.id, status);
+    }
+  }
+
+  private calculateIncidentStatus(
+    upvotes: number,
+    downvotes: number,
+  ): IncidentStatus {
+    const totalVotes = upvotes + downvotes;
+
+    if (totalVotes < 4) {
+      return 'pending';
+    }
+
+    const ratio = upvotes / totalVotes;
+    return ratio >= 0.75 ? 'verified' : 'pending';
   }
 }

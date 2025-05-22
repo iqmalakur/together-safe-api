@@ -17,9 +17,7 @@ model User {
   email        String    @id @db.VarChar(320)
   name         String    @db.VarChar(100)
   password     String    @db.VarChar(255)
-  phone        String    @db.VarChar(15)
   profilePhoto String?   @db.VarChar(2083) @map("profile_photo")
-  reputation   Int       @default(0)
 
   reports      Report[]
   comments     Comment[]
@@ -33,10 +31,8 @@ model Report {
   longitude   Float
   date        DateTime         @db.Date
   time        DateTime         @db.Time
-  status      ReportStatus     @default(crowdsourced)
   isAnonymous Boolean          @default(false) @map("is_anonymous")
   createdAt   DateTime         @db.Timestamp() @default(now()) @map("created_at")
-  deletedAt   DateTime?        @db.Timestamp() @map("deleted_at")
 
   userEmail   String           @db.VarChar(320) @map("user_email")
   user        User             @relation(fields: [userEmail], references: [email])
@@ -52,7 +48,7 @@ model Report {
 model Incident {
   id         String                               @id @default(uuid()) @db.Uuid()
   riskLevel  RiskLevel                            @map("risk_level")
-  status     IncidentStatus
+  status     IncidentStatus                       @default(pending)
   createdAt  DateTime                             @db.Timestamp() @default(now()) @map("created_at")
   updatedAt  DateTime                             @db.Timestamp() @default(now()) @map("updated_at")
 
@@ -72,11 +68,13 @@ model Incident {
 }
 
 model IncidentCategory {
-  id        Int        @id @default(autoincrement())
-  name      String     @db.VarChar(100)
-  riskLevel RiskLevel
+  id           Int        @id @default(autoincrement())
+  name         String     @db.VarChar(100)
+  minRiskLevel RiskLevel  @map("min_risk_level")
+  maxRiskLevel RiskLevel  @map("max_risk_level")
+  timeToLive   String     @db.VarChar(20)
 
-  incidents Incident[]
+  incidents    Incident[]
 }
 
 model Attachment {
@@ -132,13 +130,10 @@ enum RiskLevel {
   low
 }
 
-enum ReportStatus {
-  crowdsourced
-  verified
-  invalid
-}
-
 enum IncidentStatus {
-  active
-  non_active
+  admin_verified
+  admin_rejected
+  admin_resolved
+  pending
+  verified
 }
