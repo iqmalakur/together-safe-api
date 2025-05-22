@@ -86,16 +86,10 @@ export class ReportInteractionRepository extends BaseRepository {
     status: IncidentStatus,
   ) {
     try {
-      this.logger.debug(`
-        UPDATE "Incident"
-        SET status = ${status}::"IncidentStatus"
-        WHERE id = ${incidentId}::uuid
-      `);
-      await this.prisma.$executeRaw`
-        UPDATE "Incident"
-        SET status = ${status}::"IncidentStatus"
-        WHERE id = ${incidentId}::uuid
-      `;
+      await this.prisma.incident.update({
+        where: { id: incidentId },
+        data: { status },
+      });
     } catch (e) {
       throw handleError(e, this.logger);
     }
