@@ -14,7 +14,7 @@ async function main() {
         INSERT INTO "IncidentCategory" ("name", "min_risk_level", "max_risk_level", "ttl_date", "ttl_time")
         VALUES (
           'Kriminalitas', 'medium', 'high',
-          INTERVAL '7 days', INTERVAL '5 hours'
+          INTERVAL '7 days', INTERVAL '3 hours'
         )
         RETURNING id;
       `
