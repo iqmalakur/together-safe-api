@@ -10,7 +10,7 @@ export class GeolocationRepository extends BaseRepository {
     endLat: number,
     endLon: number,
   ): Promise<RouteResult[]> {
-    const query = `
+    return this.prisma.$queryRaw`
       WITH
         start_vertex AS (
           SELECT id
@@ -34,9 +34,12 @@ export class GeolocationRepository extends BaseRepository {
                 x1, y1, x2, y2
               FROM ways w
               LEFT JOIN LATERAL (
-                SELECT risk_level FROM "Incident" 
-                WHERE ST_DWithin(location::geography, w.the_geom::geography, 10)
-                  AND status in ('admin_verified', 'verified') 
+                SELECT i.risk_level FROM "Incident" i
+                JOIN "IncidentCategory" ic ON ic.id = i.category_id 
+                WHERE status IN ('admin_verified', 'verified') AND
+                  CURRENT_DATE BETWEEN i.date_start AND (i.date_end + ic.ttl_date) AND
+                  CURRENT_TIME BETWEEN (i.time_start - INTERVAL '1 hour') AND (i.time_end + INTERVAL '1 hour') AND
+                  ST_DWithin(location::geography, w.the_geom::geography, 10)
                 ORDER BY risk_level ASC 
                 LIMIT 1
               ) i ON TRUE
@@ -51,7 +54,5 @@ export class GeolocationRepository extends BaseRepository {
       JOIN ways w ON r.edge = w.gid
       ORDER BY r.seq;
     `;
-
-    return this.prisma.$queryRawUnsafe(query);
   }
 }

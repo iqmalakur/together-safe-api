@@ -175,45 +175,43 @@ export class ReportRepository extends BaseRepository {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<
-        ReportRelatedIncident[]
-      >(`
+      const result = await this.prisma.$queryRaw<ReportRelatedIncident[]>`
         SELECT
-          i."id"::text,
-          i."radius",
-          ic."min_risk_level" AS min_risk_level,
-          ic."max_risk_level" AS max_risk_level,
-          i."risk_level",
-          i."date_start",
-          i."date_end",
-          i."time_start",
-          i."time_end"
+          i.id,
+          i.radius,
+          ic.min_risk_level AS min_risk_level,
+          ic.max_risk_level AS max_risk_level,
+          i.risk_level,
+          i.date_start,
+          i.date_end,
+          i.time_start,
+          i.time_end
         FROM "Incident" i
-        JOIN "IncidentCategory" ic ON ic."id" = i."category_id"
-        WHERE ic."id" = ${categoryId}
+        JOIN "IncidentCategory" ic ON ic.id = i.category_id
+        WHERE ic.id = ${categoryId}
           AND ST_DWithin(
-            i."location"::geography,
+            i.location::geography,
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-            i."radius" + 50
+            i.radius + 50
           )
-          AND DATE '${date}' BETWEEN (i."date_start" - INTERVAL '7 day') AND (i."date_end" + INTERVAL '7 day')
+          AND ${date}::DATE BETWEEN (i.date_start - ic.ttl_date) AND (i.date_end + ic.ttl_date)
           AND (
             (
-              i."time_start" <= i."time_end" AND
-              TIME '${time}' BETWEEN (i."time_start" - INTERVAL '5 hour') AND (i."time_end" + INTERVAL '5 hour')
+              i.time_start <= i.time_end AND
+              ${time}::TIME BETWEEN (i.time_start - ic.ttl_time) AND (i.time_end + ic.ttl_time)
             )
 			      OR
             (
-              i."time_start" - INTERVAL '5 hour' > i."time_end" + INTERVAL '5 hour'
+              i.time_start - ic.ttl_time > i.time_end + ic.ttl_time
               AND (
-                TIME '${time}' >= (i."time_start" - INTERVAL '5 hour')
+                ${time}::TIME >= (i.time_start - ic.ttl_time)
                 OR
-                TIME '${time}' <= (i."time_end" + INTERVAL '5 hour')
+                ${time}::TIME <= (i.time_end + ic.ttl_time)
               )
             )
 		      )
         LIMIT 1
-      `);
+      `;
 
       return result.length != 0 ? result[0] : null;
     } catch (e) {
@@ -241,9 +239,7 @@ export class ReportRepository extends BaseRepository {
     try {
       const { categoryId, latitude, longitude, date, time } = report;
 
-      const result = await this.prisma.$queryRawUnsafe<
-        ReportRelatedIncident[]
-      >(`
+      const result = await this.prisma.$queryRaw<ReportRelatedIncident[]>`
         INSERT INTO "Incident" (
           category_id,
           risk_level,
@@ -256,16 +252,16 @@ export class ReportRepository extends BaseRepository {
         )
         VALUES (
           ${categoryId},
-          '${riskLevel}',
-          '${date}',
-          '${date}',
-          '${time}',
-          '${time}',
+          ${riskLevel}::"RiskLevel",
+          ${date}::DATE,
+          ${date}::DATE,
+          ${time}::TIME,
+          ${time}::TIME,
           10,
           ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)
         )
         RETURNING id, date_start, date_end, time_start, time_end;
-      `);
+      `;
 
       const incident = result[0];
       if (!incident) {

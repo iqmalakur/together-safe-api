@@ -32,8 +32,8 @@ export class IncidentRepository extends BaseRepository {
         FROM "Incident" i
         JOIN "IncidentCategory" ic ON ic.id = i.category_id
         WHERE status IN ('admin_verified', 'verified', 'pending') AND
-          -- CURRENT_DATE BETWEEN i.date_start AND (i.date_end + INTERVAL '7 days') AND
-          -- CURRENT_TIME BETWEEN (i.time_start - INTERVAL '30 minutes') AND (i.time_end + INTERVAL '30 minutes') AND
+          CURRENT_DATE BETWEEN i.date_start AND (i.date_end + ic.ttl_date) AND
+          CURRENT_TIME BETWEEN (i.time_start - INTERVAL '1 hour') AND (i.time_end + INTERVAL '1 hour') AND
           ST_DWithin(
             location::geography,
             ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
