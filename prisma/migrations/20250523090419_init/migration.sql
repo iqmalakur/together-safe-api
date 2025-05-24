@@ -61,7 +61,8 @@ CREATE TABLE "IncidentCategory" (
     "name" VARCHAR(100) NOT NULL,
     "min_risk_level" "RiskLevel" NOT NULL,
     "max_risk_level" "RiskLevel" NOT NULL,
-    "timeToLive" VARCHAR(20) NOT NULL,
+    "ttl_date" INTERVAL DAY NOT NULL,
+    "ttl_time" INTERVAL HOUR NOT NULL,
 
     CONSTRAINT "IncidentCategory_pkey" PRIMARY KEY ("id")
 );

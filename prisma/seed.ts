@@ -9,36 +9,24 @@ async function main() {
 
   await prisma.$transaction(async (tx) => {
     // Seed IncidentCategory
-    const categoryKriminalitas = await tx.incidentCategory.create({
-      data: {
-        name: 'Kriminalitas',
-        minRiskLevel: 'medium',
-        maxRiskLevel: 'high',
-        timeToLive: '7 days',
-      },
-    });
-    await tx.incidentCategory.createMany({
-      data: [
-        {
-          name: 'Kecelakaan Lalu Lintas',
-          minRiskLevel: 'medium',
-          maxRiskLevel: 'high',
-          timeToLive: '3 hours',
-        },
-        {
-          name: 'Kebakaran',
-          minRiskLevel: 'medium',
-          maxRiskLevel: 'high',
-          timeToLive: '5 hours',
-        },
-        {
-          name: 'Kemacetan Lalu Lintas',
-          minRiskLevel: 'low',
-          maxRiskLevel: 'medium',
-          timeToLive: '3 hours',
-        },
-      ],
-    });
+    const categoryKriminalitas = (
+      await tx.$queryRaw<{ id: string }>`
+        INSERT INTO "IncidentCategory" ("name", "min_risk_level", "max_risk_level", "ttl_date", "ttl_time")
+        VALUES (
+          'Kriminalitas', 'medium', 'high',
+          INTERVAL '7 days', INTERVAL '3 hours'
+        )
+        RETURNING id;
+      `
+    )[0];
+
+    await tx.$executeRaw`
+      INSERT INTO "IncidentCategory" ("name", "min_risk_level", "max_risk_level", "ttl_date", "ttl_time")
+      VALUES
+        ('Kecelakaan Lalu Lintas', 'medium', 'high', INTERVAL '0 hours', INTERVAL '3 hours'),
+        ('Kebakaran', 'medium', 'high', INTERVAL '0 hours', INTERVAL '5 hours'),
+        ('Kemacetan Lalu Lintas', 'low', 'medium', INTERVAL '0 hours', INTERVAL '3 hours');
+    `;
 
     // Seed Users
     const andi = await tx.user.create({

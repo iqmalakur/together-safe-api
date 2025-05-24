@@ -129,7 +129,7 @@ export class IncidentService extends AbstractLogger {
 
   public async handleGetCategories(): Promise<CategoryResDto[]> {
     const result = await this.repository.getCategories();
-    return result as CategoryResDto[];
+    return result.map(({ id, name }) => ({ id, name }));
   }
 
   private getDateRange(
