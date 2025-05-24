@@ -105,6 +105,11 @@ export class LoggerUtil {
       formattedData['token'] = '[hidden]';
     }
 
+    if ('routes' in formattedData && formattedData['routes'].length > 2) {
+      const routes: number[][][] = formattedData['routes'];
+      formattedData['routes'] = [routes[0], '...', routes[routes.length - 1]];
+    }
+
     return JSON.stringify(formattedData, null, 2);
   }
 }
