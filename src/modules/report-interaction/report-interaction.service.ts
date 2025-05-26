@@ -141,14 +141,16 @@ export class ReportInteractionService extends AbstractLogger {
       return;
     }
 
-    const status = this.calculateIncidentStatus(
-      incident.upvote_count,
-      incident.downvote_count,
-    );
+    if (!incident.status.startsWith('admin_')) {
+      const status = this.calculateIncidentStatus(
+        incident.upvote_count,
+        incident.downvote_count,
+      );
 
-    if (status !== incident.status) {
-      this.logger.debug(`Incident status changed to ${status}`);
-      this.repository.updateIncidentStatus(incident.id, status);
+      if (status !== incident.status) {
+        this.logger.debug(`Incident status changed to ${status}`);
+        this.repository.updateIncidentStatus(incident.id, status);
+      }
     }
   }
 
