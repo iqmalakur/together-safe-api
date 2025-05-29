@@ -4,7 +4,7 @@ import { ApiBadRequest, ApiServerError } from './api-response.decorator';
 import {
   GeocodingResDto,
   SafeRouteResDto,
-} from 'src/modules/geolocation/geolocation.dto';
+} from '../modules/geolocation/geolocation.dto';
 
 export const ApiSearch = (): MethodDecorator => {
   return applyDecorators(

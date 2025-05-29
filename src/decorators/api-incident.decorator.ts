@@ -11,7 +11,7 @@ import {
   ApiNotFound,
   ApiServerError,
 } from './api-response.decorator';
-import { ReportItemDto } from 'src/modules/report/report.dto';
+import { ReportItemDto } from '../modules/report/report.dto';
 
 export const ApiIncident = (): MethodDecorator => {
   return applyDecorators(

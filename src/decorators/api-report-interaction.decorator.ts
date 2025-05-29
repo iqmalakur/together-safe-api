@@ -10,7 +10,7 @@ import {
 import {
   CommentResDto,
   VoteResDto,
-} from 'src/modules/report-interaction/report-interaction.dto';
+} from '../modules/report-interaction/report-interaction.dto';
 
 export const ApiUserVote = (): MethodDecorator => {
   return applyDecorators(

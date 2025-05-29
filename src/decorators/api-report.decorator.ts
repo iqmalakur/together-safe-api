@@ -6,8 +6,8 @@ import {
   ApiServerError,
   ApiUnauthorized,
 } from './api-response.decorator';
-import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
-import { ReportItemDto, ReportResDto } from 'src/modules/report/report.dto';
+import { SuccessCreateDto } from '../modules/shared/shared.dto';
+import { ReportItemDto, ReportResDto } from '../modules/report/report.dto';
 
 export const ApiUserReport = (): MethodDecorator => {
   return applyDecorators(
