@@ -107,4 +107,29 @@ describe('IncidentController (e2e)', () => {
       });
     });
   });
+
+  describe('/incident/categories (GET)', () => {
+    it('should return 200 and list of incident categories', async () => {
+      jest.spyOn(prisma.incidentCategory, 'findMany').mockResolvedValue([
+        {
+          id: 1,
+          name: 'Kriminalitas',
+          minRiskLevel: 'low',
+          maxRiskLevel: 'high',
+        },
+      ]);
+
+      return request(app.getHttpServer())
+        .get('/incident/categories')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual([
+            {
+              id: 1,
+              name: 'Kriminalitas',
+            },
+          ]);
+        });
+    });
+  });
 });
