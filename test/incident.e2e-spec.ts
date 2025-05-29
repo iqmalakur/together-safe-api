@@ -22,54 +22,62 @@ describe('IncidentController (e2e)', () => {
     await app.close();
   });
 
-  it('/incident (GET) should return list of incidents', async () => {
-    jest.spyOn(prisma.incident, 'findMany').mockResolvedValue([
-      {
-        id: 'abc',
-        category: { name: 'Pembegalan' },
-        dateStart: new Date('2025-01-01'),
-        dateEnd: new Date('2025-01-01'),
-        timeStart: new Date('2025-01-01T21:00:00Z'),
-        timeEnd: new Date('2025-01-01T23:00:00Z'),
-        riskLevel: 'high',
-        latitude_centroid: 37.7749,
-        longitude_centroid: -122.4194,
-        status: 'active',
-        reports: [
-          {
-            id: 'r_abc',
-            description: 'lorem ipsum dolor sit amet',
-            attachments: [{ uri: 'https://example.com/image1.jpg' }],
-          },
-        ],
-      },
-    ] as any);
+  describe('/incident (GET)', () => {
+    it('should return 200 and list of nearby incidents', async () => {
+      jest.spyOn(prisma, '$queryRaw').mockResolvedValue([
+        {
+          id: '11111111-1111-1111-1111-111111111111',
+          status: 'pending',
+          risk_level: 'high',
+          date_start: new Date('2025-05-25'),
+          date_end: new Date('2025-05-30'),
+          time_start: new Date('1970-01-01T08:00:00Z'),
+          time_end: new Date('1970-01-01T18:00:00Z'),
+          radius: 200,
+          latitude: -6.9175,
+          longitude: 107.6191,
+          category: 'Kebakaran',
+        },
+      ]);
 
-    return request(app.getHttpServer())
-      .get('/incident')
-      .expect(200)
-      .expect((res) => {
-        expect(res.body).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              category: 'Pembegalan',
-              date: '01 Januari 2025',
-              time: '21:00 ~ 23:00',
+      return request(app.getHttpServer())
+        .get('/incident')
+        .query({
+          lat: -6.917,
+          lon: 107.619,
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual([
+            {
+              id: '11111111-1111-1111-1111-111111111111',
+              date: '25 Mei 2025 ~ 30 Mei 2025',
+              time: '08:00 ~ 18:00',
+              status: 'pending',
+              latitude: -6.9175,
+              longitude: 107.6191,
+              location: expect.stringContaining('Indonesia'),
+              category: 'Kebakaran',
+              radius: 200,
               riskLevel: 'high',
-              location: expect.any(String),
-              latitude: 37.7749,
-              longitude: -122.4194,
-              status: 'active',
-              reports: [
-                {
-                  id: 'r_abc',
-                  description: 'lorem ipsum dolor sit amet',
-                },
-              ],
-              mediaUrls: ['https://example.com/image1.jpg'],
-            }),
-          ]),
-        );
-      });
+            },
+          ]);
+        });
+    });
+
+    it('should return 200 and an empty list', async () => {
+      jest.spyOn(prisma, '$queryRaw').mockResolvedValue([]);
+
+      return request(app.getHttpServer())
+        .get('/incident')
+        .query({
+          lat: -6.917,
+          lon: 107.619,
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual([]);
+        });
+    });
   });
 });
