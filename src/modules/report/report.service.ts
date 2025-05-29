@@ -7,13 +7,17 @@ import {
 import { ReportRepository } from './report.repository';
 import { ReportItemDto, ReportReqDto, ReportResDto } from './report.dto';
 import { ReportInput, ReportRelatedIncident } from './report.type';
-import { UploadService } from 'src/infrastructures/upload.service';
+import { UploadService } from '../../infrastructures/upload.service';
 import { UserJwtPayload } from '../shared/shared.type';
-import { getDate, getFormattedDate, getTimeString } from 'src/utils/date.util';
+import {
+  getDate,
+  getFormattedDate,
+  getTimeString,
+} from '../../utils/date.util';
 import { SuccessCreateDto } from '../shared/shared.dto';
-import { getFileUrl, getFileUrlOrNull } from 'src/utils/common.util';
+import { getFileUrl, getFileUrlOrNull } from '../../utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
-import { ApiService } from 'src/infrastructures/api.service';
+import { ApiService } from '../../infrastructures/api.service';
 import { RiskLevel } from '@prisma/client';
 
 @Injectable()

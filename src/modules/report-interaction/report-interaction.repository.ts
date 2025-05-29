@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
-import { handleError } from 'src/utils/common.util';
+import { handleError } from '../../utils/common.util';
 import { IncidentStatus, Vote, VoteType } from '@prisma/client';
 import {
   ReportComment,

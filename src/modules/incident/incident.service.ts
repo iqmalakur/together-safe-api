@@ -7,9 +7,9 @@ import {
 } from './incident.dto';
 import { IncidentRepository } from './incident.repository';
 import { ReportItemDto } from '../report/report.dto';
-import { getFileUrl } from 'src/utils/common.util';
+import { getFileUrl } from '../../utils/common.util';
 import { AbstractLogger } from '../shared/abstract-logger';
-import { ApiService } from 'src/infrastructures/api.service';
+import { ApiService } from '../../infrastructures/api.service';
 
 @Injectable()
 export class IncidentService extends AbstractLogger {

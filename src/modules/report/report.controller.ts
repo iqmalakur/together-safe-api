@@ -25,7 +25,7 @@ import {
   ApiPostReport,
   ApiReport,
   ApiUserReport,
-} from 'src/decorators/api-report.decorator';
+} from '../../decorators/api-report.decorator';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { AbstractLogger } from '../shared/abstract-logger';
 

@@ -3,7 +3,7 @@ import { GeolocationRepository } from './geolocation.repository';
 import { SafeRouteResDto, GeocodingResDto } from './geolocation.dto';
 import { Geometry } from './geolocation.type';
 import { AbstractLogger } from '../shared/abstract-logger';
-import { ApiService } from 'src/infrastructures/api.service';
+import { ApiService } from '../../infrastructures/api.service';
 
 @Injectable()
 export class GeolocationService extends AbstractLogger {

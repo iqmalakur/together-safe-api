@@ -1,4 +1,4 @@
-import { LoggerUtil } from 'src/utils/logger.util';
+import { LoggerUtil } from '../../utils/logger.util';
 
 export abstract class AbstractLogger {
   protected readonly logger: LoggerUtil;

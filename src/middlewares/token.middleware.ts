@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
-import { AuthRequest } from 'src/modules/shared/shared.type';
-import { validateToken } from 'src/utils/common.util';
+import { AuthRequest } from '../modules/shared/shared.type';
+import { validateToken } from '../utils/common.util';
 
 @Injectable()
 export class TokenMiddleware implements NestMiddleware {

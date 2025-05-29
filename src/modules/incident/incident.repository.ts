@@ -5,7 +5,7 @@ import {
   VoteCountResult,
 } from './incident.type';
 import { BaseRepository } from '../shared/base.repository';
-import { handleError } from 'src/utils/common.util';
+import { handleError } from '../../utils/common.util';
 import { ReportItemResult } from '../report/report.type';
 import { IncidentCategory } from '@prisma/client';
 

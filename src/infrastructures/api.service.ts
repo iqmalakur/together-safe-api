@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { GeocodeResult } from 'src/modules/shared/shared.type';
-import { handleError } from 'src/utils/common.util';
-import { LoggerUtil } from 'src/utils/logger.util';
+import { GeocodeResult } from '../modules/shared/shared.type';
+import { handleError } from '../utils/common.util';
+import { LoggerUtil } from '../utils/logger.util';
 import { PrismaService } from './prisma.service';
 
 @Injectable()

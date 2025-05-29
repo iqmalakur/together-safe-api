@@ -7,7 +7,7 @@ import { AbstractLogger } from '../shared/abstract-logger';
 import { ReportInteractionRepository } from './report-interaction.repository';
 import { CommentResDto, VoteResDto } from './report-interaction.dto';
 import { IncidentStatus, VoteType } from '@prisma/client';
-import { getFileUrlOrNull } from 'src/utils/common.util';
+import { getFileUrlOrNull } from '../../utils/common.util';
 
 @Injectable()
 export class ReportInteractionService extends AbstractLogger {
