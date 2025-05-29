@@ -1,6 +1,5 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiToken } from './api-token.decorator';
 import {
   CategoryResDto,
   IncidentDetailResDto,
@@ -19,7 +18,6 @@ export const ApiIncident = (): MethodDecorator => {
       summary: 'Get incident',
       description: 'Get incident data based on user location',
     }),
-    ApiToken(),
     ApiResponse({
       status: 200,
       description: 'Success get incidents',
@@ -40,7 +38,6 @@ export const ApiIncidentDetail = (): MethodDecorator => {
       summary: 'Get detail incident',
       description: 'Get detail incident by incident ID',
     }),
-    ApiToken(),
     ApiResponse({
       status: 200,
       description: 'Success get detail incident',
@@ -63,6 +60,7 @@ export const ApiIncidentReport = (): MethodDecorator => {
       type: ReportItemDto,
       isArray: true,
     }),
+    ApiNotFound('Insiden tidak ditemukan', 'Incident does not exist'),
     ApiServerError(),
   );
 };

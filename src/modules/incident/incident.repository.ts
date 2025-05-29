@@ -112,8 +112,15 @@ export class IncidentRepository extends BaseRepository {
 
   public async getReportsByIncidentId(
     incidentId: string,
-  ): Promise<ReportItemResult[]> {
+  ): Promise<ReportItemResult[] | null> {
     try {
+      const incident = await this.prisma.incident.findUnique({
+        where: { id: incidentId },
+        select: { id: true },
+      });
+
+      if (!incident) return null;
+
       return await this.prisma.report.findMany({
         where: { incidentId },
         select: {
