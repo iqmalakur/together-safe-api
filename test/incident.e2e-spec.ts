@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/infrastructures/prisma.service';
@@ -14,7 +14,9 @@ describe('IncidentController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
+
     prisma = moduleFixture.get<PrismaService>(PrismaService);
   });
 
@@ -65,19 +67,44 @@ describe('IncidentController (e2e)', () => {
         });
     });
 
-    it('should return 200 and an empty list', async () => {
+    it('should return 400 for unprovided latitude or longitude', async () => {
       jest.spyOn(prisma, '$queryRaw').mockResolvedValue([]);
 
-      return request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
+        .get('/incident')
+        .expect(400);
+
+      expect(response.body).toEqual({
+        message: expect.arrayContaining([
+          'Latitude tidak valid',
+          'Latitude wajib diisi',
+          'Longitude tidak valid',
+          'Longitude wajib diisi',
+        ]),
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    });
+
+    it('should return 400 for invalid latitude or longitude', async () => {
+      jest.spyOn(prisma, '$queryRaw').mockResolvedValue([]);
+
+      const response = await request(app.getHttpServer())
         .get('/incident')
         .query({
-          lat: -6.917,
-          lon: 107.619,
+          lat: 'abc',
+          lon: 'abc',
         })
-        .expect(200)
-        .expect((res) => {
-          expect(res.body).toEqual([]);
-        });
+        .expect(400);
+
+      expect(response.body).toEqual({
+        message: expect.arrayContaining([
+          'Latitude tidak valid',
+          'Longitude tidak valid',
+        ]),
+        error: 'Bad Request',
+        statusCode: 400,
+      });
     });
   });
 });
