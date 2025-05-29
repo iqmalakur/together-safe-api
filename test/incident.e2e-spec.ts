@@ -28,7 +28,7 @@ describe('IncidentController (e2e)', () => {
     it('should return 200 and list of nearby incidents', async () => {
       jest.spyOn(prisma, '$queryRaw').mockResolvedValue([
         {
-          id: '11111111-1111-1111-1111-111111111111',
+          id: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',
           status: 'pending',
           risk_level: 'high',
           date_start: new Date('2025-05-25'),
@@ -52,7 +52,7 @@ describe('IncidentController (e2e)', () => {
         .expect((res) => {
           expect(res.body).toEqual([
             {
-              id: '11111111-1111-1111-1111-111111111111',
+              id: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',
               date: '25 Mei 2025 ~ 30 Mei 2025',
               time: '08:00 ~ 18:00',
               status: 'pending',
@@ -129,6 +129,61 @@ describe('IncidentController (e2e)', () => {
               name: 'Kriminalitas',
             },
           ]);
+        });
+    });
+  });
+
+  describe('/incident/{id}/reports (GET)', () => {
+    it('should return 200 and list of incident reports', async () => {
+      jest.spyOn(prisma.incident, 'findUnique').mockResolvedValue({
+        id: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',
+      } as any);
+
+      jest.spyOn(prisma.report, 'findMany').mockResolvedValue([
+        {
+          id: 'a1b2c3d4-e5f6-7890-ab12-cd34ef56gh78',
+          description: 'Kejadian pencurian motor di parkiran umum.',
+          date: new Date('2025-06-01'),
+          time: new Date('1970-01-01T20:15:00Z'),
+          latitude: -6.914744,
+          longitude: 107.60981,
+          incident: {
+            id: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',
+            category: {
+              name: 'Pencurian',
+            },
+          },
+        },
+      ] as any);
+
+      const response = await request(app.getHttpServer())
+        .get('/incident/98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a/reports')
+        .expect(200);
+
+      expect(response.body).toEqual([
+        {
+          id: 'a1b2c3d4-e5f6-7890-ab12-cd34ef56gh78',
+          description: 'Kejadian pencurian motor di parkiran umum.',
+          date: '01 Juni 2025',
+          time: '20:15',
+          location: expect.stringContaining('Indonesia'),
+          category: 'Pencurian',
+        },
+      ]);
+    });
+
+    it('should return 404 if incident not found', async () => {
+      jest.spyOn(prisma.incident, 'findUnique').mockResolvedValue(null as any);
+
+      return await request(app.getHttpServer())
+        .get('/incident/98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a/reports')
+        .expect(404)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Insiden tidak ditemukan',
+            error: 'Not Found',
+            statusCode: 404,
+          });
         });
     });
   });

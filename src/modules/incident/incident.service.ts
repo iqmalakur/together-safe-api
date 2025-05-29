@@ -106,6 +106,11 @@ export class IncidentService extends AbstractLogger {
 
   public async handleGetIncidentReports(id: string): Promise<ReportItemDto[]> {
     const reports = await this.repository.getReportsByIncidentId(id);
+
+    if (!reports) {
+      throw new NotFoundException('Insiden tidak ditemukan');
+    }
+
     const result: ReportItemDto[] = [];
 
     for (const report of reports) {

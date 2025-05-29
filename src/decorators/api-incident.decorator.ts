@@ -63,6 +63,7 @@ export const ApiIncidentReport = (): MethodDecorator => {
       type: ReportItemDto,
       isArray: true,
     }),
+    ApiNotFound('Insiden tidak ditemukan', 'Incident does not exist'),
     ApiServerError(),
   );
 };
