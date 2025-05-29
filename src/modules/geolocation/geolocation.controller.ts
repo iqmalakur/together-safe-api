@@ -12,7 +12,7 @@ import {
   ApiLocation,
   ApiSafeRoute,
   ApiSearch,
-} from 'src/decorators/api-geolocation.decorator';
+} from '../../decorators/api-geolocation.decorator';
 import { AbstractLogger } from '../shared/abstract-logger';
 
 @Controller('geolocation')

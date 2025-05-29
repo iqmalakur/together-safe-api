@@ -29,7 +29,7 @@ import {
   ApiUpdateComment,
   ApiUserVote,
   ApiVote,
-} from 'src/decorators/api-report-interaction.decorator';
+} from '../../decorators/api-report-interaction.decorator';
 
 @Controller('report')
 @ApiSecurity('jwt')

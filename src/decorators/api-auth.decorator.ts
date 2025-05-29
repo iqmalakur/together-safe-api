@@ -7,7 +7,7 @@ import {
   ApiUnauthorized,
 } from './api-response.decorator';
 import { AuthResDto } from '../modules/auth/auth.dto';
-import { SuccessCreateDto } from 'src/modules/shared/shared.dto';
+import { SuccessCreateDto } from '../modules/shared/shared.dto';
 
 export const ApiLogin = (): MethodDecorator => {
   return applyDecorators(

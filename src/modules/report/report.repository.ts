@@ -1,7 +1,7 @@
 import { IncidentCategory, Prisma, RiskLevel } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
-import { handleError } from 'src/utils/common.util';
+import { handleError } from '../../utils/common.util';
 import {
   ReportRelatedIncident,
   ReportDetailResult,
@@ -9,8 +9,8 @@ import {
   ReportItemResult,
   ReportResult,
 } from './report.type';
-import { getDate, getDateString, getTimeString } from 'src/utils/date.util';
-import { getUpdatedTimeRange } from 'src/utils/time.util';
+import { getDate, getDateString, getTimeString } from '../../utils/date.util';
+import { getUpdatedTimeRange } from '../../utils/time.util';
 
 @Injectable()
 export class ReportRepository extends BaseRepository {

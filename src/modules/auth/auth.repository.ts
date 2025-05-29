@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseRepository } from '../shared/base.repository';
 import { UserAuthSelection, UserCreateSelection } from './auth.type';
 import { Prisma } from '@prisma/client';
-import { handleError } from 'src/utils/common.util';
+import { handleError } from '../../utils/common.util';
 
 @Injectable()
 export class AuthRepository extends BaseRepository {
