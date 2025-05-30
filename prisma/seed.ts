@@ -1,11 +1,37 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { getDate } from '../src/utils/date.util';
+import { getDate, getDateString, getTimeString } from '../src/utils/date.util';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding database...');
+
+  const current = new Date();
+
+  const yesterday = new Date(current);
+  yesterday.setDate(current.getDate() - 1);
+
+  const tomorrow = new Date(current);
+  tomorrow.setDate(current.getDate() + 1);
+
+  const dateStrings = {
+    yesterday: getDateString(yesterday),
+    today: getDateString(current),
+    tomorrow: getDateString(tomorrow),
+  };
+
+  const oneHourBefore = new Date(current);
+  oneHourBefore.setHours(current.getHours() - 1);
+
+  const oneHourAfter = new Date(current);
+  oneHourAfter.setHours(current.getHours() + 1);
+
+  const timeStrings = {
+    oneHourBefore: getTimeString(oneHourBefore),
+    now: getTimeString(current),
+    oneHourAfter: getTimeString(oneHourAfter),
+  };
 
   await prisma.$transaction(async (tx) => {
     // Seed IncidentCategory
@@ -75,18 +101,19 @@ async function main() {
       $1, -- categoryId
       'high',
       $2::date,
-      $2::date,
-      $3::time,
+      $3::date,
       $4::time,
-      ST_SetSRID(ST_MakePoint($5, $6), 4326), -- longitude, latitude
-      $7
+      $5::time,
+      ST_SetSRID(ST_MakePoint($6, $7), 4326), -- longitude, latitude
+      $8
     )
     RETURNING id;
   `,
       categoryKriminalitas.id,
-      '2025-02-19', // dateStart & dateEnd
-      '19:00', // timeStart
-      '20:00', // timeEnd
+      dateStrings.yesterday, // dateStart
+      dateStrings.tomorrow, // dateEnd
+      timeStrings.oneHourBefore, // timeStart
+      timeStrings.oneHourAfter, // timeEnd
       107.52420030957933, // centroid longitude
       -6.884348919916044, // centroid latitude
       10, // radius
@@ -99,8 +126,8 @@ async function main() {
         description: 'Pembegalan motor di jalan ibu ganirah cimahi',
         latitude: -6.884275453943853,
         longitude: 107.52424339838008,
-        date: getDate('2025-02-19'),
-        time: getDate('19:30'),
+        date: getDate(dateStrings.yesterday),
+        time: getDate(timeStrings.oneHourBefore),
         incidentId: incident.id,
       },
     });
@@ -111,8 +138,8 @@ async function main() {
         description: 'Aksi pembegalan motor terhadap mahasiswa',
         latitude: -6.884397052259107,
         longitude: 107.52415722077858,
-        date: getDate('2025-02-19'),
-        time: getDate('19:00'),
+        date: getDate(dateStrings.today),
+        time: getDate(timeStrings.now),
         incidentId: incident.id,
       },
     });
@@ -124,8 +151,8 @@ async function main() {
           'Pelaku begal merampas tas pengendara di jalan ibu ganirah',
         latitude: -6.884422385888235,
         longitude: 107.5241731692771,
-        date: getDate('2025-02-19'),
-        time: getDate('20:00'),
+        date: getDate(dateStrings.yesterday),
+        time: getDate(timeStrings.oneHourAfter),
         incidentId: incident.id,
       },
     });
