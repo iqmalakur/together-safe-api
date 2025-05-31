@@ -60,7 +60,7 @@ async function main() {
         email: 'andi.pratama@gmail.com',
         name: 'Andi Pratama',
         password: bcrypt.hashSync('Andi123!', 10),
-        profilePhoto: '1dX61J5_x4f-TUNay4wf5kiQwCQGJ0t90',
+        profilePhoto: '1JhJvGdGhKV3ZQPu_4cYTYgmFPNet3hKj',
       },
     });
 
@@ -69,6 +69,7 @@ async function main() {
         email: 'budi.santoso@example.com',
         name: 'Budi Santoso',
         password: bcrypt.hashSync('BudiS@123', 10),
+        profilePhoto: '17ZowAHAXQQCgZSfQV_LaPGwyh6db9dQ9',
       },
     });
 
@@ -77,7 +78,7 @@ async function main() {
         email: 'siti.nurhaliza@example.com',
         name: 'Siti Nurhaliza',
         password: bcrypt.hashSync('Siti@1234', 10),
-        profilePhoto: '1ay4HPdjOFzHhq2aJi_WMiXeYdk2woxsR',
+        profilePhoto: '1WyGdqaDUKXGSY_KhxSSrppcT2xJe_z73',
       },
     });
 
@@ -86,7 +87,7 @@ async function main() {
         email: 'ayu.lestari@example.com',
         name: 'Ayu Lestari',
         password: bcrypt.hashSync('AyuLestari_21', 10),
-        profilePhoto: '169VSqQ5BDMkVo_7zHpNo5edhfqW2aB1w',
+        profilePhoto: '12eyzh9ZFidABMn1Gpyr-S-Dr9i71VU6D',
       },
     });
 
