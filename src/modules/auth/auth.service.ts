@@ -12,7 +12,7 @@ import { UploadService } from '../../infrastructures/upload.service';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { AbstractLogger } from '../shared/abstract-logger';
 import { sign } from 'jsonwebtoken';
-import { SECRET_KEY } from 'src/config/app.config';
+import { SECRET_KEY } from '../../config/app.config';
 
 @Injectable()
 export class AuthService extends AbstractLogger {
