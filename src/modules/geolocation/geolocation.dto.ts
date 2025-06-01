@@ -19,8 +19,8 @@ export class LatLonQueryDto {
 
 export class GeocodingQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
-  @IsString({
-    message: 'Query parameter harus berupa teks',
+  @IsNotEmpty({
+    message: "Query parameter 'q' wajib diisi sebagai query pencarian",
   })
   public readonly q: string;
 }
