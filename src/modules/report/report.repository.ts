@@ -83,18 +83,6 @@ export class ReportRepository extends BaseRepository {
     });
   }
 
-  public async checkCategory(categoryId: number): Promise<boolean> {
-    try {
-      const result = await this.prisma.incidentCategory.findFirst({
-        where: { id: categoryId },
-        select: { id: true },
-      });
-      return result != null;
-    } catch (e) {
-      throw handleError(e, this.logger);
-    }
-  }
-
   public async createReport(
     incident: ReportRelatedIncident,
     report: ReportInput,

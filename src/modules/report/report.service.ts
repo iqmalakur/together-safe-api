@@ -119,12 +119,6 @@ export class ReportService extends AbstractLogger {
     const { description, date, time, location, media } = data;
     const categoryId = parseInt(data.categoryId);
     const isAnonymous = data.isAnonymous.toLowerCase() === 'true';
-
-    const isCategoryExists = await this.repository.checkCategory(categoryId);
-    if (!isCategoryExists) {
-      throw new BadRequestException('Kategori tidak valid');
-    }
-
     const splittedLocation = location.split(',');
     const latitude = parseFloat(splittedLocation[0]);
     const longitude = parseFloat(splittedLocation[1]);
@@ -144,7 +138,7 @@ export class ReportService extends AbstractLogger {
     const category = await this.repository.getCategory(reportInput.categoryId);
 
     if (!category) {
-      throw new BadRequestException('Kategori tidak valid');
+      throw new BadRequestException(['Kategori tidak ditemukan']);
     }
 
     let relatedIncident =
