@@ -72,4 +72,32 @@ describe('GeolocationController (e2e)', () => {
         });
     });
   });
+
+  describe('/geolocation/location (GET)', () => {
+    it('should return 200 and location detail', async () => {
+      return request(app.getHttpServer())
+        .get('/geolocation/location')
+        .query({ lat: '-6.917464', lon: '107.619123' })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual(geocodeResultData);
+        });
+    });
+
+    it('should return 400 if latitude or longitude is empty', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/geolocation/location')
+        .query({ lat: 'a,b', lon: 'a,b' })
+        .expect(400);
+
+      expect(res.body).toEqual({
+        message: expect.arrayContaining([
+          'Latitude tidak valid',
+          'Longitude tidak valid',
+        ]),
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    });
+  });
 });
