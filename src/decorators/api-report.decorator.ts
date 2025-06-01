@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   ApiBadRequest,
   ApiConflict,
+  ApiNotFound,
   ApiServerError,
   ApiUnauthorized,
 } from './api-response.decorator';
@@ -43,6 +44,7 @@ export const ApiReport = (): MethodDecorator => {
     }),
     ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest('ID tidak valid', 'Invalid report ID format or bad token'),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
     ApiServerError(),
   );
 };
