@@ -100,4 +100,65 @@ describe('GeolocationController (e2e)', () => {
       });
     });
   });
+
+  describe('/geolocation/safe-route (GET)', () => {
+    it('should return 200 and safe route', async () => {
+      jest.spyOn(prisma, '$queryRaw').mockResolvedValue([
+        {
+          geojson:
+            '{"type":"LineString","coordinates":[[107.84513,-6.20876],[107.84600,-6.20880]]}',
+        },
+        {
+          geojson:
+            '{"type":"LineString","coordinates":[[107.84600,-6.20880],[107.84720,-6.20910]]}',
+        },
+        {
+          geojson:
+            '{"type":"LineString","coordinates":[[107.84720,-6.20910],[107.84810,-6.20950]]}',
+        },
+      ]);
+
+      return request(app.getHttpServer())
+        .get('/geolocation/safe-route')
+        .query({
+          startLatLon: '-6.20876,107.84513',
+          endLatLon: '-6.2095,107.8481',
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            routes: [
+              [
+                [107.84513, -6.20876],
+                [107.846, -6.2088],
+              ],
+              [
+                [107.846, -6.2088],
+                [107.8472, -6.2091],
+              ],
+              [
+                [107.8472, -6.2091],
+                [107.8481, -6.2095],
+              ],
+            ],
+          });
+        });
+    });
+
+    it('should return 400 if startLatLon or endLatLon is empty', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/geolocation/safe-route')
+        .query({ startLatLon: 'a,b', endLatLon: 'a,b' })
+        .expect(400);
+
+      expect(res.body).toEqual({
+        message: expect.arrayContaining([
+          'Format lokasi awal harus latitude,longitude',
+          'Format lokasi akhir harus latitude,longitude',
+        ]),
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    });
+  });
 });
