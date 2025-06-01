@@ -56,6 +56,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # API Key File
 service-account.json
+*-audit.json
 
 # Public directory
 public
