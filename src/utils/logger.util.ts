@@ -18,7 +18,7 @@ export class LoggerUtil {
 
     const createFileTransport: () => DailyRotateFile = () =>
       new DailyRotateFile({
-        filename: 'attendance-service-%DATE%.log',
+        filename: 'together-safe-%DATE%.log',
         datePattern: 'YYYY-MM-DD',
         zippedArchive: true,
         maxSize: '20m',
