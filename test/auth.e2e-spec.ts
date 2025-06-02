@@ -203,7 +203,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('/auth/validate_token (POST)', () => {
+  describe('/auth/validate-token (POST)', () => {
     it('should return 200 and JWT token', async () => {
       const token = sign(
         {
@@ -223,7 +223,7 @@ describe('AuthController (e2e)', () => {
       });
 
       const res = await request(app.getHttpServer())
-        .post('/auth/validate_token')
+        .post('/auth/validate-token')
         .send({ token })
         .expect(200);
 
@@ -238,7 +238,7 @@ describe('AuthController (e2e)', () => {
 
     it('should return 400 if token is not provided', async () => {
       const res = await request(app.getHttpServer())
-        .post('/auth/validate_token')
+        .post('/auth/validate-token')
         .expect(400);
 
       expect(res.body).toEqual({
@@ -250,7 +250,7 @@ describe('AuthController (e2e)', () => {
 
     it('should return 401 if token is not valid', async () => {
       await request(app.getHttpServer())
-        .post('/auth/validate_token')
+        .post('/auth/validate-token')
         .send({ token: 'abc' })
         .expect(401)
         .expect((res) => {
@@ -274,7 +274,7 @@ describe('AuthController (e2e)', () => {
       jest.spyOn(prisma.user, 'findFirst').mockResolvedValue(null);
 
       await request(app.getHttpServer())
-        .post('/auth/validate_token')
+        .post('/auth/validate-token')
         .send({ token })
         .expect(401)
         .expect((res) => {
