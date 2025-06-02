@@ -117,6 +117,106 @@ describe('ReportInteractionController (e2e)', () => {
     });
   });
 
+  describe('/report/{reportId}/vote (PATCH)', () => {
+    it('should return 200 and user vote information', async () => {
+      jest.spyOn(prisma.report, 'findFirst').mockResolvedValueOnce({
+        incidentId: '123e4567-e89b-12d3-a456-426614174000',
+        userEmail: 'andi@example.com',
+        isAnonymous: false,
+        votes: [{ type: 'upvote' }],
+      } as any);
+
+      jest.spyOn(prisma.vote, 'upsert').mockResolvedValue({
+        type: 'upvote',
+        userEmail: 'budi.santoso@example.com',
+        reportId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      });
+
+      jest.spyOn(prisma.report, 'findFirst').mockResolvedValueOnce({
+        incident: {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          status: 'pending',
+        },
+      } as any);
+
+      jest.spyOn(prisma, '$queryRaw').mockResolvedValueOnce([
+        {
+          upvote_count: 2,
+          downvote_count: 0,
+        },
+      ]);
+
+      jest.spyOn(prisma.incident, 'update').mockReturnValue({} as any);
+
+      await request(app.getHttpServer())
+        .patch('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479/vote')
+        .set('Authorization', 'Bearer generated_token')
+        .send({ type: 'upvote' })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            reportId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            type: 'upvote',
+            userEmail: 'budi.santoso@example.com',
+          });
+        });
+    });
+
+    it('should return 400 if input is not valid', async () => {
+      return await request(app.getHttpServer())
+        .patch('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479/vote')
+        .set('Authorization', 'Bearer generated_token')
+        .send({ type: 'invalid' })
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: ['Tipe vote tidak valid'],
+            error: 'Bad Request',
+            statusCode: 400,
+          });
+        });
+    });
+
+    it('should return 404 if report is not found', async () => {
+      jest.spyOn(prisma.report, 'findFirst').mockResolvedValue(null);
+
+      return await request(app.getHttpServer())
+        .patch('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479/vote')
+        .set('Authorization', 'Bearer generated_token')
+        .send({ type: 'upvote' })
+        .expect(404)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Laporan tidak ditemukan',
+            error: 'Not Found',
+            statusCode: 404,
+          });
+        });
+    });
+
+    it('should return 409 if user vote for the self report', async () => {
+      jest.spyOn(prisma.report, 'findFirst').mockResolvedValue({
+        incidentId: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',
+        userEmail: 'budi.santoso@example.com',
+        isAnonymous: false,
+        votes: [{ type: 'upvote' }],
+      } as any);
+
+      return await request(app.getHttpServer())
+        .patch('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479/vote')
+        .set('Authorization', 'Bearer generated_token')
+        .send({ type: 'upvote' })
+        .expect(409)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Anda tidak dapat melakukan vote pada laporan Anda',
+            error: 'Conflict',
+            statusCode: 409,
+          });
+        });
+    });
+  });
+
   describe('/report/{reportId}/comment (POST)', () => {
     it('should return 201 and submitted comment', async () => {
       jest.spyOn(prisma.report, 'findFirst').mockResolvedValue({

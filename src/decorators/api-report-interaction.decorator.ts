@@ -47,6 +47,7 @@ export const ApiVote = (): MethodDecorator => {
     }),
     ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest('Tipe vote tidak valid', 'Invalid vote type or report ID'),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
     ApiConflict(
       'Anda tidak dapat melakukan vote pada laporan Anda',
       'Self vote',
