@@ -159,6 +159,7 @@ export class ReportInteractionRepository extends BaseRepository {
           userEmail,
           id: commentId,
         },
+        select: { id: true },
       });
 
       if (!comment) {
