@@ -7,10 +7,12 @@ import { compareSync } from 'bcrypt';
 import { AuthResDto, RegisterReqDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthRepository } from './auth.repository';
-import { validateToken } from '../../utils/common.util';
+import { getFileUrlOrNull, validateToken } from '../../utils/common.util';
 import { UploadService } from '../../infrastructures/upload.service';
 import { SuccessCreateDto } from '../shared/shared.dto';
 import { AbstractLogger } from '../shared/abstract-logger';
+import { sign } from 'jsonwebtoken';
+import { SECRET_KEY } from '../../config/app.config';
 
 @Injectable()
 export class AuthService extends AbstractLogger {
@@ -31,11 +33,24 @@ export class AuthService extends AbstractLogger {
       ? compareSync(password, user.password)
       : false;
 
-    if (!isPasswordValid) {
+    if (!user || !isPasswordValid) {
       throw new UnauthorizedException('Email atau Password salah!');
     }
 
-    return new AuthResDto(user!);
+    return {
+      email: user.email,
+      name: user.name,
+      profilePhoto: getFileUrlOrNull(user.profilePhoto),
+      token: sign(
+        {
+          email: user.email,
+          name: user.name,
+          profilePhoto: user.profilePhoto,
+        },
+        SECRET_KEY,
+        { expiresIn: '1w' },
+      ),
+    };
   }
 
   public async handleRegister(user: RegisterReqDto): Promise<SuccessCreateDto> {
@@ -76,6 +91,19 @@ export class AuthService extends AbstractLogger {
       throw new UnauthorizedException('Token tidak valid!');
     }
 
-    return new AuthResDto(user);
+    return {
+      email: user.email,
+      name: user.name,
+      profilePhoto: getFileUrlOrNull(user.profilePhoto),
+      token: sign(
+        {
+          email: user.email,
+          name: user.name,
+          profilePhoto: user.profilePhoto,
+        },
+        SECRET_KEY,
+        { expiresIn: '1w' },
+      ),
+    };
   }
 }

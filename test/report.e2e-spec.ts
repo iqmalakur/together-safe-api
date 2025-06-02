@@ -122,7 +122,6 @@ describe('ReportController (e2e)', () => {
 
       const res = await request(app.getHttpServer())
         .get('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479')
-        .set('Authorization', 'Bearer generated_token')
         .expect(200);
 
       expect(res.body).toEqual({
@@ -170,7 +169,6 @@ describe('ReportController (e2e)', () => {
     it('should return 400 if id is not valid', async () => {
       await request(app.getHttpServer())
         .get('/report/invalid-id')
-        .set('Authorization', 'Bearer generated_token')
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
@@ -186,7 +184,6 @@ describe('ReportController (e2e)', () => {
 
       await request(app.getHttpServer())
         .get('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479')
-        .set('Authorization', 'Bearer generated_token')
         .expect(404)
         .expect((res) => {
           expect(res.body).toEqual({

@@ -1,8 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { getFileUrlOrNull } from '../../utils/common.util';
-import { sign } from 'jsonwebtoken';
-import { SECRET_KEY } from '../../config/app.config';
-import { UserAuthSelection } from './auth.type';
 import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
 export class ValidateTokenReqDto {
@@ -53,6 +49,7 @@ export class RegisterReqDto {
     description: 'Profile photo (file)',
     type: 'string',
     format: 'binary',
+    required: false,
   })
   public readonly profilePhoto: Express.Multer.File;
 }
@@ -75,21 +72,4 @@ export class AuthResDto {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkkujCJ9.eyJuaWsiOiIwMDEhugewNDU2MDA3MDEiLCJpYXQiOjE3MjcxMzczNjAsImV4cCI6MTcyNzc0MjE2MH0.uGwjj2AmJwJJ77QuZFf6nccBjkpbyW29Q2s0_69jjiE',
   })
   public readonly token: string;
-
-  public constructor(user: UserAuthSelection) {
-    this.email = user.email;
-    this.name = user.name;
-
-    this.profilePhoto = getFileUrlOrNull(user.profilePhoto);
-
-    this.token = sign(
-      {
-        email: this.email,
-        name: this.name,
-        profilePhoto: this.profilePhoto,
-      },
-      SECRET_KEY,
-      { expiresIn: '1w' },
-    );
-  }
 }

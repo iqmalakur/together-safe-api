@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, Matches } from 'class-validator';
 
 export class LatLonQueryDto {
   @ApiProperty({ example: '-6.9175' })
