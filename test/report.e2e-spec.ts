@@ -33,8 +33,14 @@ describe('ReportController (e2e)', () => {
     prisma = moduleFixture.get<PrismaService>(PrismaService);
     uploadService = moduleFixture.get<UploadService>(UploadService);
 
-    (CommonUtil.validateToken as jest.Mock).mockImplementation(
-      (token) => token === 'generated_token',
+    (CommonUtil.validateToken as jest.Mock).mockImplementation((token) =>
+      token === 'generated_token'
+        ? {
+            email: 'budi.santoso@example.com',
+            name: 'Budi Santoso',
+            profilePhoto: '17ZowAHAXQQCgZSfQV_LaPGwyh6db9dQ9',
+          }
+        : null,
     );
   });
 
