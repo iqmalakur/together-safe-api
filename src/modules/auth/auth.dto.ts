@@ -49,6 +49,7 @@ export class RegisterReqDto {
     description: 'Profile photo (file)',
     type: 'string',
     format: 'binary',
+    required: false,
   })
   public readonly profilePhoto: Express.Multer.File;
 }

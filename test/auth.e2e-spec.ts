@@ -6,10 +6,12 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/infrastructures/prisma.service';
 import { sign } from 'jsonwebtoken';
 import { SECRET_KEY } from '../src/config/app.config';
+import { UploadService } from '../src/infrastructures/upload.service';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+  let uploadService: UploadService;
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
@@ -21,6 +23,7 @@ describe('AuthController (e2e)', () => {
     await app.init();
 
     prisma = moduleFixture.get<PrismaService>(PrismaService);
+    uploadService = moduleFixture.get<UploadService>(UploadService);
   });
 
   afterAll(async () => {
@@ -113,6 +116,93 @@ describe('AuthController (e2e)', () => {
     });
   });
 
+  describe('/auth/register (POST)', () => {
+    it('should return 201 and JWT token', async () => {
+      const user = {
+        email: 'budi.santoso@example.com',
+        name: 'Budi Santoso',
+        profilePhoto: __dirname + '/files/incident.jpg',
+        password: 'budiSantoso123',
+      };
+
+      jest.spyOn(prisma.user, 'count').mockResolvedValue(0);
+      jest.spyOn(prisma.user, 'create').mockResolvedValue({
+        email: 'budi.santoso@example.com',
+      } as any);
+
+      const uploadFile = jest
+        .spyOn(uploadService, 'uploadFile')
+        .mockResolvedValue('17ZowAHAXQQCgZSfQV_LaPGwyh6db9dQ9');
+
+      await request(app.getHttpServer())
+        .post('/auth/register')
+        .field('email', user.email)
+        .field('name', user.name)
+        .field('password', user.password)
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            id: 'budi.santoso@example.com',
+            message: 'Pendaftaran pengguna berhasil',
+          });
+        });
+
+      expect(uploadFile).not.toHaveBeenCalled();
+
+      await request(app.getHttpServer())
+        .post('/auth/register')
+        .field('email', user.email)
+        .field('name', user.name)
+        .field('password', user.password)
+        .attach('profilePhoto', user.profilePhoto)
+        .expect(201)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            id: 'budi.santoso@example.com',
+            message: 'Pendaftaran pengguna berhasil',
+          });
+        });
+
+      expect(uploadFile).toHaveBeenCalled();
+    });
+
+    it('should return 400 if input are not valid', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/auth/register')
+        .field('email', 'coba')
+        .field('password', 'admin')
+        .expect(400);
+
+      expect(res.body).toEqual({
+        message: expect.arrayContaining([
+          'Email tidak valid',
+          'Password minimal terdiri dari 8 karakter',
+          'Nama harus diisi',
+        ]),
+        error: 'Bad Request',
+        statusCode: 400,
+      });
+    });
+
+    it('should return 409 if email already exist', async () => {
+      jest.spyOn(prisma.user, 'count').mockResolvedValue(1);
+
+      await request(app.getHttpServer())
+        .post('/auth/register')
+        .field('email', 'budi.santoso@example.com')
+        .field('password', 'budiSantoso123')
+        .field('name', 'Budi Santoso')
+        .expect(409)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: 'Email sudah terdaftar!',
+            error: 'Conflict',
+            statusCode: 409,
+          });
+        });
+    });
+  });
+
   describe('/auth/validate_token (POST)', () => {
     it('should return 200 and JWT token', async () => {
       const token = sign(
@@ -158,7 +248,7 @@ describe('AuthController (e2e)', () => {
       });
     });
 
-    it('should return 401 if email or password are not valid', async () => {
+    it('should return 401 if token is not valid', async () => {
       await request(app.getHttpServer())
         .post('/auth/validate_token')
         .send({ token: 'abc' })
