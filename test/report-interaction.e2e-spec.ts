@@ -230,7 +230,7 @@ describe('ReportInteractionController (e2e)', () => {
         });
     });
 
-    it('should return 400 if report id is not valid', () => {
+    it('should return 400 if comment is not provided', () => {
       return request(app.getHttpServer())
         .patch('/report/comment/1')
         .set('Authorization', 'Bearer generated_token')
@@ -244,13 +244,84 @@ describe('ReportInteractionController (e2e)', () => {
         });
     });
 
-    it('should return 404 if report is not found', () => {
+    it('should return 404 if comment is not found', () => {
       jest.spyOn(prisma.comment, 'findFirst').mockResolvedValue(null);
 
       return request(app.getHttpServer())
         .patch('/report/comment/1')
         .set('Authorization', 'Bearer generated_token')
         .send({ comment: 'Saya juga melihat kejadian ini, sangat meresahkan.' })
+        .expect(404)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message:
+              'Komentar tidak ditemukan atau Anda tidak memiliki komentar ini',
+            error: 'Not Found',
+            statusCode: 404,
+          });
+        });
+    });
+  });
+
+  describe('/report/comment/{id} (DELETE)', () => {
+    it('should return 200 and deleted comment', async () => {
+      jest
+        .spyOn(prisma.comment, 'findFirst')
+        .mockResolvedValue({ id: 1 } as any);
+
+      jest.spyOn(prisma.comment, 'delete').mockResolvedValue({
+        id: 1,
+        comment: 'Saya juga melihat kejadian ini, sangat meresahkan.',
+        createdAt: new Date('2025-06-01T08:30:00Z'),
+        updatedAt: new Date('2025-06-01T09:00:00Z'),
+        user: {
+          email: 'budi.santoso@example.com',
+          name: 'Budi Santoso',
+          profilePhoto: '17ZowAHAXQQCgZSfQV_LaPGwyh6db9dQ9',
+        },
+      } as any);
+
+      await request(app.getHttpServer())
+        .patch('/report/comment/1')
+        .send({ comment: 'Saya juga melihat kejadian ini, sangat meresahkan.' })
+        .set('Authorization', 'Bearer generated_token')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            id: 1,
+            comment: 'Saya juga melihat kejadian ini, sangat meresahkan.',
+            createdAt: '2025-06-01T08:30:00.000Z',
+            isEdited: true,
+            user: {
+              email: 'budi.santoso@example.com',
+              name: 'Budi Santoso',
+              profilePhoto:
+                'https://drive.google.com/uc?export=view&id=17ZowAHAXQQCgZSfQV_LaPGwyh6db9dQ9',
+            },
+          });
+        });
+    });
+
+    it('should return 400 if comment id is not valid', () => {
+      return request(app.getHttpServer())
+        .delete('/report/comment/abc')
+        .set('Authorization', 'Bearer generated_token')
+        .expect(400)
+        .expect((res) => {
+          expect(res.body).toEqual({
+            message: ['ID komentar tidak valid'],
+            error: 'Bad Request',
+            statusCode: 400,
+          });
+        });
+    });
+
+    it('should return 404 if comment is not found', () => {
+      jest.spyOn(prisma.comment, 'findFirst').mockResolvedValue(null);
+
+      return request(app.getHttpServer())
+        .delete('/report/comment/1')
+        .set('Authorization', 'Bearer generated_token')
         .expect(404)
         .expect((res) => {
           expect(res.body).toEqual({
