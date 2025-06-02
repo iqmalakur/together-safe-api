@@ -64,7 +64,7 @@ export class AuthController extends AbstractLogger {
     return await this.service.handleRegister(data);
   }
 
-  @Post('validate_token')
+  @Post('validate-token')
   @HttpCode(HttpStatus.OK)
   @ApiValidateToken()
   public async validateToken(
