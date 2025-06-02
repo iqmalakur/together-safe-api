@@ -26,14 +26,10 @@ export const ApiUserVote = (): MethodDecorator => {
     }),
     ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest(
-      'Token harus diisi atau reportId tidak valid',
+      'ID laporan tidak valid',
       'Token is missing or reportId is invalid',
     ),
     ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
-    ApiConflict(
-      'Anda tidak dapat melakukan vote pada laporan Anda',
-      'Self vote',
-    ),
     ApiServerError(),
   );
 };
@@ -51,6 +47,11 @@ export const ApiVote = (): MethodDecorator => {
     }),
     ApiUnauthorized('Token tidak valid', 'Token is not valid'),
     ApiBadRequest('Tipe vote tidak valid', 'Invalid vote type or report ID'),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
+    ApiConflict(
+      'Anda tidak dapat melakukan vote pada laporan Anda',
+      'Self vote',
+    ),
     ApiServerError(),
   );
 };
@@ -72,6 +73,7 @@ export const ApiComment = (): MethodDecorator => {
       'Komentar tidak boleh kosong',
       'Invalid comment format or report ID',
     ),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
     ApiServerError(),
   );
 };

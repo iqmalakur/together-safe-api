@@ -19,13 +19,19 @@ export class ReportInteractionService extends AbstractLogger {
     userEmail: string,
     reportId: string,
   ): Promise<VoteResDto> {
+    const report = await this.repository.findReport(reportId);
+
+    if (!report) {
+      throw new NotFoundException('Laporan tidak ditemukan');
+    }
+
     const result = await this.repository.findUserVote(userEmail, reportId);
 
     if (!result) {
       return {
         userEmail,
         reportId,
-        voteType: null as unknown as undefined,
+        type: null as unknown as undefined,
       };
     }
 
@@ -63,11 +69,18 @@ export class ReportInteractionService extends AbstractLogger {
     reportId: string,
     comment: string,
   ): Promise<CommentResDto> {
+    const report = await this.repository.findReport(reportId);
+
+    if (!report) {
+      throw new NotFoundException('Laporan tidak ditemukan');
+    }
+
     const result = await this.repository.createComment(
       userEmail,
       reportId,
       comment,
     );
+
     return {
       id: result.id,
       comment: result.comment,

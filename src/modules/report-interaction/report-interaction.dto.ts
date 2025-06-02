@@ -35,7 +35,7 @@ export class VoteResDto {
   public readonly reportId: string;
 
   @ApiProperty({ example: 'upvote' })
-  public readonly voteType?: VoteType;
+  public readonly type?: VoteType;
 }
 
 export class CommentReqDto {
