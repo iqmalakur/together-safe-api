@@ -1,17 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
-import { logger } from '../mocks/logger.mock';
-import { LoggerUtil } from '../../utils/logger.util';
+import { LoggerUtil } from './logger.util';
 
 describe('logger utility test', () => {
   const classname = 'TestClass';
   const dataObject = { key: 'value' };
+  const logger = {
+    debug: jest.fn(),
+    silly: jest.fn(),
+    http: jest.fn(),
+    info: jest.fn(),
+    error: jest.fn(),
+  };
+
   let loggerUtil: LoggerUtil;
 
   beforeAll(() => {
     loggerUtil = new LoggerUtil(classname);
+    (LoggerUtil as any).logger = logger;
   });
 
   afterEach(() => {
@@ -104,16 +108,12 @@ describe('logger utility test', () => {
 
     data = { nik: '12345', name: 'ucup', password: 'admin$1234' };
     formattedData = (loggerUtil as any).logFormat(data);
-    expectedResult = JSON.stringify(
-      { ...data, password: '**********' },
-      null,
-      2,
-    );
+    expectedResult = JSON.stringify({ ...data, password: '[hidden]' }, null, 2);
     expect(formattedData).toBe(expectedResult);
 
     data = { token: 'klsadfjoinvwekureong' };
     formattedData = (loggerUtil as any).logFormat(data);
-    expectedResult = JSON.stringify({ ...data, token: '**********' }, null, 2);
+    expectedResult = JSON.stringify({ ...data, token: '[hidden]' }, null, 2);
     expect(formattedData).toBe(expectedResult);
 
     data = {
@@ -124,7 +124,43 @@ describe('logger utility test', () => {
     };
     formattedData = (loggerUtil as any).logFormat(data);
     expectedResult = JSON.stringify(
-      { ...data, password: '**********', token: '**********' },
+      { ...data, password: '[hidden]', token: '[hidden]' },
+      null,
+      2,
+    );
+    expect(formattedData).toBe(expectedResult);
+
+    data = {
+      routes: [
+        [
+          [107.5262377, -6.8869031],
+          [107.5262283, -6.8866081],
+        ],
+        [
+          [107.5262377, -6.8869031],
+          [107.5262283, -6.8866081],
+        ],
+        [
+          [107.5262377, -6.8869031],
+          [107.5262283, -6.8866081],
+        ],
+      ],
+    };
+    formattedData = (loggerUtil as any).logFormat(data);
+    expectedResult = JSON.stringify(
+      {
+        routes: [
+          [
+            [107.5262377, -6.8869031],
+            [107.5262283, -6.8866081],
+          ],
+          '...',
+          [
+            [107.5262377, -6.8869031],
+            [107.5262283, -6.8866081],
+          ],
+        ],
+      },
       null,
       2,
     );

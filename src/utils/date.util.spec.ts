@@ -1,12 +1,21 @@
 import {
   getDate,
   getDateString,
+  getFormattedDate,
   getLogDateFormat,
   getTimeString,
   isValidTime,
-} from '../../utils/date.util';
+  zeroPadding,
+} from './date.util';
 
 describe('date utility test', () => {
+  it('should return correctly padded string', () => {
+    expect(zeroPadding(5)).toBe('05');
+    expect(zeroPadding(7, 3)).toBe('007');
+    expect(zeroPadding(123, 2)).toBe('123');
+    expect(zeroPadding('9', 4)).toBe('0009');
+  });
+
   it('should return correct value for getDateString', () => {
     expect(getDateString(new Date('2024-12-20'))).toBe('2024-12-20');
     expect(getDateString(new Date('2024-01-01'))).toBe('2024-01-01');
@@ -14,6 +23,13 @@ describe('date utility test', () => {
     expect(getDateString(new Date('2020-03-04T07:00:00.000Z'))).toBe(
       '2020-03-04',
     );
+  });
+
+  it('should return correct formatted date', () => {
+    expect(getFormattedDate(new Date(2023, 5, 9))).toBe('09 Juni 2023');
+    expect(getFormattedDate(new Date(2024, 10, 1), true)).toBe('01 Nov 2024');
+    expect(getFormattedDate(new Date(2025, 0, 5), true)).toBe('05 Jan 2025');
+    expect(getFormattedDate(new Date(9, 3, 12))).toBe('12 April 1909');
   });
 
   it('should return correct value for getTimeString', () => {
