@@ -72,6 +72,7 @@ export const ApiComment = (): MethodDecorator => {
       'Komentar tidak boleh kosong',
       'Invalid comment format or report ID',
     ),
+    ApiNotFound('Laporan tidak ditemukan', 'Report not found'),
     ApiServerError(),
   );
 };

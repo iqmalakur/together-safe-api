@@ -69,11 +69,18 @@ export class ReportInteractionService extends AbstractLogger {
     reportId: string,
     comment: string,
   ): Promise<CommentResDto> {
+    const report = await this.repository.findReport(reportId);
+
+    if (!report) {
+      throw new NotFoundException('Laporan tidak ditemukan');
+    }
+
     const result = await this.repository.createComment(
       userEmail,
       reportId,
       comment,
     );
+
     return {
       id: result.id,
       comment: result.comment,
