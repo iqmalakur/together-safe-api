@@ -148,9 +148,9 @@ CREATE OR REPLACE FUNCTION adjust_cost(risk_level "RiskLevel", cost DOUBLE PRECI
 RETURNS DOUBLE PRECISION AS $$
 BEGIN
     RETURN cost * CASE risk_level
-        WHEN 'high' THEN 5
-        WHEN 'medium' THEN 4
-        WHEN 'low' THEN 2
+        WHEN 'high' THEN 10
+        WHEN 'medium' THEN 8
+        WHEN 'low' THEN 5
         ELSE 1
     END;
 END;
