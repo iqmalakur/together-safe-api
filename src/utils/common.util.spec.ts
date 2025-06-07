@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { HttpException, InternalServerErrorException } from '@nestjs/common';
 import {
   getFileUrl,
