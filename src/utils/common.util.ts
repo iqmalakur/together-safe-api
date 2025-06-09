@@ -9,6 +9,10 @@ import {
 } from 'jsonwebtoken';
 import { SECRET_KEY } from '../config/app.config';
 
+export const zeroPadding = (numText: string | number, length: number = 2) => {
+  return `${numText}`.padStart(length, '0');
+};
+
 export const handleError = (error: Error, logger: LoggerUtil): Error => {
   if (error instanceof HttpException) {
     return error;

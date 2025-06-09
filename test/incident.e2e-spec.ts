@@ -67,10 +67,10 @@ describe('IncidentController (e2e)', () => {
         });
     });
 
-    it('should return 400 for unprovided latitude or longitude', async () => {
+    it('should return 400 for unprovided or invalid latitude or longitude', async () => {
       jest.spyOn(prisma, '$queryRaw').mockResolvedValue([]);
 
-      const response = await request(app.getHttpServer())
+      let response = await request(app.getHttpServer())
         .get('/incident')
         .expect(400);
 
@@ -84,12 +84,8 @@ describe('IncidentController (e2e)', () => {
         error: 'Bad Request',
         statusCode: 400,
       });
-    });
 
-    it('should return 400 for invalid latitude or longitude', async () => {
-      jest.spyOn(prisma, '$queryRaw').mockResolvedValue([]);
-
-      const response = await request(app.getHttpServer())
+      response = await request(app.getHttpServer())
         .get('/incident')
         .query({
           lat: 'abc',
@@ -134,7 +130,7 @@ describe('IncidentController (e2e)', () => {
   });
 
   describe('/incident/{id} (GET)', () => {
-    it('should return 200 and list of incident reports', async () => {
+    it('should return 200 and detail of incident', async () => {
       jest.spyOn(prisma, '$queryRaw').mockResolvedValueOnce([
         {
           id: '98f3d8a7-1b2c-4e5d-9f0a-1b2c3d4e5f6a',

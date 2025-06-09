@@ -1,6 +1,4 @@
-export const zeroPadding = (numText: string | number, length: number = 2) => {
-  return `${numText}`.padStart(length, '0');
-};
+import { zeroPadding } from './common.util';
 
 export const getDateString = (date: Date) => {
   const year: string = zeroPadding(date.getFullYear(), 4);

@@ -5,17 +5,9 @@ import {
   getLogDateFormat,
   getTimeString,
   isValidTime,
-  zeroPadding,
 } from './date.util';
 
 describe('date utility test', () => {
-  it('should return correctly padded string', () => {
-    expect(zeroPadding(5)).toBe('05');
-    expect(zeroPadding(7, 3)).toBe('007');
-    expect(zeroPadding(123, 2)).toBe('123');
-    expect(zeroPadding('9', 4)).toBe('0009');
-  });
-
   it('should return correct value for getDateString', () => {
     expect(getDateString(new Date('2024-12-20'))).toBe('2024-12-20');
     expect(getDateString(new Date('2024-01-01'))).toBe('2024-01-01');

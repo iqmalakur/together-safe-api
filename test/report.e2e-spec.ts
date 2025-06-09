@@ -284,7 +284,7 @@ describe('ReportController (e2e)', () => {
       });
     });
 
-    it('should return 400 if category is not exists', async () => {
+    it('should return 404 if category is not exists', async () => {
       jest.spyOn(prisma.incidentCategory, 'findFirst').mockResolvedValue(null);
 
       return await request(app.getHttpServer())
@@ -296,12 +296,12 @@ describe('ReportController (e2e)', () => {
         .field('date', '2025-06-01')
         .field('time', '12:30')
         .field('isAnonymous', 'false')
-        .expect(400)
+        .expect(404)
         .expect((res) => {
           expect(res.body).toEqual({
             message: ['Kategori tidak ditemukan'],
-            error: 'Bad Request',
-            statusCode: 400,
+            error: 'Not Found',
+            statusCode: 404,
           });
         });
     });

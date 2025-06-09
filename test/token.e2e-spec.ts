@@ -14,7 +14,7 @@ jest.mock('../src/utils/common.util', () => {
   };
 });
 
-describe('ReportController (e2e)', () => {
+describe('Token (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 

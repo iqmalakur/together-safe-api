@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -138,7 +137,7 @@ export class ReportService extends AbstractLogger {
     const category = await this.repository.getCategory(reportInput.categoryId);
 
     if (!category) {
-      throw new BadRequestException(['Kategori tidak ditemukan']);
+      throw new NotFoundException(['Kategori tidak ditemukan']);
     }
 
     let relatedIncident =

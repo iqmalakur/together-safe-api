@@ -259,7 +259,7 @@ describe('ReportInteractionController (e2e)', () => {
         });
     });
 
-    it('should return 400 if report id is not valid', () => {
+    it('should return 400 if comment is not provided', () => {
       return request(app.getHttpServer())
         .post('/report/f47ac10b-58cc-4372-a567-0e02b2c3d479/comment')
         .set('Authorization', 'Bearer generated_token')

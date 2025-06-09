@@ -5,6 +5,7 @@ import {
   getFileUrlOrNull,
   handleError,
   validateToken,
+  zeroPadding,
 } from './common.util';
 import { LoggerUtil } from './logger.util';
 import { sign } from 'jsonwebtoken';
@@ -23,6 +24,13 @@ describe('common utility test', () => {
   beforeAll(() => {
     loggerUtil = new LoggerUtil('TestClass');
     (LoggerUtil as any).logger = logger;
+  });
+
+  it('should return correctly padded string', () => {
+    expect(zeroPadding(5)).toBe('05');
+    expect(zeroPadding(7, 3)).toBe('007');
+    expect(zeroPadding(123, 2)).toBe('123');
+    expect(zeroPadding('9', 4)).toBe('0009');
   });
 
   it('should return same HttpException or wrap error in InternalServerErrorException', () => {
