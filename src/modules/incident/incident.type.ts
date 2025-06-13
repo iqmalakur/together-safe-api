@@ -27,8 +27,8 @@ export interface IncidentResult {
 }
 
 export interface VoteCountResult {
-  upvote_count: 0;
-  downvote_count: 0;
+  upvote_count: number;
+  downvote_count: number;
 }
 
 export interface IncidentSelection extends IncidentResult, VoteCountResult {

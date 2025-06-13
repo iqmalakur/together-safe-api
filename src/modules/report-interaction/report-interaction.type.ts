@@ -1,10 +1,14 @@
 import { VoteType } from '@prisma/client';
 
+export type VoteResult = {
+  type: VoteType | null;
+};
+
 export type ReportVoteResult = {
   incidentId: string;
   userEmail: string;
   isAnonymous: boolean;
-  votes: { type: VoteType | null }[];
+  votes: VoteResult[];
 };
 
 export type IncidentVoteResult = {
