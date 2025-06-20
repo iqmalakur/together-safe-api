@@ -57,15 +57,13 @@ describe('GeolocationController (e2e)', () => {
         });
     });
 
-    it('should return 400 if query is empty', async () => {
+    it('should return 400 if query is not provided', async () => {
       return request(app.getHttpServer())
         .get('/geolocation/search')
         .expect(400)
         .expect((res) => {
           expect(res.body).toEqual({
-            message: [
-              "Query parameter 'q' wajib diisi sebagai query pencarian",
-            ],
+            message: ["Query parameter 'q' harus berupa string"],
             error: 'Bad Request',
             statusCode: 400,
           });
