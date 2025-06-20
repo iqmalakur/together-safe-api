@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class LatLonQueryDto {
   @ApiProperty({ example: '-6.9175' })
@@ -19,8 +19,8 @@ export class LatLonQueryDto {
 
 export class GeocodingQueryDto {
   @ApiProperty({ example: 'cimahi', description: 'search query' })
-  @IsNotEmpty({
-    message: "Query parameter 'q' wajib diisi sebagai query pencarian",
+  @IsString({
+    message: "Query parameter 'q' harus berupa string",
   })
   public readonly q: string;
 }

@@ -100,6 +100,7 @@ CREATE TABLE "Vote" (
 -- CreateTable
 CREATE TABLE "NominatimLocation" (
     "osm_id" BIGINT NOT NULL,
+    "keywords" TEXT NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "display_name" VARCHAR(255) NOT NULL,
     "lat" VARCHAR(255) NOT NULL,

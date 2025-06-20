@@ -113,6 +113,7 @@ model Vote {
 
 model NominatimLocation {
   osm_id       BigInt                                 @id
+  keywords     String                                 @db.Text
   name         String                                 @db.VarChar(255)
   display_name String                                 @db.VarChar(255)
   lat          String                                 @db.VarChar(255)
