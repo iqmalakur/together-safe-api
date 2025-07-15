@@ -33,7 +33,7 @@ export class ApiService {
       `Cache miss for "${normalizedQuery}", querying Nominatim...`,
     );
     const result = await this.sendRequest<GeocodeResult[]>(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&polygon_geojson=1`,
+      `https://nominatim.openstreetmap.org/search?q=${query}&format=json`,
     );
 
     for (const item of result) {
